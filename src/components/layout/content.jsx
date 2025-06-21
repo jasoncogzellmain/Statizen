@@ -5,6 +5,7 @@ import PVP from '@/views/PVP';
 import PVE from '@/views/PVE';
 import Org from '@/views/Org';
 import Settings from '@/views/Settings';
+import LoadLog from '@/views/LoadLog';
 
 const Content = () => {
   return (
@@ -16,6 +17,7 @@ const Content = () => {
         <Route path='/PVE' element={<PVE />} />
         <Route path='/Org' element={<Org />} />
         <Route path='/settings' element={<Settings />} />
+        <Route path='/load-log' element={<LoadLog />} />
       </Routes>
     </div>
   );
