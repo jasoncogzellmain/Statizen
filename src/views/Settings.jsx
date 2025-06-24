@@ -105,6 +105,16 @@ function Settings() {
               )}
             </CardContent>
           </Card>
+          <div className='flex items-center justify-between'>
+            <div>
+              <p className='font-medium'>Submit Missing NPC Names</p>
+              <div className='flex flex-row gap-2 items-center'>
+                <Switch checked={settings.allowDictionarySubmit} onCheckedChange={(val) => updateSettings('allowDictionarySubmit', val)} />
+                <p className='text-sm text-muted-foreground'>Allow sharing unknown NPC types to improve the dictionary (opt-in)</p>
+              </div>
+              <span className='text-xs text-muted-foreground'>** This will send data to the Statizen team to help improve the dictionary. By default, this is disabled.</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>

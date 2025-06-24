@@ -15,6 +15,11 @@ Download the latest Statizen Installer
 
 Statizen is a free, open-source desktop application designed to help Star Citizen players track their combat performance, mission statistics, and gameplay metrics. The application provides detailed insights into PVP and PVE activities, helping players analyze their performance and improve their gameplay.
 
+> This project is built by one developer in the community and maintained in spare time.  
+> If Statizen helps you and you’d like to support its ongoing development:
+>
+> [🌯 Buy Me a Torpedo Burrito](https://buymeacoffee.com/chrisnarow5)
+
 ## Features
 
 - **Dashboard Overview**: Real-time display of current location, K/D ratios, and recent activity
@@ -27,19 +32,26 @@ Statizen is a free, open-source desktop application designed to help Star Citize
 ```mermaid
 flowchart TD
   A[logParser.js - Watches game.log] --> B{New line detected}
-  B -->|Non-player kill| C[pveManager.js]
-  B -->|Player kill| D[pvpManager.js]
-  D --> E[Generate UUID for kill]
-  E --> F[orgManager.js - Link org info via UUID]
-  C --> G[pveContext]
-  D --> H[pvpContext]
-  F --> I[orgContext]
-  G --> X[Update PVE GUI]
-  H --> Y[Update PVP GUI]
-  I --> Z[Update Org GUI]
-  G --> R[statisticRunner Context]
-  H --> R
+  B --> C[DictionaryLookup - Check NPC-Dictionary]
+
+  C -->|Non-player kill| D[pveManager.js]
+  C -->|Player kill| E[pvpManager.js]
+
+  E --> F[Generate UUID for kill]
+  F --> G[orgManager.js - Link org info via UUID]
+
+  D --> H[pveContext]
+  E --> I[pvpContext]
+  G --> J[orgContext]
+
+  H --> X[Update PVE GUI]
+  I --> Y[Update PVP GUI]
+  J --> Z[Update Org GUI]
+
+  H --> R[statisticRunner Context]
   I --> R
+  J --> R
+
   R --> D1[Update Dashboard Stats]
 ```
 

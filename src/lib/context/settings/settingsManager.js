@@ -13,6 +13,7 @@ const defaultSettings = {
     pvpDeaths: true,
     pveKills: false,
   },
+  allowDictionarySubmit: false,
 };
 
 export async function getSettingsPath() {
