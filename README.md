@@ -2,6 +2,15 @@
 
 A desktop application for tracking Star Citizen statistics and performance metrics, built with React, Vite, and Tauri.
 
+⚠️ **Currently Under Development**
+
+This application is actively being developed and does not work in its current state. The current version is 0.1.0 and is not yet ready for production use.
+
+## Installation
+
+Download the latest Statizen Installer
+[Latest Release](https://github.com/ChrisNSki/Statizen/latest)
+
 ## About
 
 Statizen is a free, open-source desktop application designed to help Star Citizen players track their combat performance, mission statistics, and gameplay metrics. The application provides detailed insights into PVP and PVE activities, helping players analyze their performance and improve their gameplay.
@@ -13,11 +22,26 @@ Statizen is a free, open-source desktop application designed to help Star Citize
 - **PVE Statistics**: Monitor NPC combat performance
 - **Ship Performance**: Track statistics for different ships and their combat effectiveness
 
-## Development Status
+## App Flow
 
-⚠️ **Currently Under Development**
-
-This application is actively being developed and may contain incomplete features or bugs. The current version is 0.1.0 and is not yet ready for production use.
+```mermaid
+flowchart TD
+  A[logParser.js - Watches game.log] --> B{New line detected}
+  B -->|Non-player kill| C[pveManager.js]
+  B -->|Player kill| D[pvpManager.js]
+  D --> E[Generate UUID for kill]
+  E --> F[orgManager.js - Link org info via UUID]
+  C --> G[pveContext]
+  D --> H[pvpContext]
+  F --> I[orgContext]
+  G --> X[Update PVE GUI]
+  H --> Y[Update PVP GUI]
+  I --> Z[Update Org GUI]
+  G --> R[statisticRunner Context]
+  H --> R
+  I --> R
+  R --> D1[Update Dashboard Stats]
+```
 
 ## Getting Started
 
@@ -27,7 +51,7 @@ This application is actively being developed and may contain incomplete features
 - Rust (for Tauri development)
 - Star Citizen game client
 
-### Installation
+### Installation For Development
 
 1. Clone the repository:
 

@@ -2,6 +2,16 @@
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "default",
   "description": "enables the default permissions",
-  "windows": ["main"],
-  "permissions": ["core:default", "core:window:allow-minimize", "core:window:allow-close"]
+  "windows": [
+    "main"
+  ],
+  "permissions": [
+    "core:default",
+    "core:window:allow-minimize",
+    "core:window:allow-close",
+    "fs:default",
+    "fs:allow-config-read-recursive",
+    "fs:allow-config-write-recursive",
+    "dialog:default"
+  ]
 }
