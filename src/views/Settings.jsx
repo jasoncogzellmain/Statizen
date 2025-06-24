@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { handleOpenFile } from '@/lib/handleOpenFile';
 import { useSettings } from '@/lib/context/settings/settingsContext';
+import { InfoIcon } from 'lucide-react';
 
 function Settings() {
   const { settings, loading, updateSettings, updateEventTypes } = useSettings();
@@ -29,7 +30,7 @@ function Settings() {
       <div className='space-y-6'>
         <div className='space-y-4'>
           <h3 className='text-lg font-semibold'>General Settings</h3>
-          <div className='space-y-4'>
+          <div className='space-y-4 pl-4'>
             <div className='space-y-2 w-3/4'>
               <Label htmlFor='log-path'>Game Log File</Label>
               <div className='flex flex-row w-full gap-2'>
@@ -43,11 +44,29 @@ function Settings() {
                   <Switch checked={settings.notifications} onCheckedChange={(val) => updateSettings('notifications', val)} />
                   <p className='text-sm text-muted-foreground'>Enable push notifications (Windows overlay)</p>
                 </div>
+                <div className='flex flex-row gap-1 items-center pt-2 pl-2'>
+                  <InfoIcon className='w-3 h-3' />
+                  <span className='text-xs text-muted-foreground'>Display notifications for PVP kills only (May cause unexpected behavior)</span>
+                </div>
               </div>
             </div>
           </div>
         </div>
-
+        <div className='flex items-center justify-between'>
+          <div>
+            <p className='font-medium'>Submit Missing NPC Names</p>
+            <div className='pl-4'>
+              <div className='flex flex-row gap-2 items-center pt-2'>
+                <Switch checked={settings.allowDictionarySubmit} onCheckedChange={(val) => updateSettings('allowDictionarySubmit', val)} />
+                <p className='text-sm text-muted-foreground'>Allow sharing unknown NPC types to improve the dictionary (opt-in)</p>
+              </div>
+              <div className='flex flex-row gap-1 items-center pt-2 pl-2'>
+                <InfoIcon className='w-3 h-3' />
+                <span className='text-xs text-muted-foreground'>This will send data to the Statizen team to help improve the dictionary. By default, this is disabled.</span>
+              </div>
+            </div>
+          </div>
+        </div>
         <div className='space-y-4'>
           <h3 className='text-lg font-semibold'>Webhooks</h3>
           <Card>
@@ -105,16 +124,6 @@ function Settings() {
               )}
             </CardContent>
           </Card>
-          <div className='flex items-center justify-between'>
-            <div>
-              <p className='font-medium'>Submit Missing NPC Names</p>
-              <div className='flex flex-row gap-2 items-center'>
-                <Switch checked={settings.allowDictionarySubmit} onCheckedChange={(val) => updateSettings('allowDictionarySubmit', val)} />
-                <p className='text-sm text-muted-foreground'>Allow sharing unknown NPC types to improve the dictionary (opt-in)</p>
-              </div>
-              <span className='text-xs text-muted-foreground'>** This will send data to the Statizen team to help improve the dictionary. By default, this is disabled.</span>
-            </div>
-          </div>
         </div>
       </div>
     </div>
