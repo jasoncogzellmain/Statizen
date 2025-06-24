@@ -25,7 +25,6 @@ export async function getSettingsPath() {
 
 export async function loadSettings() {
   const path = await getSettingsPath();
-  console.log(path);
   try {
     const text = await readTextFile(path);
     return JSON.parse(text);

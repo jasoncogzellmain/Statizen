@@ -21,7 +21,7 @@ function Settings() {
   if (loading || !settings) return <div>Loading Settings...</div>;
 
   return (
-    <div className='flex flex-col gap-6'>
+    <div className='flex flex-col gap-6 p-5'>
       <div className='flex flex-col gap-2'>
         <h1 className='text-3xl font-bold'>Settings</h1>
         <p className='text-muted-foreground'>Manage your Statizen preferences</p>

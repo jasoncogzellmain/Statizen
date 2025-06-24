@@ -1,4 +1,11 @@
 {
-  "Kopion_Irradiated": "Kopion Trooper (Irradiated)",
-  "PU_Human_Enemy_GroundCombat_NPC": "Enemy Ground Combat NPC"
+  "version": "0.1.0",
+  "dictionary": {
+    "Kopion_Irradiated": {
+      "name": "Kopion Trooper (Irradiated)"
+    },
+    "PU_Human_Enemy_GroundCombat_NPC": {
+      "name": "Ground Combat Unit"
+    }
+  }
 }

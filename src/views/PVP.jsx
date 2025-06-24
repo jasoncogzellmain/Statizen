@@ -4,7 +4,7 @@ import { TrendingUp, TrendingDown, Target, Skull, MapPin, Zap, Ship, Calendar } 
 
 function PVP() {
   return (
-    <div className='flex flex-row gap-6'>
+    <div className='flex flex-row gap-6 p-5'>
       {/* K/D Overview Cards */}
       <div className='flex flex-col gap-2 w-1/4'>
         <Card>

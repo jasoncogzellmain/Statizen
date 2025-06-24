@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect } from 'react';
-import { loadSettings, saveSettings } from './settingsManager';
+import { loadSettings, saveSettings } from '@/lib/settingsManager';
 
 const SettingsContext = createContext();
 

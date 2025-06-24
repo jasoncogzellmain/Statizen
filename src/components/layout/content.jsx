@@ -4,13 +4,14 @@ import Dashboard from '@/views/Dashboard';
 import PVP from '@/views/PVP';
 import PVE from '@/views/PVE';
 import Org from '@/views/Org';
+import Dictionary from '@/views/Dictionary';
 import Settings from '@/views/Settings';
 import LogFileLoader from '@/components/LogFileLoader';
 import PageWrapper from '@/components/PageWrapper';
 
 const Content = () => {
   return (
-    <div className='flex-1 bg-accent min-h-full p-5 overflow-y-auto max-h-[604px]'>
+    <div className='flex-1 bg-accent min-h-full overflow-y-auto max-h-[654px]'>
       <Routes>
         <Route
           path='/'
@@ -61,6 +62,7 @@ const Content = () => {
             </PageWrapper>
           }
         />
+        <Route path='/dictionary' element={<Dictionary />} />
       </Routes>
     </div>
   );

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Minus, Sun, X, Home, Settings as SettingsIcon, Sword, Shield, Users } from 'lucide-react';
+import { Minus, Sun, X, Home, Settings as SettingsIcon, Sword, Shield, Users, Book } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { getCurrentWindow } from '@tauri-apps/api/window';
@@ -42,6 +42,12 @@ const TopNav = () => {
             <Button variant={location.pathname === '/settings' ? 'default' : 'ghost'} size='sm' className='flex items-center gap-2'>
               <SettingsIcon className='w-4 h-4' />
               Settings
+            </Button>
+          </Link>
+          <Link to='/dictionary'>
+            <Button variant={location.pathname === '/dictionary' ? 'default' : 'ghost'} size='sm' className='flex items-center gap-2'>
+              <Book className='w-4 h-4' />
+              Dictionary
             </Button>
           </Link>
         </nav>

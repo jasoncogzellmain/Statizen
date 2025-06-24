@@ -1,10 +1,11 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { MapPin, Target, Skull, User, Zap, Clock, UserCheck, Server, Gamepad2 } from 'lucide-react';
+import { MapPin, Target, Skull, User, Zap, Clock, UserCheck, Gamepad2, Rocket } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 
 function Dashboard() {
   return (
-    <div className='flex flex-col gap-2'>
+    <div className='flex flex-col gap-2 p-5'>
       <div className='flex flex-row w-full gap-2'>
         <div className='flex flex-col gap-2 w-1/3'>
           {/* Main Stats Cards */}
@@ -82,34 +83,29 @@ function Dashboard() {
           </Card>
           <Card>
             <CardContent className='space-y-3'>
-              <div className='flex items-center justify-between p-2 rounded-lg'>
-                <div className='flex items-center gap-3'>
-                  <div className='w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center'>
+              <div className='flex justify-between p-2 rounded-lg min-h-33'>
+                <div className='flex gap-3'>
+                  <div className='w-8 h-8 mt-2 min-w-8 min-h-8 bg-blue-100 rounded-full flex items-center justify-center'>
                     <Zap className='w-4 h-4 text-blue-600' />
                   </div>
                   <div>
-                    <p className='font-medium'>Quantuming To</p>
-                    <p className='text-sm text-muted-foreground'>ArcCorp</p>
+                    <p className='font-medium'>Detected Nearby Players</p>
+                    <div className='flex flex-row gap-2 pt-2 flex-wrap'>
+                      <Badge>Nowskify</Badge>
+                      <Badge>Player 1</Badge>
+                      <Badge>Player 2</Badge>
+                      <Badge>Player 3</Badge>
+                      <Badge>Player 4</Badge>
+                      <Badge>Player 5</Badge>
+                      <Badge>Player 6</Badge>
+                      <Badge>Player 7</Badge>
+                      <Badge>Player 8</Badge>
+                      <Badge>Player 9</Badge>
+                      <Badge>Player 10</Badge>
+                      <Badge>Player 11</Badge>
+                      <Badge>Player 12</Badge>
+                    </div>
                   </div>
-                </div>
-                <div className='text-right'>
-                  <p className='font-medium text-blue-600'>In Progress</p>
-                  <p className='text-xs text-muted-foreground'>ETA: 2m 34s</p>
-                </div>
-              </div>
-              <div className='flex items-center justify-between p-2 rounded-lg'>
-                <div className='flex items-center gap-3'>
-                  <div className='w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center'>
-                    <MapPin className='w-4 h-4 text-purple-600' />
-                  </div>
-                  <div>
-                    <p className='font-medium'>Current Ship</p>
-                    <p className='text-sm text-muted-foreground'>Aurora MR</p>
-                  </div>
-                </div>
-                <div className='text-right'>
-                  <p className='font-medium text-purple-600'>Ready</p>
-                  <p className='text-xs text-muted-foreground'>100% Hull</p>
                 </div>
               </div>
             </CardContent>
@@ -143,10 +139,10 @@ function Dashboard() {
               </div>
             </div>
             <div className='flex items-center gap-3 p-3 border rounded-lg'>
-              <Server className='w-5 h-5 text-orange-600' />
+              <Rocket className='w-5 h-5 text-orange-600' />
               <div>
-                <p className='font-medium'>Connected to Shard</p>
-                <p className='text-sm text-muted-foreground'>US-AUS-01</p>
+                <p className='font-medium'>Current Ship</p>
+                <p className='text-sm text-muted-foreground'>Aurora MR</p>
               </div>
             </div>
           </div>

@@ -13,8 +13,8 @@
     "windows": [
       {
         "title": "statizen",
-        "width": 850,
-        "height": 700,
+        "width": 900,
+        "height": 750,
         "resizable": false,
         "fullscreen": false,
         "decorations": false,
