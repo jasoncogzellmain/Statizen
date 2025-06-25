@@ -1,9 +1,14 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { MapPin, Target, Skull, User, Zap, Clock, UserCheck, Gamepad2, Rocket } from 'lucide-react';
+import { MapPin, Target, Skull, User, Zap, Clock, UserCheck, Gamepad2, Rocket, Activity, AlertCircle, Play, Square } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { useLogProcessor } from '@/lib/context/logProcessor/logProcessorContext';
+import { useUser } from '@/lib/context/user/userContext';
 
 function Dashboard() {
+  const { isWatching, toggleLogging } = useLogProcessor();
+  const { userData } = useUser();
+
   return (
     <div className='flex flex-col gap-2 p-5'>
       <div className='flex flex-row w-full gap-2'>
@@ -121,33 +126,52 @@ function Dashboard() {
               <Gamepad2 className='w-5 h-5 text-blue-600' />
               <div>
                 <p className='font-medium'>Star Citizen Version</p>
-                <p className='text-sm text-muted-foreground'>3.22.1-LIVE</p>
+                <p className='text-sm text-muted-foreground'>{userData?.starCitizenVersion || 'Unknown'}</p>
               </div>
             </div>
             <div className='flex items-center gap-3 p-3 border rounded-lg'>
-              <Clock className='w-5 h-5 text-green-600' />
+              <Activity className='w-5 h-5 text-blue-600' />
               <div>
-                <p className='font-medium'>Last Sync Time</p>
-                <p className='text-sm text-muted-foreground'>2 minutes ago</p>
+                <p className='font-medium'>Log Parser Status</p>
+                <div className='flex flex-row items-center gap-2'>
+                  <div className={`w-3 h-3 rounded-full ${isWatching ? 'bg-green-500' : 'bg-red-500'}`}></div>
+                  <p className='text-sm text-muted-foreground'>{isWatching ? 'Live' : 'Not connected'}</p>
+                </div>
               </div>
             </div>
             <div className='flex items-center gap-3 p-3 border rounded-lg'>
               <UserCheck className='w-5 h-5 text-purple-600' />
               <div>
                 <p className='font-medium'>Logged in as</p>
-                <p className='text-sm text-muted-foreground'>YourUsername</p>
+                <p className='text-sm text-muted-foreground'>{userData?.userName || 'Unknown'}</p>
               </div>
             </div>
             <div className='flex items-center gap-3 p-3 border rounded-lg'>
               <Rocket className='w-5 h-5 text-orange-600' />
               <div>
                 <p className='font-medium'>Current Ship</p>
-                <p className='text-sm text-muted-foreground'>Aurora MR</p>
+                <p className='text-sm text-muted-foreground'>{userData?.currentShip || 'Unknown'}</p>
               </div>
             </div>
           </div>
         </CardContent>
       </Card>
+      {/* Logging Control */}
+      <div className='flex flex-row gap-2 w-full justify-end pt-2'>
+        <Button onClick={toggleLogging} variant={isWatching ? 'destructive' : 'default'} className='flex items-center gap-2'>
+          {isWatching ? (
+            <>
+              <Square className='w-4 h-4' />
+              Stop Logging
+            </>
+          ) : (
+            <>
+              <Play className='w-4 h-4' />
+              Start Logging
+            </>
+          )}
+        </Button>
+      </div>
     </div>
   );
 }

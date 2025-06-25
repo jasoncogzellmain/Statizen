@@ -4,7 +4,7 @@ import { exists, mkdir, readTextFile, writeTextFile } from '@tauri-apps/plugin-f
 const defaultUserCheck = {
   userName: '',
   geid: '',
-  StarCitizenVersion: '',
+  starCitizenVersion: '',
   currentShip: '',
 };
 
@@ -12,7 +12,7 @@ export async function getUserCheckPath() {
   const dir = await configDir();
   const userCheckDir = await join(dir, 'statizen', 'user');
   if (!(await exists(userCheckDir))) await mkdir(userCheckDir, { recursive: true });
-  return await join(userCheckDir, 'logutil.json');
+  return await join(userCheckDir, 'userUtil.json');
 }
 
 export async function loadUserCheck() {
