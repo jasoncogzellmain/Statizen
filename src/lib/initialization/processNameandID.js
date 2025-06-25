@@ -1,4 +1,4 @@
-import { loadUserCheck, saveUserCheck } from '@/lib/user/userUtil';
+import { loadUser, saveUser } from '@/lib/user/userUtil';
 
 export const extractUserData = (line) => {
   const updates = {};
@@ -18,22 +18,19 @@ export const extractUserData = (line) => {
   return updates;
 };
 
-export const processNameAndID = async (line, updateUserData) => {
+export const processNameAndID = async (line) => {
   // Extract user data from the line
   const userUpdates = extractUserData(line);
 
   if (Object.keys(userUpdates).length > 0) {
     // Load existing user data
-    const existingUserData = await loadUserCheck();
+    const existingUserData = await loadUser();
 
     // Merge with new data
     const updatedUserData = { ...existingUserData, ...userUpdates };
 
     // Save updated user data
-    await saveUserCheck(updatedUserData);
-
-    // Update context
-    updateUserData(userUpdates);
+    await saveUser(updatedUserData);
 
     return updatedUserData;
   }
@@ -41,18 +38,13 @@ export const processNameAndID = async (line, updateUserData) => {
   return null;
 };
 
-export const processStarCitizenVersion = async (line, updateUserData) => {
+export const processStarCitizenVersion = async (line) => {
   const starCitizenVersion = line.match(/(?<=>\sBranch:\s).*/);
   if (starCitizenVersion) {
-    const existingUserData = await loadUserCheck();
+    const existingUserData = await loadUser();
     const updates = { starCitizenVersion: starCitizenVersion[0] };
     const updatedUserData = { ...existingUserData, ...updates };
-    await saveUserCheck(updatedUserData);
-
-    // Update context
-    updateUserData(updates);
-
-    return updatedUserData;
+    await saveUser(updatedUserData);
   } else {
     console.log('No star citizen version found in log file');
   }

@@ -3,11 +3,23 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { MapPin, Target, Skull, User, Zap, Clock, UserCheck, Gamepad2, Rocket, Activity, AlertCircle, Play, Square } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { useLogProcessor } from '@/lib/context/logProcessor/logProcessorContext';
-import { useUser } from '@/lib/context/user/userContext';
+import { useData } from '@/lib/context/data/dataContext';
+import { useSettings } from '@/lib/context/settings/settingsContext';
+import { initializeLog } from '@/lib/initialization/initializeLog';
 
 function Dashboard() {
   const { isWatching, toggleLogging } = useLogProcessor();
-  const { userData } = useUser();
+  const { settings } = useSettings();
+  const { userData } = useData();
+
+  const startLogging = async () => {
+    if (!isWatching) {
+      await initializeLog(settings);
+      toggleLogging();
+    } else {
+      toggleLogging();
+    }
+  };
 
   return (
     <div className='flex flex-col gap-2 p-5'>
@@ -158,7 +170,7 @@ function Dashboard() {
       </Card>
       {/* Logging Control */}
       <div className='flex flex-row gap-2 w-full justify-end pt-2'>
-        <Button onClick={toggleLogging} variant={isWatching ? 'destructive' : 'default'} className='flex items-center gap-2'>
+        <Button onClick={startLogging} variant={isWatching ? 'destructive' : 'default'} className='flex items-center gap-2'>
           {isWatching ? (
             <>
               <Square className='w-4 h-4' />

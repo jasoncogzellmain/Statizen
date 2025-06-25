@@ -8,15 +8,15 @@ const defaultUserCheck = {
   currentShip: '',
 };
 
-export async function getUserCheckPath() {
+export async function getUserPath() {
   const dir = await configDir();
   const userCheckDir = await join(dir, 'statizen', 'user');
   if (!(await exists(userCheckDir))) await mkdir(userCheckDir, { recursive: true });
   return await join(userCheckDir, 'userUtil.json');
 }
 
-export async function loadUserCheck() {
-  const path = await getUserCheckPath();
+export async function loadUser() {
+  const path = await getUserPath();
   try {
     const text = await readTextFile(path);
     return JSON.parse(text);
@@ -25,7 +25,7 @@ export async function loadUserCheck() {
   }
 }
 
-export async function saveUserCheck(data) {
-  const path = await getUserCheckPath();
+export async function saveUser(data) {
+  const path = await getUserPath();
   await writeTextFile(path, JSON.stringify(data, null, 2));
 }
