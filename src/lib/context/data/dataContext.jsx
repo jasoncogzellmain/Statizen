@@ -1,28 +1,42 @@
 import { createContext, useContext, useState, useEffect, useRef } from 'react';
 import { loadUser, saveUser } from '@/lib/user/userUtil';
 import { loadPVE, savePVE, addPVEEntry, getPVEEntry, updatePVEEntry, getMonthEntries } from '@/lib/pve/pveUtil';
+import { loadPVP, savePVP, addPVPEntry, getPVPEntry, updatePVPEntry, getMonthPVPEntries } from '@/lib/pvp/pvpUtil';
+import { addOrgEntry, getOrgEntry, updateOrgEntry, getMonthOrgEntries } from '@/lib/org/orgUtil';
 
 const DataContext = createContext();
 
 export function DataProvider({ children }) {
   const [userData, setUserData] = useState(null);
-  const lastFileContent = useRef(null);
   const [PVEData, setPVEData] = useState(null);
-  // const [PVPData, setPVPData] = useState(null);
-  // const [OrgData, setOrgData] = useState(null);
+  const [PVPData, setPVPData] = useState(null);
+  const [OrgData, setOrgData] = useState(null);
 
-  // Load initial user data
+  // Separate tracking for each data type
+  const lastUserContent = useRef(null);
+  const lastPVEContent = useRef(null);
+  const lastPVPContent = useRef(null);
+  const lastOrgContent = useRef(null);
+
+  // Load initial data
   useEffect(() => {
     const loadInitialData = async () => {
       try {
         const userData = await loadUser();
         const pveData = await loadPVE();
+        const pvpData = await loadPVP();
+
         setUserData(userData);
         setPVEData(pveData);
-        lastFileContent.current = JSON.stringify(userData);
-        lastFileContent.current = JSON.stringify(pveData);
+        setPVPData(pvpData);
+        setOrgData({}); // Org only has monthly data, no summary stats
+
+        lastUserContent.current = JSON.stringify(userData);
+        lastPVEContent.current = JSON.stringify(pveData);
+        lastPVPContent.current = JSON.stringify(pvpData);
+        lastOrgContent.current = JSON.stringify({});
       } catch (error) {
-        console.error('Failed to load initial user data:', error);
+        console.error('Failed to load initial data:', error);
       }
     };
 
@@ -35,22 +49,32 @@ export function DataProvider({ children }) {
       try {
         const currentUserData = await loadUser();
         const currentPVEData = await loadPVE();
+        const currentPVPData = await loadPVP();
+
         const currentUserContent = JSON.stringify(currentUserData);
         const currentPVEContent = JSON.stringify(currentPVEData);
+        const currentPVPContent = JSON.stringify(currentPVPData);
 
-        // Check if the file content has changed
-        if (lastFileContent.current !== currentUserContent) {
+        // Check if each file content has changed
+        if (lastUserContent.current !== currentUserContent) {
           setUserData(currentUserData);
-          lastFileContent.current = currentUserContent;
+          lastUserContent.current = currentUserContent;
           console.log('User data updated from file:', currentUserData);
         }
-        if (lastFileContent.current !== currentPVEContent) {
+
+        if (lastPVEContent.current !== currentPVEContent) {
           setPVEData(currentPVEData);
-          lastFileContent.current = currentPVEContent;
+          lastPVEContent.current = currentPVEContent;
           console.log('PVE data updated from file:', currentPVEData);
         }
+
+        if (lastPVPContent.current !== currentPVPContent) {
+          setPVPData(currentPVPData);
+          lastPVPContent.current = currentPVPContent;
+          console.log('PVP data updated from file:', currentPVPData);
+        }
       } catch (error) {
-        console.error('Failed to poll user data:', error);
+        console.error('Failed to poll data:', error);
       }
     }, 1000); // Poll every second
 
@@ -69,6 +93,12 @@ export function DataProvider({ children }) {
     const updated = { ...PVEData, [key]: value };
     setPVEData(updated);
     await savePVE(updated);
+  };
+
+  const updatePVPData = async (key, value) => {
+    const updated = { ...PVPData, [key]: value };
+    setPVPData(updated);
+    await savePVP(updated);
   };
 
   // PVE Entry Management Functions
@@ -100,15 +130,81 @@ export function DataProvider({ children }) {
     return await getMonthEntries(monthYYYYMM);
   };
 
+  // PVP Entry Management Functions
+  const addPVPEntryToContext = async (uuid, entryData) => {
+    const success = await addPVPEntry(uuid, entryData);
+    if (success) {
+      // Reload PVP data to reflect changes
+      const updatedPVPData = await loadPVP();
+      setPVPData(updatedPVPData);
+    }
+    return success;
+  };
+
+  const getPVPEntryFromContext = async (uuid) => {
+    return await getPVPEntry(uuid);
+  };
+
+  const updatePVPEntryInContext = async (uuid, entryData) => {
+    const success = await updatePVPEntry(uuid, entryData);
+    if (success) {
+      // Reload PVP data to reflect changes
+      const updatedPVPData = await loadPVP();
+      setPVPData(updatedPVPData);
+    }
+    return success;
+  };
+
+  const getMonthPVPEntriesFromContext = async (monthYYYYMM = null) => {
+    return await getMonthPVPEntries(monthYYYYMM);
+  };
+
+  // Org Entry Management Functions
+  const addOrgEntryToContext = async (uuid, entryData) => {
+    const success = await addOrgEntry(uuid, entryData);
+    if (success) {
+      // Org data is only monthly, so we don't need to reload summary stats
+      console.log('Org entry added successfully');
+    }
+    return success;
+  };
+
+  const getOrgEntryFromContext = async (uuid) => {
+    return await getOrgEntry(uuid);
+  };
+
+  const updateOrgEntryInContext = async (uuid, entryData) => {
+    const success = await updateOrgEntry(uuid, entryData);
+    if (success) {
+      console.log('Org entry updated successfully');
+    }
+    return success;
+  };
+
+  const getMonthOrgEntriesFromContext = async (monthYYYYMM = null) => {
+    return await getMonthOrgEntries(monthYYYYMM);
+  };
+
   const value = {
     userData,
     updateUserData,
     PVEData,
     updatePVEData,
+    PVPData,
+    updatePVPData,
+    OrgData,
     addPVEEntry: addPVEEntryToContext,
     getPVEEntry: getPVEEntryFromContext,
     updatePVEEntry: updatePVEEntryInContext,
     getMonthEntries: getMonthEntriesFromContext,
+    addPVPEntry: addPVPEntryToContext,
+    getPVPEntry: getPVPEntryFromContext,
+    updatePVPEntry: updatePVPEntryInContext,
+    getMonthPVPEntries: getMonthPVPEntriesFromContext,
+    addOrgEntry: addOrgEntryToContext,
+    getOrgEntry: getOrgEntryFromContext,
+    updateOrgEntry: updateOrgEntryInContext,
+    getMonthOrgEntries: getMonthOrgEntriesFromContext,
   };
 
   return <DataContext.Provider value={value}>{children}</DataContext.Provider>;
