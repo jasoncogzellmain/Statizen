@@ -16,7 +16,7 @@ Download the latest Statizen Installer
 Statizen is a free, open-source desktop application designed to help Star Citizen players track their combat performance, mission statistics, and gameplay metrics. The application provides detailed insights into PVP and PVE activities, helping players analyze their performance and improve their gameplay.
 
 > This project is built by one developer in the community and maintained in spare time.  
-> If Statizen helps you and you’d like to support its ongoing development:
+> If Statizen helps you and you'd like to support its ongoing development:
 >
 > [🌯 Buy Me a Torpedo Burrito](https://buymeacoffee.com/chrisnarow5)
 
@@ -31,28 +31,37 @@ Statizen is a free, open-source desktop application designed to help Star Citize
 
 ```mermaid
 flowchart TD
-  A[logParser.js - Watches game.log] --> B{New line detected}
-  B --> C[DictionaryLookup - Check NPC-Dictionary]
+  A[logUtil.js - Watches game.log] --> B{New line detected}
+  B --> C[Engine - Parse & Route Lines]
 
-  C -->|Non-player kill| D[pveManager.js]
-  C -->|Player kill| E[pvpManager.js]
+  C --> D{Line contains?}
+  D -->|Actor Death| E[actorDeath.js - PVE Processing]
+  D -->|Spawn Flow| F[spawnFlow.js - Detect Nearby Players]
+  D -->|Actor Stall| G[stallFlow.js - Detect Nearby Players]
+  D -->|Vehicle Control Flow| H[vehicleControlFlow.js - Ship Detection]
+  D -->|ActorState Corpse| I[corpse.js - PVP Processing]
 
-  E --> F[Generate UUID for kill]
-  F --> G[orgManager.js - Link org info via UUID]
+  E --> J[Update PVE Data]
+  F --> K[Update Nearby Players]
+  G --> L[Update Nearby Players]
+  H --> M[Update Current Ship]
+  I --> N[Update PVP Data]
 
-  D --> H[pveContext]
-  E --> I[pvpContext]
-  G --> J[orgContext]
+  J --> O[DataContext - PVE State]
+  K --> P[DataContext - Nearby Players State]
+  L --> P
+  M --> Q[DataContext - User State]
+  N --> R[DataContext - PVP State]
 
-  H --> X[Update PVE GUI]
-  I --> Y[Update PVP GUI]
-  J --> Z[Update Org GUI]
+  O --> S[Update PVE GUI]
+  P --> T[Update Dashboard - Nearby Players Badges]
+  Q --> U[Update Dashboard - Current Ship]
+  R --> V[Update PVP GUI]
 
-  H --> R[statisticRunner Context]
-  I --> R
-  J --> R
-
-  R --> D1[Update Dashboard Stats]
+  U --> W[Update Statizen Stats]
+  S --> W
+  T --> W
+  V --> W
 ```
 
 ## Getting Started
