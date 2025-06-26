@@ -3,6 +3,7 @@ import { loadUser, saveUser } from '@/lib/user/userUtil';
 import { loadPVE, savePVE, addPVEEntry, getPVEEntry, updatePVEEntry, getMonthEntries } from '@/lib/pve/pveUtil';
 import { loadPVP, savePVP, addPVPEntry, getPVPEntry, updatePVPEntry, getMonthPVPEntries } from '@/lib/pvp/pvpUtil';
 import { addOrgEntry, getOrgEntry, updateOrgEntry, getMonthOrgEntries } from '@/lib/org/orgUtil';
+import { loadLogInfo } from '@/lib/log/logUtil';
 
 const DataContext = createContext();
 
@@ -11,12 +12,14 @@ export function DataProvider({ children }) {
   const [PVEData, setPVEData] = useState(null);
   const [PVPData, setPVPData] = useState(null);
   const [OrgData, setOrgData] = useState(null);
+  const [logInfo, setLogInfo] = useState(null);
 
   // Separate tracking for each data type
   const lastUserContent = useRef(null);
   const lastPVEContent = useRef(null);
   const lastPVPContent = useRef(null);
   const lastOrgContent = useRef(null);
+  const lastLogInfoContent = useRef(null);
 
   // Load initial data
   useEffect(() => {
@@ -25,16 +28,19 @@ export function DataProvider({ children }) {
         const userData = await loadUser();
         const pveData = await loadPVE();
         const pvpData = await loadPVP();
+        const logInfoData = await loadLogInfo();
 
         setUserData(userData);
         setPVEData(pveData);
         setPVPData(pvpData);
         setOrgData({}); // Org only has monthly data, no summary stats
+        setLogInfo(logInfoData);
 
         lastUserContent.current = JSON.stringify(userData);
         lastPVEContent.current = JSON.stringify(pveData);
         lastPVPContent.current = JSON.stringify(pvpData);
         lastOrgContent.current = JSON.stringify({});
+        lastLogInfoContent.current = JSON.stringify(logInfoData);
       } catch (error) {
         console.error('Failed to load initial data:', error);
       }
@@ -50,10 +56,12 @@ export function DataProvider({ children }) {
         const currentUserData = await loadUser();
         const currentPVEData = await loadPVE();
         const currentPVPData = await loadPVP();
+        const currentLogInfoData = await loadLogInfo();
 
         const currentUserContent = JSON.stringify(currentUserData);
         const currentPVEContent = JSON.stringify(currentPVEData);
         const currentPVPContent = JSON.stringify(currentPVPData);
+        const currentLogInfoContent = JSON.stringify(currentLogInfoData);
 
         // Check if each file content has changed
         if (lastUserContent.current !== currentUserContent) {
@@ -72,6 +80,12 @@ export function DataProvider({ children }) {
           setPVPData(currentPVPData);
           lastPVPContent.current = currentPVPContent;
           console.log('PVP data updated from file:', currentPVPData);
+        }
+
+        if (lastLogInfoContent.current !== currentLogInfoContent) {
+          setLogInfo(currentLogInfoData);
+          lastLogInfoContent.current = currentLogInfoContent;
+          console.log('Log info updated from file:', currentLogInfoData);
         }
       } catch (error) {
         console.error('Failed to poll data:', error);
@@ -193,6 +207,7 @@ export function DataProvider({ children }) {
     PVPData,
     updatePVPData,
     OrgData,
+    logInfo,
     addPVEEntry: addPVEEntryToContext,
     getPVEEntry: getPVEEntryFromContext,
     updatePVEEntry: updatePVEEntryInContext,

@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { MapPin, Target, Skull, User, Zap, Clock, UserCheck, Gamepad2, Rocket, Activity, AlertCircle, Play, Square } from 'lucide-react';
+import { MapPin, Target, Skull, User, Zap, Clock, UserCheck, Gamepad2, Rocket, Activity, AlertCircle, Play, Square, FileText } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { useLogProcessor } from '@/lib/context/logProcessor/logProcessorContext';
 import { useData } from '@/lib/context/data/dataContext';
@@ -29,12 +29,12 @@ function Dashboard() {
           <Card>
             <CardHeader>
               <div className='flex items-center gap-2'>
-                <MapPin className='w-5 h-5 text-blue-600' />
-                <CardTitle>Current Location</CardTitle>
+                <Rocket className='w-5 h-5 text-blue-600' />
+                <CardTitle>Current Ship</CardTitle>
               </div>
             </CardHeader>
             <CardContent>
-              <p className='text-xl font-bold'>Port Olisar</p>
+              <span className={`flex text-nowrap font-bold ${(userData?.currentShip?.length || 0) > 28 ? 'text-xs' : (userData?.currentShip?.length || 0) > 22 ? 'text-md' : 'text-xl'}`}>{userData?.currentShip || 'Unknown'}</span>
             </CardContent>
           </Card>
           <Card>
@@ -159,10 +159,10 @@ function Dashboard() {
               </div>
             </div>
             <div className='flex items-center gap-3 p-3 border rounded-lg'>
-              <Rocket className='w-5 h-5 text-orange-600' />
+              <FileText className='w-5 h-5 text-orange-600' />
               <div>
-                <p className='font-medium'>Current Ship</p>
-                <p className='text-sm text-muted-foreground'>{userData?.currentShip || 'Unknown'}</p>
+                <p className='font-medium'>Log Lines Processed</p>
+                <p className='text-sm text-muted-foreground'>{userData?.lastProcessedLine || 'Unknown'}</p>
               </div>
             </div>
           </div>
