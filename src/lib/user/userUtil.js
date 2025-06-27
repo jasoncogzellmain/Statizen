@@ -29,3 +29,10 @@ export async function saveUser(data) {
   const path = await getUserPath();
   await writeTextFile(path, JSON.stringify(data, null, 2));
 }
+
+export async function resetUserShip() {
+  const path = await getUserPath();
+  const userData = await loadUser();
+  userData.currentShip = '';
+  await writeTextFile(path, JSON.stringify(userData, null, 2));
+}

@@ -1,5 +1,5 @@
 import { readTextFile } from '@tauri-apps/plugin-fs';
-import { processNameAndID, processStarCitizenVersion } from './processNameandID';
+import { processNameAndID, processStarCitizenVersion } from '@/lib/initialization/processNameandID';
 
 export const initializeLog = async (settings) => {
   if (!settings?.logPath) {

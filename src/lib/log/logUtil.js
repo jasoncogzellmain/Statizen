@@ -1,6 +1,7 @@
 import { configDir, join } from '@tauri-apps/api/path';
 import { exists, mkdir, readTextFile, writeTextFile } from '@tauri-apps/plugin-fs';
 import { loadSettings } from '@/lib/settings/settingsUtil';
+import { resetUserShip } from '@/lib/user/userUtil';
 import { engineRunner } from '@/processing_engine/engine';
 
 async function getLogPath() {
@@ -67,29 +68,38 @@ export async function parseNewLogLines() {
       const logContent = await readTextFile(logPath);
       const lines = logContent.split('\n');
 
+      if (lines[1] !== storedLogInfo.logDate || !lines[1]) {
+        console.log('log date has changed');
+        const updatedLogInfo = {
+          logDate: lines[1],
+          logFileSize: currentSize,
+          lastProcessedLine: 0,
+        };
+
+        await saveLogInfo(updatedLogInfo);
+        await resetUserShip();
+        return;
+      }
       // Process lines one by one, updating position after each line
       let currentLine = storedLogInfo.lastProcessedLine;
 
       for (let i = currentLine; i < lines.length; i++) {
         const rawLine = lines[i];
-        const line = rawLine.trim();
+        const line = await rawLine.trim();
+        console.log(line);
 
         if (line) {
           await processLogLine(line);
-        } else {
-          await processLogLine('');
+          // Only increment and save progress if we processed meaningful content
+          currentLine = i + 1;
+          const updatedLogInfo = {
+            logDate: storedLogInfo.logDate,
+            logFileSize: currentSize,
+            lastProcessedLine: currentLine,
+          };
+          await saveLogInfo(updatedLogInfo);
         }
-
-        // Update position after each line (even empty ones)
-        currentLine = i + 1;
-
-        // Save progress after each line to avoid missing simultaneous writes
-        const updatedLogInfo = {
-          logDate: storedLogInfo.logDate,
-          logFileSize: currentSize,
-          lastProcessedLine: currentLine,
-        };
-        await saveLogInfo(updatedLogInfo);
+        // Don't increment currentLine for blank lines
       }
     }
   } catch (error) {
@@ -99,7 +109,10 @@ export async function parseNewLogLines() {
 
 async function processLogLine(_line) {
   if (_line.includes('<Actor Death>')) {
+    console.log('actorDeath');
     engineRunner(_line, 'actorDeath');
+  } else if (_line.includes('<AccountLoginCharacterStatus_Character>')) {
+    engineRunner(_line, 'initializeLog');
   } else if (_line.includes('<Spawn Flow>')) {
     engineRunner(_line, 'spawnFlow');
   } else if (_line.includes('<Actor Stall>')) {

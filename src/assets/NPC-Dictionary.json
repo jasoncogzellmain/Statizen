@@ -2,10 +2,39 @@
   "version": "0.1.0",
   "dictionary": {
     "Kopion_Irradiated": {
-      "name": "Kopion Trooper (Irradiated)"
+      "name": "Kopion Trooper (Irradiated)",
+      "versus-wins": 0,
+      "versus-losses": 0
     },
     "PU_Human_Enemy_GroundCombat_NPC": {
-      "name": "Ground Combat Unit"
+      "name": "Ground Combat Unit",
+      "versus-wins": 0,
+      "versus-losses": 0
+    },
+    "PU_Human-NineTails-Pilot-Male-Light_01": {
+      "name": "NineTails Light Fighter Pilot",
+      "versus-wins": 0,
+      "versus-losses": 0
+    },
+    "PU_Human_Enemy_GroundCombat_NPC_Ninetails_cqc": {
+      "name": "NineTails CQC Unit",
+      "versus-wins": 0,
+      "versus-losses": 0
+    },
+    "PU_Human_Enemy_GroundCombat_NPC_Ninetails_grunt": {
+      "name": "NineTails Grunt",
+      "versus-wins": 0,
+      "versus-losses": 0
+    },
+    "PU_Pilots-Human-Criminal-Gunner_Light": {
+      "name": "Criminal Gunner",
+      "versus-wins": 0,
+      "versus-losses": 0
+    },
+    "PU_Pilots-Human-Criminal-Pilot_Light": {
+      "name": "Criminal Pilot",
+      "versus-wins": 0,
+      "versus-losses": 0
     }
   }
 }

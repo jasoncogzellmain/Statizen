@@ -5,8 +5,6 @@ export async function vehicleControlFlow(line) {
   try {
     let userData = await loadUser();
     const geid = userData.geid;
-    console.log(line);
-    console.log(geid);
     if (line.includes('[' + geid + '] requesting control token for')) {
       const vehicleClass = line.match(/(?<=requesting control token for ').*(?=_\d+')/);
       const vehicle = ShipDictionary.dictionary[vehicleClass];

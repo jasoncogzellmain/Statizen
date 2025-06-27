@@ -10,14 +10,18 @@ import { initializeLog } from '@/lib/initialization/initializeLog';
 function Dashboard() {
   const { isWatching, toggleLogging } = useLogProcessor();
   const { settings } = useSettings();
-  const { userData } = useData();
+  const { userData, logInfo, PVEData, PVPData, OrgData } = useData();
 
   const startLogging = async () => {
     if (!isWatching) {
-      await initializeLog(settings);
-      toggleLogging();
+      try {
+        await initializeLog(settings);
+        await toggleLogging();
+      } catch (error) {
+        console.error('Failed to start logging:', error);
+      }
     } else {
-      toggleLogging();
+      await toggleLogging();
     }
   };
 
@@ -45,8 +49,10 @@ function Dashboard() {
               </div>
             </CardHeader>
             <CardContent>
-              <p className='text-xl font-bold text-green-600'>2.78</p>
-              <CardDescription>247 kills / 89 deaths</CardDescription>
+              <p className='text-xl font-bold text-green-600'>{PVPData?.kills / PVPData?.deaths || 0}</p>
+              <CardDescription>
+                {PVPData?.kills} kills / {PVPData?.deaths} deaths
+              </CardDescription>
             </CardContent>
           </Card>
           <Card>
@@ -57,8 +63,10 @@ function Dashboard() {
               </div>
             </CardHeader>
             <CardContent>
-              <p className='text-xl font-bold text-orange-600'>54.2</p>
-              <CardDescription>1,247 kills / 23 deaths</CardDescription>
+              <p className='text-xl font-bold text-orange-600'>{PVEData?.deaths === 0 ? PVEData?.kills : PVEData?.kills / PVEData?.deaths || 0}</p>
+              <CardDescription>
+                {PVEData?.kills} kills / {PVEData?.deaths} deaths
+              </CardDescription>
             </CardContent>
           </Card>
         </div>
@@ -162,7 +170,7 @@ function Dashboard() {
               <FileText className='w-5 h-5 text-orange-600' />
               <div>
                 <p className='font-medium'>Log Lines Processed</p>
-                <p className='text-sm text-muted-foreground'>{userData?.lastProcessedLine || 'Unknown'}</p>
+                <p className='text-sm text-muted-foreground'>{logInfo?.lastProcessedLine.toString() || 'Unknown'}</p>
               </div>
             </div>
           </div>
