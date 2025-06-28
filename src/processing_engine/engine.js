@@ -10,42 +10,33 @@ export function engineRunner(_line, type) {
 
   switch (type) {
     case 'actorDeath': {
-      console.log('actorDeath');
       actorDeath(_line);
       break;
     }
     case 'spawnFlow': {
-      console.log('spawnFlow');
       break;
     }
     case 'stallFlow': {
-      console.log('stallFlow');
       break;
     }
     case 'requestLocationInventory': {
-      console.log('requestLocationInventory');
       break;
     }
     case 'vehicleControlFlow': {
-      console.log('vehicleControlFlow');
       vehicleControlFlow(_line);
       break;
     }
     case 'corpse': {
-      console.log('corpse');
       break;
     }
     case 'endMission': {
-      console.log('endMission');
       break;
     }
     case 'initializeLog': {
-      console.log('initializeLog');
       initializeLog(settings);
       break;
     }
     default: {
-      console.log('unknown event type');
       break;
     }
   }

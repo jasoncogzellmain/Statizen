@@ -6,11 +6,12 @@ import { useLogProcessor } from '@/lib/context/logProcessor/logProcessorContext'
 import { useData } from '@/lib/context/data/dataContext';
 import { useSettings } from '@/lib/context/settings/settingsContext';
 import { initializeLog } from '@/lib/initialization/initializeLog';
+import { formatTimeAgo } from '@/lib/utils';
 
 function Dashboard() {
   const { isWatching, toggleLogging } = useLogProcessor();
   const { settings } = useSettings();
-  const { userData, logInfo, PVEData, PVPData, OrgData } = useData();
+  const { userData, logInfo, PVEData, PVPData, OrgData, lastKilledBy, lastKilledActor } = useData();
 
   const startLogging = async () => {
     if (!isWatching) {
@@ -49,7 +50,7 @@ function Dashboard() {
               </div>
             </CardHeader>
             <CardContent>
-              <p className='text-xl font-bold text-green-600'>{PVPData?.kills / PVPData?.deaths || 0}</p>
+              <p className='text-xl font-bold text-green-600'>{PVPData?.deaths === 0 ? PVPData?.kills : PVPData?.kills / PVPData?.deaths || 0}</p>
               <CardDescription>
                 {PVPData?.kills} kills / {PVPData?.deaths} deaths
               </CardDescription>
@@ -81,12 +82,11 @@ function Dashboard() {
                   </div>
                   <div>
                     <p className='font-medium'>Last Killed By</p>
-                    <p className='text-sm text-muted-foreground'>PlayerName123</p>
+                    <p className='text-sm text-muted-foreground'>{lastKilledBy?.actorName || 'No one yet!'}</p>
                   </div>
                 </div>
                 <div className='text-right'>
-                  <p className='font-medium text-red-600'>2 hours ago</p>
-                  <p className='text-xs text-muted-foreground'>Grim Hex</p>
+                  <p className='font-medium text-red-600'>{formatTimeAgo(lastKilledBy?.time)}</p>
                 </div>
               </div>
               <div className='flex items-center justify-between p-2 rounded-lg'>
@@ -96,12 +96,11 @@ function Dashboard() {
                   </div>
                   <div>
                     <p className='font-medium'>Last Killed</p>
-                    <p className='text-sm text-muted-foreground'>EnemyPlayer456</p>
+                    <p className='text-sm text-muted-foreground'>{lastKilledActor?.actorName || 'No one yet!'}</p>
                   </div>
                 </div>
                 <div className='text-right'>
-                  <p className='font-medium text-green-600'>5 hours ago</p>
-                  <p className='text-xs text-muted-foreground'>Yela Belt</p>
+                  <p className='font-medium text-green-600'>{formatTimeAgo(lastKilledActor?.time)}</p>
                 </div>
               </div>
             </CardContent>

@@ -2,39 +2,64 @@
   "version": "0.1.0",
   "dictionary": {
     "Kopion_Irradiated": {
-      "name": "Kopion Trooper (Irradiated)",
-      "versus-wins": 0,
-      "versus-losses": 0
+      "name": "Kopion Trooper (Irradiated)"
     },
     "PU_Human_Enemy_GroundCombat_NPC": {
-      "name": "Ground Combat Unit",
-      "versus-wins": 0,
-      "versus-losses": 0
-    },
-    "PU_Human-NineTails-Pilot-Male-Light_01": {
-      "name": "NineTails Light Fighter Pilot",
-      "versus-wins": 0,
-      "versus-losses": 0
+      "name": "Ground Combat Unit"
     },
     "PU_Human_Enemy_GroundCombat_NPC_Ninetails_cqc": {
-      "name": "NineTails CQC Unit",
-      "versus-wins": 0,
-      "versus-losses": 0
+      "name": "NineTails CQC Unit"
     },
     "PU_Human_Enemy_GroundCombat_NPC_Ninetails_grunt": {
-      "name": "NineTails Grunt",
-      "versus-wins": 0,
-      "versus-losses": 0
+      "name": "NineTails Grunt"
     },
     "PU_Pilots-Human-Criminal-Gunner_Light": {
-      "name": "Criminal Gunner",
-      "versus-wins": 0,
-      "versus-losses": 0
+      "name": "Criminal Light Pilot Gunner"
     },
     "PU_Pilots-Human-Criminal-Pilot_Light": {
-      "name": "Criminal Pilot",
-      "versus-wins": 0,
-      "versus-losses": 0
+      "name": "Criminal Light Pilot"
+    },
+    "PU_Human-Frontier-Worker-Male-Pyro_01": {
+      "name": "Frontier Pyro Worker"
+    },
+    "PU_Human-NineTails-Pilot-Male-Light_01": {
+      "name": "NineTails Light Pilot"
+    },
+    "PU_Human-Populace-Engineer-Female-Stormageddon_01": {
+      "name": "Populace Female Engineer (Stormageddon)"
+    },
+    "PU_Human-Populace-Engineer-Male-Stormageddon_01": {
+      "name": "Populace Male Engineer (Stormageddon)"
+    },
+    "PU_Human-Populace-Farmer-Male-Pyro-Frontier_01": {
+      "name": "Pyro Frontier Farmer"
+    },
+    "PU_Human_Enemy_GroundCombat_NPC_ASD_grunt": {
+      "name": "ASD Grunt"
+    },
+    "PU_Human_Enemy_GroundCombat_NPC_CitizensforProsperity_cqc": {
+      "name": "Citizens for Prosperity CQC"
+    },
+    "PU_Human_Enemy_GroundCombat_NPC_CitizensforProsperity_juggernaut": {
+      "name": "Citizens for Prosperity Juggernaut"
+    },
+    "PU_Human_Enemy_GroundCombat_NPC_CitizensforProsperity_soldier": {
+      "name": "Citizens for Prosperity Soldier"
+    },
+    "PU_Human_Enemy_GroundCombat_NPC_CitizensforProsperity_techie": {
+      "name": "Citizens for Prosperity Techie"
+    },
+    "PU_Human_Enemy_GroundCombat_NPC_Contestedzones_grunt": {
+      "name": "Grunt (Contested Zones)"
+    },
+    "PU_Human_Enemy_GroundCombat_NPC_Contestedzones_juggernaut": {
+      "name": "Juggernaut (Contested Zones)"
+    },
+    "PU_Human_Enemy_GroundCombat_NPC_Contestedzones_soldier": {
+      "name": "Soldier (Contested Zones)"
+    },
+    "PU_Human_Enemy_GroundCombat_NPC_contestedzones_cqc": {
+      "name": "CQC Unit (Contested Zones)"
     }
   }
 }

@@ -1,24 +1,36 @@
 import { configDir, join } from '@tauri-apps/api/path';
 import { exists, mkdir, readTextFile, writeTextFile } from '@tauri-apps/plugin-fs';
 
+const currentMonth = new Date().toISOString().slice(0, 7);
+const previousMonth = new Date(new Date().setMonth(new Date().getMonth() - 1)).toISOString().slice(0, 7);
+
 const defaultPVPStats = {
   kills: 0,
   deaths: 0,
-  killsThisWeek: 0,
-  deathsThisWeek: 0,
-  killsThisMonth: 0,
-  deathsThisMonth: 0,
-  KillsLastWeek: 0,
-  DeathsLastWeek: 0,
-  KillsLastMonth: 0,
-  DeathsLastMonth: 0,
+  currentMonth: {
+    month: currentMonth,
+    kills: 0,
+    deaths: 0,
+  },
+  previousMonth: {
+    month: previousMonth,
+    kills: 0,
+    deaths: 0,
+  },
 };
 
 export async function getPVPPath() {
   const dir = await configDir();
   const pvpDir = await join(dir, 'statizen', 'pvp');
   if (!(await exists(pvpDir))) await mkdir(pvpDir, { recursive: true });
-  return await join(pvpDir, 'pvpStats.json');
+  return await join(pvpDir, 'pvp.json');
+}
+
+export async function getPVPLogPath() {
+  const dir = await configDir();
+  const pvpDir = await join(dir, 'statizen', 'pvp');
+  if (!(await exists(pvpDir))) await mkdir(pvpDir, { recursive: true });
+  return await join(pvpDir, 'pvp-log.json');
 }
 
 export async function loadPVP() {
@@ -28,6 +40,54 @@ export async function loadPVP() {
     return JSON.parse(text);
   } catch {
     return { ...defaultPVPStats };
+  }
+}
+
+export async function loadPVPLog() {
+  const path = await getPVPLogPath();
+  try {
+    const text = await readTextFile(path);
+    return JSON.parse(text);
+  } catch {
+    return [];
+  }
+}
+
+export async function savePVP(data) {
+  await checkMonthChange();
+  const path = await getPVPPath();
+  await writeTextFile(path, JSON.stringify(data, null, 2));
+}
+
+export async function addPVPLogEntry(playerClass, action, shipClass) {
+  const dateTime = new Date().toISOString();
+  const logEntry = {
+    action: action,
+    playerClass: playerClass,
+    dateTime: dateTime,
+  };
+
+  if (shipClass !== null) {
+    logEntry.shipClass = shipClass;
+  }
+
+  const path = await getPVPLogPath();
+  const log = await loadPVPLog();
+  log.push(logEntry);
+  await writeTextFile(path, JSON.stringify(log, null, 2));
+}
+
+export async function checkMonthChange() {
+  const pvp = await loadPVP();
+  const currentMonth = new Date().toISOString().slice(0, 7);
+  if (pvp.currentMonth.month !== currentMonth) {
+    pvp.previousMonth = pvp.currentMonth;
+    pvp.currentMonth = {
+      month: currentMonth,
+      kills: 0,
+      deaths: 0,
+    };
+    await savePVP(pvp);
   }
 }
 
@@ -51,11 +111,6 @@ export async function loadMonthPVP() {
 
 export async function saveMonthPVP(data) {
   const path = await getMonthPVPPath();
-  await writeTextFile(path, JSON.stringify(data, null, 2));
-}
-
-export async function savePVP(data) {
-  const path = await getPVPPath();
   await writeTextFile(path, JSON.stringify(data, null, 2));
 }
 

@@ -12,20 +12,10 @@ const PageWrapper = ({ children }) => {
   // Show LogFileLoader if not on settings page, not loading, and no log path is set
   const shouldShowLogFileLoader = !isSettingsPage && !loading && !settings?.logPath;
 
-  console.log('PageWrapper debug:', {
-    pathname: location.pathname,
-    isSettingsPage,
-    loading,
-    logPath: settings?.logPath,
-    shouldShowLogFileLoader,
-  });
-
   if (shouldShowLogFileLoader) {
-    console.log('Showing LogFileLoader');
     return <LogFileLoader />;
   }
 
-  console.log('Showing page content');
   return children;
 };
 

@@ -1,33 +1,35 @@
 import { loadUser } from '../../lib/user/userUtil.js';
 import { submitNPCtoDictionary } from '../../lib/pve/submitNPCtoDictionary.js';
 import { loadPVE, savePVE, addPVELogEntry } from '../../lib/pve/pveUtil.js';
+import { loadPVP, savePVP, addPVPLogEntry } from '../../lib/pvp/pvpUtil.js';
 import NPCDictionary from '../../assets/NPC-Dictionary.json';
+import shipDictionary from '../../assets/Ship-Dictionary.json';
 
 export async function actorDeath(line) {
   const pveData = await loadPVE();
-
-  console.log('actordeath called');
+  const pvpData = await loadPVP();
   try {
-    console.log('loading user data');
     let userData = await loadUser();
-    console.log('userData: ' + userData);
     const userName = userData.userName;
-    console.log('username: ' + userName);
+    //Register a kill by player
     if (line.includes("killed by '" + userName + "'")) {
-      console.log('line includes userName');
+      //Match the NPC class ONLY
       const npcClass = line.match(/(?<=CActor::Kill:\s').*?(?=_[0-9]{11,13}'\s\[[0-9]+\]\sin\szone)/);
 
+      //If the NPC class is found
       if (npcClass && npcClass[0]) {
+        //Get the NPC class key
         const npcClassKey = npcClass[0];
-        console.log(`Processing NPC: ${npcClassKey}`);
 
+        //If the NPC class is found in the dictionary, log the kill
         if (NPCDictionary.dictionary[npcClassKey]) {
           const npc = NPCDictionary.dictionary[npcClassKey].name;
-          console.log(`NPC found in dictionary: ${npcClassKey} -> ${npc}`);
+          console.log('you killed a ' + npc);
         } else {
-          console.log(`NPC not found in dictionary: ${npcClassKey}`);
+          //If the NPC class is not found in the dictionary, submit it to the dictionary
           submitNPCtoDictionary(npcClassKey);
         }
+        //Log the kill to the PVE log
         addPVELogEntry(npcClassKey, 'win');
 
         //Update PVE data directly
@@ -35,7 +37,81 @@ export async function actorDeath(line) {
         updatedPVE.kills = pveData.kills + 1;
         updatedPVE.currentMonth.kills = pveData.currentMonth.kills + 1;
         await savePVE(updatedPVE);
+      } else {
+        const playerKill = line.match(/(?<=CActor::Kill:\s').*?(?='\s\[\d{9,12})/);
+        const shipClass = line.match(/(?<=\]\sin\szone\s').*(?=_[0-9]{9,14}')/);
+        if (playerKill && playerKill[0]) {
+          const playerKillName = playerKill[0];
+          console.log('you killed the player ' + playerKillName);
+          const updatedPVP = { ...pvpData };
+          updatedPVP.kills = pvpData.kills + 1;
+          updatedPVP.currentMonth.kills = pvpData.currentMonth.kills + 1;
+          let shipClassKey = null;
+          if (shipClass && shipClass[0]) {
+            const extractedShipClass = shipClass[0];
+            if (shipDictionary.dictionary[extractedShipClass]) {
+              const ship = shipDictionary.dictionary[extractedShipClass].name;
+              console.log('you killed the ship ' + ship);
+              shipClassKey = extractedShipClass;
+            }
+          }
+          addPVPLogEntry(playerKillName, 'win', shipClassKey);
+          await savePVP(updatedPVP);
+        }
       }
+    }
+    // Taking out killed by NPC, in 1 year of log data it happened once, most are suicides
+    // if (line.includes("CActor::Kill: '" + userName + "'")) {
+    //   const npcClass = line.match(/(?<=killed\sby\s').*?(?=_\d{10,13}'\s\[)/);
+    //   if (npcClass && npcClass[0]) {
+    //     const npcClassKey = npcClass[0];
+    //     if (NPCDictionary.dictionary[npcClassKey]) {
+    //       const npc = NPCDictionary.dictionary[npcClassKey].name;
+    //       console.log('you were killed by a ' + npc);
+    //     } else {
+    //       submitNPCtoDictionary(npcClassKey);
+    //     }
+    //     addPVELogEntry(npcClassKey, 'loss');
+
+    //     //Update PVE data directly
+    //     const updatedPVE = { ...pveData };
+    //     updatedPVE.deaths = pveData.deaths + 1;
+    //     updatedPVE.currentMonth.deaths = pveData.currentMonth.deaths + 1;
+    //     await savePVE(updatedPVE);
+    //   }
+    // }
+    if (line.includes("CActor::Kill: '" + userName + "'") && !line.includes("with damage type 'Suicide'")) {
+      const killByNPCCheck = line.match(/(?<=killed\sby\s').*?(?=_\d{9,13}'\s\[\d{9,13}\]\susing)/);
+      if (!killByNPCCheck) {
+        const enemyPlayer = line.match(/(?<=killed\sby\s').*?(?='\s\[\d{9,13}\]\susing)/);
+        if (enemyPlayer && enemyPlayer[0]) {
+          const enemyPlayerName = enemyPlayer[0];
+          console.log('you were killed by player ' + enemyPlayerName);
+          const updatedPVP = { ...pvpData };
+          updatedPVP.deaths = pvpData.deaths + 1;
+          updatedPVP.currentMonth.deaths = pvpData.currentMonth.deaths + 1;
+          let shipClassKey = null;
+          const shipClass = line.match(/(?<=\]\sin\szone\s').*?(?=_[0-9]{9,14}')/);
+          if (shipClass && shipClass[0]) {
+            const extractedShipClass = shipClass[0];
+            if (shipDictionary.dictionary[extractedShipClass]) {
+              const ship = shipDictionary.dictionary[extractedShipClass].name;
+              console.log('you were killed while driving a ' + ship);
+              shipClassKey = extractedShipClass;
+            }
+          }
+          addPVPLogEntry(enemyPlayerName, 'loss', shipClassKey);
+          await savePVP(updatedPVP);
+        }
+      }
+    }
+    if (line.includes("'" + userName + "' [Class Player] with damage type 'Suicide'")) {
+      console.log('you committed suicide');
+      addPVELogEntry('suicide', 'loss');
+      const updatedPVE = { ...pveData };
+      updatedPVE.deaths = pveData.deaths + 1;
+      updatedPVE.currentMonth.deaths = pveData.currentMonth.deaths + 1;
+      await savePVE(updatedPVE);
     }
   } catch (error) {
     console.error('Error loading user data:', error);

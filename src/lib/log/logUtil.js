@@ -86,7 +86,6 @@ export async function parseNewLogLines() {
       for (let i = currentLine; i < lines.length; i++) {
         const rawLine = lines[i];
         const line = await rawLine.trim();
-        console.log(line);
 
         if (line) {
           await processLogLine(line);
@@ -109,7 +108,6 @@ export async function parseNewLogLines() {
 
 async function processLogLine(_line) {
   if (_line.includes('<Actor Death>')) {
-    console.log('actorDeath');
     engineRunner(_line, 'actorDeath');
   } else if (_line.includes('<AccountLoginCharacterStatus_Character>')) {
     engineRunner(_line, 'initializeLog');
