@@ -67,13 +67,13 @@ flowchart TD
   D -->|Spawn Flow| F[spawnFlow.js - Detect Nearby Players]
   D -->|Actor Stall| G[stallFlow.js - Detect Nearby Players]
   D -->|Vehicle Control Flow| H[vehicleControlFlow.js - Ship Detection]
-  D -->|ActorState Corpse| I[corpse.js - PVP Processing]
+  D -->|ActorState Corpse| I[corpse.js - Detect Nearby Players]
 
   E --> J[Update PVE Data]
   F --> K[Update Nearby Players]
   G --> L[Update Nearby Players]
   H --> M[Update Current Ship]
-  I --> N[Update PVP Data]
+  I --> K
 
   J --> O[DataContext - PVE State]
   K --> P[DataContext - Nearby Players State]
