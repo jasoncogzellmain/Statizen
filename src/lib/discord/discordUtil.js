@@ -37,8 +37,11 @@ const calculateKDRatio = (kills, deaths) => {
   return (kills / deaths).toFixed(2);
 };
 
-// Send Discord webhook
-const sendDiscordWebhook = async (webhookUrl, message) => {
+// Helper to build player profile URL
+const getPlayerUrl = (name) => `https://robertsspaceindustries.com/en/citizens/${encodeURIComponent(name)}`;
+
+// Send Discord webhook with embed
+const sendDiscordWebhook = async (webhookUrl, embed) => {
   try {
     const response = await fetch(webhookUrl, {
       method: 'POST',
@@ -46,7 +49,7 @@ const sendDiscordWebhook = async (webhookUrl, message) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        content: message,
+        embeds: [embed],
       }),
     });
 
@@ -63,35 +66,64 @@ const sendDiscordWebhook = async (webhookUrl, message) => {
 };
 
 // Report PVP Kill
-export const reportPVPKill = async (victimName, victimShipClass) => {
+export const reportPVPKill = async (victimName, victimShipClass, currentShipClass) => {
   try {
     const settings = await loadSettings();
+    if (!settings.eventTypes?.pvpKills) {
+      return false;
+    }
     const userData = await loadUser();
     const pvpData = await loadPVP();
 
-    // Check if Discord is enabled
     if (!settings.discordEnabled || !settings.discordWebhookUrl) {
       return false;
     }
 
     const killerName = userData?.userName || 'Unknown';
     const victimShipName = getShipName(victimShipClass);
+    const currentShipName = getShipName(currentShipClass);
     const pvpKDRatio = calculateKDRatio(pvpData?.kills || 0, pvpData?.deaths || 0);
 
-    const message = `🎯 Kill Alert!
-Killer
-${killerName}
+    const embed = {
+      title: '🎯 Kill Alert!',
+      color: 0xffffff, // White
+      fields: [
+        {
+          name: 'Killer',
+          value: `[${killerName}](${getPlayerUrl(killerName)})`,
+          inline: true,
+        },
+        {
+          name: 'Victim',
+          value: `[${victimName}](${getPlayerUrl(victimName)})`,
+          inline: true,
+        },
+      ],
+    };
+    if (victimShipClass) {
+      embed.fields.push({
+        name: 'Victim Ship',
+        value: victimShipName,
+        inline: false,
+      });
+      // Only show current ship when there's a victim ship
+      if (currentShipClass) {
+        embed.fields.push({
+          name: 'Using Ship',
+          value: currentShipName,
+          inline: false,
+        });
+      }
+    }
+    if (pvpKDRatio !== undefined) {
+      embed.fields.push({
+        name: 'PVP K/D',
+        value: String(pvpKDRatio),
+        inline: false,
+      });
+    }
 
-Victim
-${victimName}
-
-Victim Ship
-${victimShipName}
-
-PVP K/D
-${pvpKDRatio}`;
-
-    return await sendDiscordWebhook(settings.discordWebhookUrl, message);
+    return await sendDiscordWebhook(settings.discordWebhookUrl, embed);
   } catch (error) {
     console.error('Error reporting PVP kill:', error);
     return false;
@@ -99,43 +131,65 @@ ${pvpKDRatio}`;
 };
 
 // Report PVE Kill
-export const reportPVEKill = async (npcClass, npcShipClass) => {
+export const reportPVEKill = async (npcClass, npcShipClass, currentShipClass) => {
   try {
     const settings = await loadSettings();
+    if (!settings.eventTypes?.pveKills) {
+      return false;
+    }
     const userData = await loadUser();
     const pveData = await loadPVE();
 
-    // Check if Discord is enabled
     if (!settings.discordEnabled || !settings.discordWebhookUrl) {
       return false;
     }
 
     const killerName = userData?.userName || 'Unknown';
     const npcName = getNPCName(npcClass);
+    const npcShipName = getShipName(npcShipClass);
+    const currentShipName = getShipName(currentShipClass);
     const pveKDRatio = calculateKDRatio(pveData?.kills || 0, pveData?.deaths || 0);
 
-    let message = `🎯 PVE Kill Alert!
-Killer
-${killerName}
-
-Victim
-${npcName}`;
-
-    // Only include Victim Ship section if it's a ship
+    const embed = {
+      title: '🎯 PVE Kill Alert!',
+      color: 0xffffff, // White
+      fields: [
+        {
+          name: 'Killer',
+          value: `[${killerName}](https://robertsspaceindustries.com/en/citizens/${encodeURIComponent(killerName)})`,
+          inline: false,
+        },
+        {
+          name: 'Victim',
+          value: npcName,
+          inline: false,
+        },
+      ],
+    };
     if (npcShipClass) {
-      const shipName = getShipName(npcShipClass);
-      message += `
-
-Victim Ship
-${shipName}`;
+      embed.fields.push({
+        name: 'Victim Ship',
+        value: npcShipName,
+        inline: false,
+      });
+      // Only show current ship when there's a victim ship
+      if (currentShipClass) {
+        embed.fields.push({
+          name: 'Using Ship',
+          value: currentShipName,
+          inline: false,
+        });
+      }
+    }
+    if (pveKDRatio !== undefined) {
+      embed.fields.push({
+        name: 'PVE K/D',
+        value: String(pveKDRatio),
+        inline: false,
+      });
     }
 
-    message += `
-
-PVE K/D
-${pveKDRatio}`;
-
-    return await sendDiscordWebhook(settings.discordWebhookUrl, message);
+    return await sendDiscordWebhook(settings.discordWebhookUrl, embed);
   } catch (error) {
     console.error('Error reporting PVE kill:', error);
     return false;
@@ -143,37 +197,95 @@ ${pveKDRatio}`;
 };
 
 // Report PVP Death
-export const reportPVPDeath = async (killerName, killerShipClass) => {
+export const reportPVPDeath = async (killerName, killerShipClass, currentShipClass) => {
   try {
     const settings = await loadSettings();
+    if (!settings.eventTypes?.pvpDeaths) {
+      return false;
+    }
     const userData = await loadUser();
     const pvpData = await loadPVP();
 
-    // Check if Discord is enabled
     if (!settings.discordEnabled || !settings.discordWebhookUrl) {
       return false;
     }
 
     const victimName = userData?.userName || 'Unknown';
     const killerShipName = getShipName(killerShipClass);
+    const currentShipName = getShipName(currentShipClass);
     const pvpKDRatio = calculateKDRatio(pvpData?.kills || 0, pvpData?.deaths || 0);
 
-    const message = `💀 Death Alert!
-Killer
-${killerName}
+    const embed = {
+      title: '💀 Death Alert!',
+      color: 0xed4245, // Red
+      fields: [
+        {
+          name: 'Killer',
+          value: `[${killerName}](${getPlayerUrl(killerName)})`,
+          inline: true,
+        },
+        {
+          name: 'Victim',
+          value: `[${victimName}](${getPlayerUrl(victimName)})`,
+          inline: true,
+        },
+      ],
+    };
+    if (killerShipClass) {
+      embed.fields.push({
+        name: 'Killer Ship',
+        value: killerShipName,
+        inline: false,
+      });
+      // Only show current ship when there's a killer ship
+      if (currentShipClass) {
+        embed.fields.push({
+          name: 'Using Ship',
+          value: currentShipName,
+          inline: false,
+        });
+      }
+    }
+    if (pvpKDRatio !== undefined) {
+      embed.fields.push({
+        name: 'PVP K/D',
+        value: String(pvpKDRatio),
+        inline: false,
+      });
+    }
 
-Victim
-${victimName}
-
-Killer Ship
-${killerShipName}
-
-PVP K/D
-${pvpKDRatio}`;
-
-    return await sendDiscordWebhook(settings.discordWebhookUrl, message);
+    return await sendDiscordWebhook(settings.discordWebhookUrl, embed);
   } catch (error) {
     console.error('Error reporting PVP death:', error);
+    return false;
+  }
+};
+
+// Report Suicide
+export const reportSuicide = async () => {
+  try {
+    const settings = await loadSettings();
+    const userData = await loadUser();
+
+    if (!settings.discordEnabled || !settings.discordWebhookUrl || !settings.eventTypes?.suicides) {
+      return false;
+    }
+
+    const userName = userData?.userName || 'Unknown';
+    const embed = {
+      color: 0x23272a, // Black
+      fields: [
+        {
+          name: '\u200B',
+          value: `[${userName}](${getPlayerUrl(userName)}) committed suicide`,
+          inline: true,
+        },
+      ],
+    };
+
+    return await sendDiscordWebhook(settings.discordWebhookUrl, embed);
+  } catch (error) {
+    console.error('Error reporting suicide:', error);
     return false;
   }
 };

@@ -22,6 +22,17 @@ export function LogProcessorProvider({ children }) {
     }
   }, [isProcessing]);
 
+  // Start cleanup interval when component mounts
+  useEffect(() => {
+    // Start cleanup interval for nearby players immediately
+    startCleanupInterval();
+
+    // Cleanup on unmount
+    return () => {
+      stopCleanupInterval();
+    };
+  }, []);
+
   useEffect(() => {
     // Clear any existing interval first
     if (intervalRef.current) {
@@ -32,11 +43,6 @@ export function LogProcessorProvider({ children }) {
     if (isWatching) {
       // Start polling every second
       intervalRef.current = setInterval(processLog, 1000);
-      // Start cleanup interval for nearby players
-      startCleanupInterval();
-    } else {
-      // Stop cleanup interval when not watching
-      stopCleanupInterval();
     }
 
     // Cleanup on unmount or when isWatching changes
@@ -45,7 +51,6 @@ export function LogProcessorProvider({ children }) {
         clearInterval(intervalRef.current);
         intervalRef.current = null;
       }
-      stopCleanupInterval();
     };
   }, [isWatching, processLog]);
 

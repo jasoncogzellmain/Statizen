@@ -138,6 +138,10 @@ function Settings() {
                         <Switch id='pve-kills' checked={settings.eventTypes.pveKills} onCheckedChange={(val) => updateEventTypes('pveKills', val)} />
                         <Label htmlFor='pve-kills'>PVE Kills</Label>
                       </div>
+                      <div className='flex items-center space-x-2'>
+                        <Switch id='suicides' checked={settings.eventTypes.suicides} onCheckedChange={(val) => updateEventTypes('suicides', val)} />
+                        <Label htmlFor='suicides'>Suicides</Label>
+                      </div>
                     </div>
                   </div>
 

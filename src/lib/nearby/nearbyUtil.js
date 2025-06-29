@@ -1,26 +1,6 @@
 import { configDir, join } from '@tauri-apps/api/path';
 import { exists, mkdir, readTextFile, writeTextFile } from '@tauri-apps/plugin-fs';
 
-const nearbyPlayers = [];
-
-const corpseJSONdefault = {
-  playerName: '',
-  icon: 'skull',
-  addedAt: new Date().toISOString(),
-};
-
-const spawnJSONdefault = {
-  playerName: '',
-  icon: 'badge-plus',
-  addedAt: new Date().toISOString(),
-};
-
-const stallJSONdefault = {
-  playerName: '',
-  icon: 'person-standing',
-  addedAt: new Date().toISOString(),
-};
-
 // Cleanup interval reference
 let cleanupInterval = null;
 
@@ -35,11 +15,11 @@ export async function loadNearby() {
   const path = await getNearbyPath();
   try {
     const text = await readTextFile(path);
-    return JSON.parse(text);
+    const data = JSON.parse(text);
+    // Ensure we always return an array
+    return Array.isArray(data) ? data : [];
   } catch {
-    return {
-      ...nearbyPlayers,
-    };
+    return [];
   }
 }
 
@@ -51,15 +31,29 @@ export async function addNearbyPlayer(playerName, type) {
 
   // Create new entry based on type
   let newEntry;
+  const currentTime = new Date().toISOString();
+
   switch (type) {
     case 'corpse':
-      newEntry = { ...corpseJSONdefault, playerName };
+      newEntry = {
+        playerName,
+        icon: 'skull',
+        addedAt: currentTime,
+      };
       break;
     case 'spawn':
-      newEntry = { ...spawnJSONdefault, playerName };
+      newEntry = {
+        playerName,
+        icon: 'badge-plus',
+        addedAt: currentTime,
+      };
       break;
     case 'stall':
-      newEntry = { ...stallJSONdefault, playerName };
+      newEntry = {
+        playerName,
+        icon: 'person-standing',
+        addedAt: currentTime,
+      };
       break;
     default:
       return; // Invalid type
@@ -93,10 +87,8 @@ export async function cleanupOldEntries() {
     return addedAt > cutoffTime;
   });
 
-  // Only save if we actually removed entries
-  if (filteredNearby.length !== nearby.length) {
-    await saveNearby(filteredNearby);
-  }
+  // Always save, so the file timestamp updates and the dashboard refreshes
+  await saveNearby(filteredNearby);
 }
 
 // Start the cleanup interval

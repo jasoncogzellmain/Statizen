@@ -5,10 +5,10 @@
       "name": "Kopion Trooper (Irradiated)"
     },
     "PU_Human_Enemy_GroundCombat_NPC": {
-      "name": "Ground Combat Unit"
+      "name": "Ground Combat"
     },
     "PU_Human_Enemy_GroundCombat_NPC_Ninetails_cqc": {
-      "name": "NineTails CQC Unit"
+      "name": "NineTails CQC"
     },
     "PU_Human_Enemy_GroundCombat_NPC_Ninetails_grunt": {
       "name": "NineTails Grunt"
@@ -20,10 +20,10 @@
       "name": "Criminal Light Pilot"
     },
     "PU_Human-Frontier-Worker-Male-Pyro_01": {
-      "name": "Frontier Pyro Worker"
+      "name": "Frontier Male Pyro Worker"
     },
     "PU_Human-NineTails-Pilot-Male-Light_01": {
-      "name": "NineTails Light Pilot"
+      "name": "NineTails Male Light Pilot"
     },
     "PU_Human-Populace-Engineer-Female-Stormageddon_01": {
       "name": "Populace Female Engineer (Stormageddon)"
@@ -32,7 +32,7 @@
       "name": "Populace Male Engineer (Stormageddon)"
     },
     "PU_Human-Populace-Farmer-Male-Pyro-Frontier_01": {
-      "name": "Pyro Frontier Farmer"
+      "name": "Pyro Frontier Male Farmer"
     },
     "PU_Human_Enemy_GroundCombat_NPC_ASD_grunt": {
       "name": "ASD Grunt"
@@ -59,7 +59,28 @@
       "name": "Soldier (Contested Zones)"
     },
     "PU_Human_Enemy_GroundCombat_NPC_contestedzones_cqc": {
-      "name": "CQC Unit (Contested Zones)"
+      "name": "CQC (Contested Zones)"
+    },
+    "PU_Human-NineTails-Grunt-Male-Medium_01": {
+      "name": "NineTails Male Grunt (Medium)"
+    },
+    "PU_Human_Enemy_GroundCombat_NPC_Contestedzones_sniper": {
+      "name": "Sniper (Contested Zones)"
+    },
+    "PU_Human_Enemy_GroundCombat_NPC_Contestedzones_techie": {
+      "name": "Techie (Contested Zones)"
+    },
+    "PU_Human_Enemy_GroundCombat_NPC_xenothreat_cqc": {
+      "name": "Xenothreat CQC"
+    },
+    "PU_Human_Enemy_GroundCombat_NPC_xenothreat_juggernaut": {
+      "name": "Xenothreat Juggernaut"
+    },
+    "PU_Human_Enemy_GroundCombat_NPC_xenothreat_juggernaut_sentry": {
+      "name": "Xenothreat Juggernaut Sentry"
+    },
+    "Quasigrazer": {
+      "name": "Quasigrazer"
     }
   }
 }

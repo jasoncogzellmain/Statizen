@@ -132,7 +132,7 @@ function PVE() {
                           {entry.action === 'win' ? <Target className='w-4 h-4 text-green-600' /> : <Shield className='w-4 h-4 text-red-600' />}
                         </div>
                         <div>
-                          <p className='font-medium'>{entry.npcName || 'Unknown NPC'}</p>
+                          <p className='font-medium'>{entry.npcName ? (entry.npcName.length > 42 ? entry.npcName.slice(0, 42) + '…' : entry.npcName) : 'Unknown NPC'}</p>
                           <p className='text-sm text-muted-foreground'>{formatTimeAgo(entry.dateTime)}</p>
                         </div>
                       </div>
@@ -160,7 +160,7 @@ function PVE() {
                 {filteredNPCs.map(([npcName, stats]) => (
                   <div key={npcName} className='pl-3 py-2 rounded cursor-pointer transition-colors select-none hover:bg-accent hover:text-accent-foreground'>
                     <div className='flex items-center justify-between pr-4'>
-                      <span className='font-medium'>{npcName}</span>
+                      <span className='font-medium'>{npcName.length > 42 ? npcName.slice(0, 42) + '…' : npcName}</span>
                       <span className='text-green-600 font-medium'>{stats.kills} kills</span>
                     </div>
                   </div>

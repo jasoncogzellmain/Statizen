@@ -10,6 +10,7 @@ export async function vehicleControlFlow(line) {
       const vehicle = ShipDictionary.dictionary[vehicleClass];
       if (vehicle) {
         userData.currentShip = vehicle.name;
+        userData.currentShipClass = vehicleClass;
         await saveUser(userData);
       }
     }

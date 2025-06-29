@@ -96,7 +96,7 @@ function Dashboard() {
                   </div>
                   <div>
                     <p className='font-medium'>Last Killed</p>
-                    <p className='text-sm text-muted-foreground'>{lastKilledActor?.actorName || 'No one yet!'}</p>
+                    <p className='text-sm text-muted-foreground'>{lastKilledActor?.actorName ? (lastKilledActor.actorName.length > 42 ? lastKilledActor.actorName.slice(0, 42) + '…' : lastKilledActor.actorName) : 'No one yet!'}</p>
                   </div>
                 </div>
                 <div className='text-right'>

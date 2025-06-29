@@ -2,9 +2,9 @@
 
 A desktop application for tracking Star Citizen statistics and performance metrics, built with React, Vite, and Tauri.
 
-⚠️ **Currently Under Development**
+🚀 **Version 1.0 Beta Release**
 
-This application is actively being developed and does not work in its current state. The current version is 0.1.0 and is not yet ready for production use.
+Statizen is now in beta with a full feature set for tracking Star Citizen combat statistics and player interactions. The application is stable and ready for community testing and feedback.
 
 ## Installation
 
@@ -22,10 +22,36 @@ Statizen is a free, open-source desktop application designed to help Star Citize
 
 ## Features
 
+### Core Statistics
+
 - **Dashboard Overview**: Real-time display of current location, K/D ratios, and recent activity
 - **PVP Statistics**: Track player vs player combat performance with detailed kill/death ratios
-- **PVE Statistics**: Monitor NPC combat performance
+- **PVE Statistics**: Monitor NPC combat performance and track kills by NPC type
 - **Ship Performance**: Track statistics for different ships and their combat effectiveness
+
+### Real-Time Monitoring
+
+- **Nearby Player Detection**: Automatically detect and display nearby players with 2-minute auto-clear
+- **Current Ship Tracking**: Monitor which ship you're currently using
+- **Live Log Processing**: Real-time parsing of Star Citizen game logs
+
+### Discord Integration
+
+- **Discord Webhooks**: Send kill/death notifications to Discord channels
+- **Ship Information**: Include victim ship and your current ship in notifications
+- **Configurable Events**: Choose which events to send to Discord (PVP kills, PVP deaths, PVE kills, suicides)
+
+### Data Management
+
+- **Persistent Storage**: All statistics are saved locally and persist between sessions
+- **Monthly Tracking**: Separate statistics for current and previous months
+- **Detailed Logs**: Comprehensive logs of all combat encounters with timestamps
+
+### User Interface
+
+- **Modern Design**: Clean, responsive interface built with Tailwind CSS
+- **Real-Time Updates**: Live updates as new data is processed
+- **Cross-Platform**: Works on Windows, macOS, and Linux
 
 ## App Flow
 

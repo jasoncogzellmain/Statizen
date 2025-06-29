@@ -183,7 +183,6 @@ function PVP() {
                         </div>
                         <div>
                           <p className='font-medium'>{getShipName(ship.shipClass)}</p>
-                          <p className='text-sm text-muted-foreground'>{index === 0 ? 'Top performer' : index === 1 ? 'Second best' : 'Third best'}</p>
                         </div>
                       </div>
                       <div className='text-right'>

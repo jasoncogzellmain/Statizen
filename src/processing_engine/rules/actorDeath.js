@@ -2,7 +2,7 @@ import { loadUser } from '../../lib/user/userUtil.js';
 import { submitNPCtoDictionary } from '../../lib/pve/submitNPCtoDictionary.js';
 import { loadPVE, savePVE, addPVELogEntry } from '../../lib/pve/pveUtil.js';
 import { loadPVP, savePVP, addPVPLogEntry } from '../../lib/pvp/pvpUtil.js';
-import { reportPVEKill, reportPVPKill, reportPVPDeath } from '../../lib/discord/discordUtil.js';
+import { reportPVEKill, reportPVPKill, reportPVPDeath, reportSuicide } from '../../lib/discord/discordUtil.js';
 import NPCDictionary from '../../assets/NPC-Dictionary.json';
 import shipDictionary from '../../assets/Ship-Dictionary.json';
 
@@ -12,6 +12,22 @@ export async function actorDeath(line) {
   try {
     let userData = await loadUser();
     const userName = userData.userName;
+    const currentShipClass = userData.currentShipClass;
+
+    // Check for suicide first - if it's a suicide, handle it and return early
+    if (line.includes("'" + userName + "' [Class Player] with damage type 'Suicide'")) {
+      console.log('you committed suicide');
+      addPVELogEntry('suicide', 'loss');
+      const updatedPVE = { ...pveData };
+      updatedPVE.deaths = pveData.deaths + 1;
+      updatedPVE.currentMonth.deaths = pveData.currentMonth.deaths + 1;
+      await savePVE(updatedPVE);
+
+      // Send Discord notification for suicide
+      await reportSuicide();
+      return; // Exit early to prevent PVP kill processing
+    }
+
     //Register a kill by player
     if (line.includes("killed by '" + userName + "'")) {
       //Match the NPC class ONLY
@@ -33,17 +49,17 @@ export async function actorDeath(line) {
         //Log the kill to the PVE log
         addPVELogEntry(npcClassKey, 'win');
 
-        // Send Discord notification for PVE kill
-        await reportPVEKill(npcClassKey, null);
-
         //Update PVE data directly
         const updatedPVE = { ...pveData };
         updatedPVE.kills = pveData.kills + 1;
         updatedPVE.currentMonth.kills = pveData.currentMonth.kills + 1;
         await savePVE(updatedPVE);
+
+        // Send Discord notification for PVE kill (after data is updated)
+        await reportPVEKill(npcClassKey, null, currentShipClass);
       } else {
         const playerKill = line.match(/(?<=CActor::Kill:\s').*?(?='\s\[\d{9,12})/);
-        const shipClass = line.match(/(?<=\]\sin\szone\s').*(?=_[0-9]{9,14}')/);
+        const shipClass = line.match(/(?<=\]\sin\szone\s').*(?=_[0-9]{9,14}'\skilled\sby)/);
         if (playerKill && playerKill[0]) {
           const playerKillName = playerKill[0];
           console.log('you killed the player ' + playerKillName);
@@ -59,12 +75,16 @@ export async function actorDeath(line) {
               shipClassKey = extractedShipClass;
             }
           }
-          addPVPLogEntry(playerKillName, 'win', shipClassKey);
-
-          // Send Discord notification for PVP kill
-          await reportPVPKill(playerKillName, shipClassKey);
+          let usingShipClassKey = null;
+          if (currentShipClass) {
+            usingShipClassKey = currentShipClass;
+          }
+          addPVPLogEntry(playerKillName, 'win', shipClassKey, usingShipClassKey);
 
           await savePVP(updatedPVP);
+
+          // Send Discord notification for PVP kill (after data is updated)
+          await reportPVPKill(playerKillName, shipClassKey, currentShipClass);
         }
       }
     }
@@ -110,20 +130,12 @@ export async function actorDeath(line) {
           }
           addPVPLogEntry(enemyPlayerName, 'loss', shipClassKey);
 
-          // Send Discord notification for PVP death
-          await reportPVPDeath(enemyPlayerName, shipClassKey);
-
           await savePVP(updatedPVP);
+
+          // Send Discord notification for PVP death (after data is updated)
+          await reportPVPDeath(enemyPlayerName, shipClassKey, currentShipClass);
         }
       }
-    }
-    if (line.includes("'" + userName + "' [Class Player] with damage type 'Suicide'")) {
-      console.log('you committed suicide');
-      addPVELogEntry('suicide', 'loss');
-      const updatedPVE = { ...pveData };
-      updatedPVE.deaths = pveData.deaths + 1;
-      updatedPVE.currentMonth.deaths = pveData.currentMonth.deaths + 1;
-      await savePVE(updatedPVE);
     }
   } catch (error) {
     console.error('Error loading user data:', error);

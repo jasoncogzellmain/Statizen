@@ -6,6 +6,7 @@ const defaultUserCheck = {
   geid: '',
   starCitizenVersion: '',
   currentShip: '',
+  currentShipClass: '',
 };
 
 export async function getUserPath() {
@@ -34,5 +35,6 @@ export async function resetUserShip() {
   const path = await getUserPath();
   const userData = await loadUser();
   userData.currentShip = '';
+  userData.currentShipClass = '';
   await writeTextFile(path, JSON.stringify(userData, null, 2));
 }

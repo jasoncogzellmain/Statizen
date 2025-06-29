@@ -14,6 +14,7 @@ const defaultSettings = {
     pvpKills: true,
     pvpDeaths: true,
     pveKills: false,
+    suicides: false,
   },
   allowDictionarySubmit: false,
 };
