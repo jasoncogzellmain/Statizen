@@ -9,7 +9,9 @@ Statizen is now in beta with a full feature set for tracking Star Citizen combat
 ## Installation
 
 Download the latest Statizen Installer
-[Latest Release](https://github.com/ChrisNSki/Statizen/latest)
+[Latest Release](https://github.com/ChrisNSki/Statizen/releases/latest)
+
+The installation can be ran from either the msi or the exe. Once installed you will be prompted to select your Game.log file which is located in the Star Citizen directory (The current default is: C:\Program Files\Roberts Space Industries\StarCitizen\LIVE)
 
 ## About
 
