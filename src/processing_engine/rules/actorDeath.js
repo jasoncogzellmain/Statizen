@@ -2,6 +2,7 @@ import { loadUser } from '../../lib/user/userUtil.js';
 import { submitNPCtoDictionary } from '../../lib/pve/submitNPCtoDictionary.js';
 import { loadPVE, savePVE, addPVELogEntry } from '../../lib/pve/pveUtil.js';
 import { loadPVP, savePVP, addPVPLogEntry } from '../../lib/pvp/pvpUtil.js';
+import { reportPVEKill, reportPVPKill, reportPVPDeath } from '../../lib/discord/discordUtil.js';
 import NPCDictionary from '../../assets/NPC-Dictionary.json';
 import shipDictionary from '../../assets/Ship-Dictionary.json';
 
@@ -32,6 +33,9 @@ export async function actorDeath(line) {
         //Log the kill to the PVE log
         addPVELogEntry(npcClassKey, 'win');
 
+        // Send Discord notification for PVE kill
+        await reportPVEKill(npcClassKey, null);
+
         //Update PVE data directly
         const updatedPVE = { ...pveData };
         updatedPVE.kills = pveData.kills + 1;
@@ -56,6 +60,10 @@ export async function actorDeath(line) {
             }
           }
           addPVPLogEntry(playerKillName, 'win', shipClassKey);
+
+          // Send Discord notification for PVP kill
+          await reportPVPKill(playerKillName, shipClassKey);
+
           await savePVP(updatedPVP);
         }
       }
@@ -101,6 +109,10 @@ export async function actorDeath(line) {
             }
           }
           addPVPLogEntry(enemyPlayerName, 'loss', shipClassKey);
+
+          // Send Discord notification for PVP death
+          await reportPVPDeath(enemyPlayerName, shipClassKey);
+
           await savePVP(updatedPVP);
         }
       }

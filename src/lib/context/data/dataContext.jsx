@@ -3,6 +3,7 @@ import { loadUser, saveUser } from '@/lib/user/userUtil';
 import { loadLogInfo } from '@/lib/log/logUtil';
 import { loadPVE, savePVE, loadPVELog } from '@/lib/pve/pveUtil';
 import { loadPVP, savePVP, loadPVPLog } from '@/lib/pvp/pvpUtil';
+import { loadNearby } from '@/lib/nearby/nearbyUtil';
 import NPCDictionary from '@/assets/NPC-Dictionary.json';
 
 const DataContext = createContext();
@@ -27,6 +28,9 @@ export function DataProvider({ children }) {
   const [PVPData, setPVPData] = useState(null);
   const [lastKilledBy, setLastKilledBy] = useState(null);
   const [lastKilledActor, setLastKilledActor] = useState(null);
+  const [nearbyPlayers, setNearbyPlayers] = useState([]);
+  const [pveLog, setPveLog] = useState([]);
+  const [pvpLog, setPvpLog] = useState([]);
 
   // Separate tracking for each data type
   const lastUserContent = useRef(null);
@@ -35,6 +39,9 @@ export function DataProvider({ children }) {
   const lastPVPContent = useRef(null);
   const lastLastKilledByContent = useRef(null);
   const lastLastKilledActorContent = useRef(null);
+  const lastNearbyContent = useRef(null);
+  const lastPveLogContent = useRef(null);
+  const lastPvpLogContent = useRef(null);
 
   // Load initial data
   useEffect(() => {
@@ -46,6 +53,9 @@ export function DataProvider({ children }) {
         const PVPData = await loadPVP();
         const lastKilledBy = await getLastKilledBy();
         const lastKilledActor = await getLastKilledActor();
+        const nearbyData = await loadNearby();
+        const pveLogData = await loadPVELog();
+        const pvpLogData = await loadPVPLog();
 
         setUserData(userData);
         setLogInfo(logInfoData);
@@ -53,6 +63,9 @@ export function DataProvider({ children }) {
         setPVPData(PVPData);
         setLastKilledBy(lastKilledBy);
         setLastKilledActor(lastKilledActor);
+        setNearbyPlayers(nearbyData);
+        setPveLog(pveLogData);
+        setPvpLog(pvpLogData);
 
         lastUserContent.current = JSON.stringify(userData);
         lastLogInfoContent.current = JSON.stringify(logInfoData);
@@ -60,6 +73,9 @@ export function DataProvider({ children }) {
         lastPVPContent.current = JSON.stringify(PVPData);
         lastLastKilledByContent.current = JSON.stringify(lastKilledBy);
         lastLastKilledActorContent.current = JSON.stringify(lastKilledActor);
+        lastNearbyContent.current = JSON.stringify(nearbyData);
+        lastPveLogContent.current = JSON.stringify(pveLogData);
+        lastPvpLogContent.current = JSON.stringify(pvpLogData);
       } catch (error) {
         console.error('Failed to load initial data:', error);
       }
@@ -78,6 +94,9 @@ export function DataProvider({ children }) {
         const currentPVPData = await loadPVP();
         const currentLastKilledBy = await getLastKilledBy();
         const currentLastKilledActor = await getLastKilledActor();
+        const currentNearbyData = await loadNearby();
+        const currentPveLogData = await loadPVELog();
+        const currentPvpLogData = await loadPVPLog();
 
         const currentUserContent = JSON.stringify(currentUserData);
         const currentLogInfoContent = JSON.stringify(currentLogInfoData);
@@ -85,6 +104,9 @@ export function DataProvider({ children }) {
         const currentPVPContent = JSON.stringify(currentPVPData);
         const currentLastKilledByContent = JSON.stringify(currentLastKilledBy);
         const currentLastKilledActorContent = JSON.stringify(currentLastKilledActor);
+        const currentNearbyContent = JSON.stringify(currentNearbyData);
+        const currentPveLogContent = JSON.stringify(currentPveLogData);
+        const currentPvpLogContent = JSON.stringify(currentPvpLogData);
 
         // Check if each file content has changed
         if (lastUserContent.current !== currentUserContent) {
@@ -115,6 +137,21 @@ export function DataProvider({ children }) {
         if (lastLastKilledActorContent.current !== currentLastKilledActorContent) {
           setLastKilledActor(currentLastKilledActor);
           lastLastKilledActorContent.current = currentLastKilledActorContent;
+        }
+
+        if (lastNearbyContent.current !== currentNearbyContent) {
+          setNearbyPlayers(currentNearbyData);
+          lastNearbyContent.current = currentNearbyContent;
+        }
+
+        if (lastPveLogContent.current !== currentPveLogContent) {
+          setPveLog(currentPveLogData);
+          lastPveLogContent.current = currentPveLogContent;
+        }
+
+        if (lastPvpLogContent.current !== currentPvpLogContent) {
+          setPvpLog(currentPvpLogData);
+          lastPvpLogContent.current = currentPvpLogContent;
         }
       } catch (error) {
         console.error('Failed to poll data:', error);
@@ -220,6 +257,9 @@ export function DataProvider({ children }) {
     updatePVPData,
     lastKilledBy,
     lastKilledActor,
+    nearbyPlayers,
+    pveLog,
+    pvpLog,
   };
 
   return <DataContext.Provider value={value}>{children}</DataContext.Provider>;

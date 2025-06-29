@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect, useRef, useCallback } from 'react';
 import { parseNewLogLines } from '@/lib/log/logUtil';
+import { startCleanupInterval, stopCleanupInterval } from '@/lib/nearby/nearbyUtil';
 
 const LogProcessorContext = createContext();
 
@@ -31,6 +32,11 @@ export function LogProcessorProvider({ children }) {
     if (isWatching) {
       // Start polling every second
       intervalRef.current = setInterval(processLog, 1000);
+      // Start cleanup interval for nearby players
+      startCleanupInterval();
+    } else {
+      // Stop cleanup interval when not watching
+      stopCleanupInterval();
     }
 
     // Cleanup on unmount or when isWatching changes
@@ -39,6 +45,7 @@ export function LogProcessorProvider({ children }) {
         clearInterval(intervalRef.current);
         intervalRef.current = null;
       }
+      stopCleanupInterval();
     };
   }, [isWatching, processLog]);
 

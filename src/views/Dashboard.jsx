@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { MapPin, Target, Skull, User, Zap, Clock, UserCheck, Gamepad2, Rocket, Activity, AlertCircle, Play, Square, FileText } from 'lucide-react';
+import { MapPin, Target, Skull, User, Zap, Clock, UserCheck, Gamepad2, Rocket, Activity, AlertCircle, Play, Square, FileText, BadgePlus, PersonStanding, CircleOff } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { useLogProcessor } from '@/lib/context/logProcessor/logProcessorContext';
 import { useData } from '@/lib/context/data/dataContext';
@@ -11,7 +11,7 @@ import { formatTimeAgo } from '@/lib/utils';
 function Dashboard() {
   const { isWatching, toggleLogging } = useLogProcessor();
   const { settings } = useSettings();
-  const { userData, logInfo, PVEData, PVPData, OrgData, lastKilledBy, lastKilledActor } = useData();
+  const { userData, logInfo, PVEData, PVPData, OrgData, lastKilledBy, lastKilledActor, nearbyPlayers } = useData();
 
   const startLogging = async () => {
     if (!isWatching) {
@@ -109,25 +109,32 @@ function Dashboard() {
             <CardContent className='space-y-3'>
               <div className='flex justify-between p-2 rounded-lg min-h-33'>
                 <div className='flex gap-3'>
-                  <div className='w-8 h-8 mt-2 min-w-8 min-h-8 bg-blue-100 rounded-full flex items-center justify-center'>
-                    <Zap className='w-4 h-4 text-blue-600' />
-                  </div>
                   <div>
                     <p className='font-medium'>Detected Nearby Players</p>
                     <div className='flex flex-row gap-2 pt-2 flex-wrap'>
-                      <Badge>Nowskify</Badge>
-                      <Badge>Player 1</Badge>
-                      <Badge>Player 2</Badge>
-                      <Badge>Player 3</Badge>
-                      <Badge>Player 4</Badge>
-                      <Badge>Player 5</Badge>
-                      <Badge>Player 6</Badge>
-                      <Badge>Player 7</Badge>
-                      <Badge>Player 8</Badge>
-                      <Badge>Player 9</Badge>
-                      <Badge>Player 10</Badge>
-                      <Badge>Player 11</Badge>
-                      <Badge>Player 12</Badge>
+                      {nearbyPlayers && nearbyPlayers.length > 0 ? (
+                        nearbyPlayers.map((player, index) => {
+                          let badgeStyle = '';
+                          if (player.icon === 'skull') {
+                            badgeStyle = 'bg-gray-700 text-white hover:bg-gray-600';
+                          } else if (player.icon === 'badge-plus') {
+                            badgeStyle = 'bg-blue-100 text-blue-800 hover:bg-blue-200';
+                          } else if (player.icon === 'person-standing') {
+                            badgeStyle = 'bg-white text-gray-800 border border-gray-300 hover:bg-gray-50';
+                          }
+
+                          return (
+                            <Badge key={index} className={badgeStyle}>
+                              {player.icon === 'badge-plus' ? <BadgePlus className='w-4 h-4' /> : player.icon === 'person-standing' ? <PersonStanding className='w-4 h-4' /> : <Skull className='w-4 h-4' />}
+                              {player.playerName}
+                            </Badge>
+                          );
+                        })
+                      ) : (
+                        <Badge variant='outline'>
+                          <CircleOff className='w-4 h-4' /> No players detected
+                        </Badge>
+                      )}
                     </div>
                   </div>
                 </div>

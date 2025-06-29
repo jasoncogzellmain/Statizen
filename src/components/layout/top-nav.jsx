@@ -32,12 +32,13 @@ const TopNav = () => {
               PVE
             </Button>
           </Link>
-          <Link to='/Org'>
+          {/* Org is not used yet */}
+          {/* <Link to='/Org'>
             <Button variant={location.pathname === '/Org' ? 'default' : 'ghost'} size='sm' className='flex items-center gap-2'>
               <Users className='w-4 h-4' />
               Org
             </Button>
-          </Link>
+          </Link> */}
           <Link to='/settings'>
             <Button variant={location.pathname === '/settings' ? 'default' : 'ghost'} size='sm' className='flex items-center gap-2'>
               <SettingsIcon className='w-4 h-4' />

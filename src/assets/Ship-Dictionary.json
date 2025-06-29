@@ -1602,6 +1602,23 @@
       "pilot-guns": "4 x S3",
       "turret-guns": ""
     },
+    "ANVL_Lightning_F8C_Exec_Military": {
+      "name": "F8C Lightning Executive Military",
+      "image": "400px-F8C_Executive_flying_above_clouds_-_cropped_and_adjusted.png.webp",
+      "role": "Heavy fighter",
+      "size": "S1/XXS",
+      "crew": 1,
+      "base-dps": 0,
+      "HullBody": 9200,
+      "cargo": 0,
+      "shield-type": "Sheut",
+      "shield-capacity": 2890,
+      "missles": "2 x S4, 8 x S2",
+      "manufacturer": "Anvil Aerospace",
+      "manufacturer-code": "ANVL",
+      "pilot-guns": "4 x S3",
+      "turret-guns": ""
+    },
     "MISC_Fortune": {
       "name": "Fortune",
       "image": "400px-Fortune_salvaging_crash_site_-_cropped.jpg.webp",
@@ -2571,7 +2588,7 @@
       "pilot-guns": "2 x S5",
       "turret-guns": ""
     },
-    "Prowler Utility": {
+    "ESPR_Prowler_Utility": {
       "name": "Prowler Utility",
       "image": "400px-Prowler_Utility_on_outpost_landing_pad_-_cropped.png.webp",
       "role": "Cargo",

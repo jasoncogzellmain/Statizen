@@ -8,6 +8,8 @@ const defaultSettings = {
   webhookType: '',
   webhookUrl: '',
   webhookEnabled: false,
+  discordEnabled: false,
+  discordWebhookUrl: '',
   eventTypes: {
     pvpKills: true,
     pvpDeaths: true,

@@ -6,15 +6,48 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { handleOpenFile } from '@/lib/handleOpenFile';
 import { useSettings } from '@/lib/context/settings/settingsContext';
+import { useData } from '@/lib/context/data/dataContext';
 import { InfoIcon } from 'lucide-react';
+import { useState } from 'react';
 
 function Settings() {
   const { settings, loading, updateSettings, updateEventTypes } = useSettings();
+  const { userData } = useData();
+  const [testing, setTesting] = useState(false);
 
   const handleLogPath = async () => {
     const path = await handleOpenFile();
     if (path) {
       updateSettings('logPath', path);
+    }
+  };
+
+  const testDiscordWebhook = async () => {
+    if (!settings.discordEnabled || !settings.discordWebhookUrl) {
+      return;
+    }
+
+    setTesting(true);
+    try {
+      const response = await fetch(settings.discordWebhookUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          content: `${userData?.userName || 'Unknown User'} just tested the Statizen Discord link, it is up and running!`,
+        }),
+      });
+
+      if (!response.ok) {
+        console.error('Failed to send test Discord webhook:', response.status, response.statusText);
+      } else {
+        console.log('Discord webhook test successful!');
+      }
+    } catch (error) {
+      console.error('Error sending test Discord webhook:', error);
+    } finally {
+      setTesting(false);
     }
   };
 
@@ -68,35 +101,26 @@ function Settings() {
           </div>
         </div>
         <div className='space-y-4'>
-          <h3 className='text-lg font-semibold'>Webhooks</h3>
+          <h3 className='text-lg font-semibold'>Discord Notifications</h3>
           <Card>
             <CardContent className='space-y-4'>
               <div className='flex items-center justify-between'>
                 <div>
-                  <p className='font-medium'>Enable Webhook</p>
-                  <p className='text-sm text-muted-foreground'>Send game events to external services</p>
+                  <p className='font-medium'>Enable Discord Notifications</p>
+                  <p className='text-sm text-muted-foreground'>Send game events to Discord via webhook</p>
                 </div>
-                <Switch checked={settings.webhookEnabled} onCheckedChange={(val) => updateSettings('webhookEnabled', val)} />
+                <Switch checked={settings.discordEnabled} onCheckedChange={(val) => updateSettings('discordEnabled', val)} />
               </div>
 
-              {settings.webhookEnabled && (
+              {settings.discordEnabled && (
                 <div className='space-y-4'>
                   <div className='space-y-2'>
-                    <Label htmlFor='webhook-type'>Webhook Type</Label>
-                    <Select value={settings.webhookType} onValueChange={(val) => updateSettings('webhookType', val)}>
-                      <SelectTrigger>
-                        <SelectValue placeholder='Select webhook type' />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value='discord'>Discord</SelectItem>
-                        <SelectItem value='webhook'>Generic Webhook</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className='space-y-2'>
-                    <Label htmlFor='webhook-url'>Webhook URL</Label>
-                    <Input id='webhook-url' type='url' placeholder='https://discord.com/api/webhooks/...' value={settings.webhookUrl} onChange={(e) => updateSettings('webhookUrl', e.target.value)} />
+                    <Label htmlFor='discord-webhook-url'>Discord Webhook URL</Label>
+                    <Input id='discord-webhook-url' type='url' placeholder='https://discord.com/api/webhooks/...' value={settings.discordWebhookUrl} onChange={(e) => updateSettings('discordWebhookUrl', e.target.value)} />
+                    <div className='flex flex-row gap-1 items-center pt-2'>
+                      <InfoIcon className='w-3 h-3' />
+                      <span className='text-xs text-muted-foreground'>Create a webhook in your Discord server settings to get the URL</span>
+                    </div>
                   </div>
 
                   <div className='space-y-2'>
@@ -118,7 +142,9 @@ function Settings() {
                   </div>
 
                   <div className='flex gap-2 w-full justify-end'>
-                    <Button>Test Webhook</Button>
+                    <Button onClick={testDiscordWebhook} disabled={testing}>
+                      {testing ? 'Testing...' : 'Test Discord Webhook'}
+                    </Button>
                   </div>
                 </div>
               )}
