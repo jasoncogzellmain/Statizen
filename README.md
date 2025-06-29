@@ -3,7 +3,7 @@
 
 # Statizen
 
-A desktop application for tracking Star Citizen statistics and performance metrics, built with React, Vite, and Tauri.
+A desktop application for tracking Star Citizen statistics and performance metrics.
 
 🚀 **Version 1.0 Beta Release**
 
