@@ -1,3 +1,6 @@
+
+![alt text](https://github.com/ChrisNSki/Statizen/blob/7db861007c7f36c3b3f36430197725790d6418a0/public/StatizenLogo.png?raw=true)
+
 # Statizen
 
 A desktop application for tracking Star Citizen statistics and performance metrics, built with React, Vite, and Tauri.
