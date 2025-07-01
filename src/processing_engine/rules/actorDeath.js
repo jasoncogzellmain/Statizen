@@ -29,7 +29,7 @@ export async function actorDeath(line) {
     }
 
     //Register a kill by player
-    if (line.includes("killed by '" + userName + "'")) {
+    if (line.includes("killed by '" + userName + "'") && !line.includes("<Actor Death> CActor::Kill: '" + userName + "'")) {
       //Match the NPC class ONLY
       const npcClass = line.match(/(?<=CActor::Kill:\s').*?(?=_[0-9]{11,13}'\s\[[0-9]+\]\sin\szone)/);
 
@@ -108,7 +108,7 @@ export async function actorDeath(line) {
     //     await savePVE(updatedPVE);
     //   }
     // }
-    if (line.includes("CActor::Kill: '" + userName + "'") && !line.includes("with damage type 'Suicide'")) {
+    if (line.includes("CActor::Kill: '" + userName + "'") && !line.includes("with damage type 'Suicide'") && !line.includes("killed by '" + userName + "'")) {
       const killByNPCCheck = line.match(/(?<=killed\sby\s').*?(?=_\d{9,13}'\s\[\d{9,13}\]\susing)/);
       if (!killByNPCCheck) {
         const enemyPlayer = line.match(/(?<=killed\sby\s').*?(?='\s\[\d{9,13}\]\susing)/);
