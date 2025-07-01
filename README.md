@@ -5,7 +5,7 @@
 
 A desktop application for tracking Star Citizen statistics and performance metrics.
 
-🚀 **Version 1.0 Beta Release**
+🚀 **Version 1.0.1 Beta Release**
 
 Statizen is now in beta with a full feature set for tracking Star Citizen combat statistics and player interactions. The application is stable enough for community testing and feedback.
 
