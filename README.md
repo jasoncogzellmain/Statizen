@@ -3,7 +3,7 @@
 
 # Statizen
 
-A desktop application for tracking Star Citizen statistics and performance metrics.
+A desktop application for tracking Star Citizen statistics around kills/deaths, and a built in dictionary for ships and NPCs. Allows for posting kill info to a discord channel, with more features coming soon!
 
 🚀 **Version 1.0.1 Beta Release**
 
