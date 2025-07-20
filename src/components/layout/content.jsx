@@ -11,7 +11,7 @@ import PageWrapper from '@/components/PageWrapper';
 
 const Content = () => {
   return (
-    <div className='flex-1 bg-accent min-h-full overflow-y-auto max-h-[654px]'>
+    <div className='flex-1 bg-accent overflow-y-auto'>
       <Routes>
         <Route
           path='/'

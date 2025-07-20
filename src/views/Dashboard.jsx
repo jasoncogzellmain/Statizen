@@ -1,3 +1,4 @@
+import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { MapPin, Target, Skull, User, Zap, Clock, UserCheck, Gamepad2, Rocket, Activity, AlertCircle, Play, Square, FileText, BadgePlus, PersonStanding, CircleOff } from 'lucide-react';
@@ -7,11 +8,53 @@ import { useData } from '@/lib/context/data/dataContext';
 import { useSettings } from '@/lib/context/settings/settingsContext';
 import { initializeLog } from '@/lib/initialization/initializeLog';
 import { formatTimeAgo } from '@/lib/utils';
+import { loadPVE } from '@/lib/pve/pveUtil';
+import { loadPVP } from '@/lib/pvp/pvpUtil';
+
+// Copy the exact same functions from Discord utility
+const getOutlawRankTitle = (level) => {
+  const ranks = ['Drifter', 'Rogue', 'Gunner', 'Marauder', 'Ravager', 'Skullbrand', 'Void Reaper', 'Ash Warden', 'Hellbringer', 'Death Harbinger'];
+  return ranks[Math.min(level, ranks.length - 1)];
+};
+
+const getOutlawPrestigeTitle = (prestige) => {
+  const titles = ['Scavver', 'Red Flag', 'Blackwake', 'Warrant Ghost', 'Hullsplitter', 'Star Scourge', 'Quantum Raider', 'Ashborne', 'Fleetbreaker', 'Versebane'];
+  return titles[Math.min(prestige, titles.length - 1)];
+};
+
+const getPeacekeeperRankTitle = (level) => {
+  const ranks = ['Recruit', 'Sentinel', 'Marksman', 'Enforcer', 'Vanguard', 'Ironbrand', 'Void Warden', 'Starseeker', 'Lightbringer', 'Peacebringer'];
+  return ranks[Math.min(level, ranks.length - 1)];
+};
+
+const getPeacekeeperPrestigeTitle = (prestige) => {
+  const titles = ['Spacer', 'White Flag', 'Starwake', 'Warrant Seeker', 'Hullguard', 'Starward Shield', 'Quantum Sentinel', 'Solarborn', 'Fleetwarden', 'Versekeeper'];
+  return titles[Math.min(prestige, titles.length - 1)];
+};
+
+const getRankTitle = (level, isOutlaw) => isOutlaw ? getOutlawRankTitle(level) : getPeacekeeperRankTitle(level);
+const getPrestigeTitle = (prestige, isOutlaw) => isOutlaw ? getOutlawPrestigeTitle(prestige) : getPeacekeeperPrestigeTitle(prestige);
+const getLevelFromXP = (xp) => Math.floor(0.1 * Math.sqrt(xp));
+const getXPForLevel = (level) => Math.pow(level / 0.1, 2);
+
+const getXPProgressBar = (xp) => {
+  const level = getLevelFromXP(xp);
+  const xpStart = getXPForLevel(level);
+  const xpEnd = getXPForLevel(level + 1);
+  const xpInLevel = xp - xpStart;
+  const xpNeeded = xpEnd - xpStart;
+  const percent = (xpInLevel / xpNeeded) * 100;
+  const blocks = Math.floor(percent / 10);
+  const bar = '█'.repeat(blocks) + '░'.repeat(10 - blocks);
+  return { bar, percent: Math.round(percent), level, xpInLevel, xpNeeded };
+};
 
 function Dashboard() {
   const { isWatching, toggleLogging } = useLogProcessor();
   const { settings } = useSettings();
   const { userData, logInfo, PVEData, PVPData, OrgData, lastKilledBy, lastKilledActor, nearbyPlayers } = useData();
+
+
 
   const startLogging = async () => {
     if (!isWatching) {
@@ -25,6 +68,47 @@ function Dashboard() {
       await toggleLogging();
     }
   };
+
+  const isOutlaw = settings?.faction === 'outlaw';
+
+  // Load fresh data like Discord webhook (synchronously)
+  const [freshData, setFreshData] = React.useState(null);
+
+  React.useEffect(() => {
+    const loadFreshData = async () => {
+      try {
+        const freshPVE = await loadPVE();
+        const freshPVP = await loadPVP();
+        setFreshData({ pve: freshPVE, pvp: freshPVP });
+      } catch (error) {
+        console.error('Error loading fresh data:', error);
+      }
+    };
+    loadFreshData();
+  }, []);
+
+  // Calculate level and prestige from XP using fresh data (same as Discord webhook)
+  // Use PVE data for XP since that's where the XP is stored
+  const xp = freshData ? freshData.pve?.xp || 0 : 0;
+  const { level } = getXPProgressBar(xp);
+  // Calculate prestige from level: every 100 levels = 1 prestige
+  const prestige = Math.floor(level / 100);
+  const factionDisplay = isOutlaw ? 'Outlaw' : 'Peacekeeper';
+
+  // Use exact same calculation as Discord webhook
+  const rankTitle = getRankTitle(level, isOutlaw);
+  const prestigeTitle = getPrestigeTitle(prestige, isOutlaw);
+
+  // Debug logging
+  console.log('Dashboard XP Debug:', {
+    isOutlaw,
+    freshData: freshData,
+    fresh_xp: xp,
+    calculated_level: level,
+    calculated_prestige: prestige,
+    rankTitle,
+    prestigeTitle
+  });
 
   return (
     <div className='flex flex-col gap-2 p-5'>
@@ -170,6 +254,11 @@ function Dashboard() {
               <div>
                 <p className='font-medium'>Logged in as</p>
                 <p className='text-sm text-muted-foreground'>{userData?.userName || 'Unknown'}</p>
+                <div className='flex flex-wrap gap-4 pt-1 text-sm text-muted-foreground'>
+                  <p><b>Faction:</b> {factionDisplay}</p>
+                  <p><b>Prestige:</b> {prestigeTitle} ({prestige})</p>
+                  <p><b>Rank:</b> {rankTitle} (<b>Level</b> {level})</p>
+                </div>
               </div>
             </div>
             <div className='flex items-center gap-3 p-3 border rounded-lg'>
@@ -203,3 +292,4 @@ function Dashboard() {
 }
 
 export default Dashboard;
+

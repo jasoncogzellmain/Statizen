@@ -5,7 +5,7 @@ const Footer = () => {
 
   if (loading) {
     return (
-      <div className='bg-black'>
+      <div className='bg-black flex-shrink-0'>
         <div className='flex justify-between items-center py-1 px-3 text-xs'>
           <span>Loading...</span>
         </div>
@@ -14,7 +14,7 @@ const Footer = () => {
   }
 
   return (
-    <div className='bg-black'>
+    <div className='bg-black flex-shrink-0'>
       <div className='flex justify-between items-center py-1 px-3 text-xs'>
         <span>
           Written by{' '}

@@ -17,6 +17,7 @@ const defaultSettings = {
     suicides: false,
   },
   allowDictionarySubmit: false,
+  faction: 'peacekeeper', // 👈 needed for UI
 };
 
 export async function getSettingsPath() {
@@ -30,7 +31,10 @@ export async function loadSettings() {
   const path = await getSettingsPath();
   try {
     const text = await readTextFile(path);
-    return JSON.parse(text);
+    const storedSettings = JSON.parse(text);
+
+    // Safely apply defaults for missing keys (e.g., new fields)
+    return { ...defaultSettings, ...storedSettings };
   } catch {
     return { ...defaultSettings };
   }
