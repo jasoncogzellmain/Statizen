@@ -7,6 +7,7 @@ const previousMonth = new Date(new Date().setMonth(new Date().getMonth() - 1)).t
 const defaultPVEStats = {
   kills: 0,
   deaths: 0,
+  xp: 0,
   currentMonth: {
     month: currentMonth,
     kills: 0,
@@ -82,6 +83,8 @@ export async function checkMonthChange() {
       kills: 0,
       deaths: 0,
     };
+    // Preserve XP across months
+    if (!pve.xp) pve.xp = 0;
     await savePVE(pve);
   }
 }

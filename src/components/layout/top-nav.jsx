@@ -10,7 +10,7 @@ const TopNav = () => {
   const appWindow = getCurrentWindow();
 
   return (
-    <div className='flex justify-between items-center p-4 draggable bg-black'>
+    <div className='flex justify-between items-center p-4 draggable bg-black flex-shrink-0'>
       <div className='flex items-center gap-6'>
         <img src='/StatizenLogo.png' alt='Statizen Logo' className='h-10' />
         <nav className='flex items-center gap-2 no-drag'>

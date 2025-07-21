@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -23,17 +23,13 @@ function Settings() {
   };
 
   const testDiscordWebhook = async () => {
-    if (!settings.discordEnabled || !settings.discordWebhookUrl) {
-      return;
-    }
+    if (!settings?.discordEnabled || !settings?.discordWebhookUrl) return;
 
     setTesting(true);
     try {
       const response = await fetch(settings.discordWebhookUrl, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           content: `${userData?.userName || 'Unknown User'} just tested the Statizen Discord link, it is up and running!`,
         }),
@@ -52,6 +48,8 @@ function Settings() {
   };
 
   if (loading || !settings) return <div>Loading Settings...</div>;
+
+  const safeEvent = settings.eventTypes || {};
 
   return (
     <div className='flex flex-col gap-6 p-5'>
@@ -85,6 +83,7 @@ function Settings() {
             </div>
           </div>
         </div>
+
         <div className='flex items-center justify-between'>
           <div>
             <p className='font-medium'>Submit Missing NPC Names</p>
@@ -100,6 +99,27 @@ function Settings() {
             </div>
           </div>
         </div>
+
+        <div className='space-y-4'>
+          <h3 className='text-lg font-semibold'>Faction Selection</h3>
+          <Card>
+            <CardContent className='space-y-4'>
+              <div className='flex items-center justify-between'>
+                <Label htmlFor='faction'>Select Your Faction</Label>
+                <Select value={settings.faction} onValueChange={(val) => updateSettings('faction', val)}>
+                  <SelectTrigger className='w-[180px]'>
+                    <SelectValue placeholder='Faction' />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value='peacekeeper'>Peacekeeper</SelectItem>
+                    <SelectItem value='outlaw'>Outlaw</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
         <div className='space-y-4'>
           <h3 className='text-lg font-semibold'>Discord Notifications</h3>
           <Card>
@@ -127,19 +147,19 @@ function Settings() {
                     <Label>Event Types</Label>
                     <div className='space-y-2'>
                       <div className='flex items-center space-x-2'>
-                        <Switch id='pvp-kills' checked={settings.eventTypes.pvpKills} onCheckedChange={(val) => updateEventTypes('pvpKills', val)} />
+                        <Switch id='pvp-kills' checked={safeEvent.pvpKills} onCheckedChange={(val) => updateEventTypes('pvpKills', val)} />
                         <Label htmlFor='pvp-kills'>PVP Kills</Label>
                       </div>
                       <div className='flex items-center space-x-2'>
-                        <Switch id='pvp-deaths' checked={settings.eventTypes.pvpDeaths} onCheckedChange={(val) => updateEventTypes('pvpDeaths', val)} />
+                        <Switch id='pvp-deaths' checked={safeEvent.pvpDeaths} onCheckedChange={(val) => updateEventTypes('pvpDeaths', val)} />
                         <Label htmlFor='pvp-deaths'>PVP Deaths</Label>
                       </div>
                       <div className='flex items-center space-x-2'>
-                        <Switch id='pve-kills' checked={settings.eventTypes.pveKills} onCheckedChange={(val) => updateEventTypes('pveKills', val)} />
+                        <Switch id='pve-kills' checked={safeEvent.pveKills} onCheckedChange={(val) => updateEventTypes('pveKills', val)} />
                         <Label htmlFor='pve-kills'>PVE Kills</Label>
                       </div>
                       <div className='flex items-center space-x-2'>
-                        <Switch id='suicides' checked={settings.eventTypes.suicides} onCheckedChange={(val) => updateEventTypes('suicides', val)} />
+                        <Switch id='suicides' checked={safeEvent.suicides} onCheckedChange={(val) => updateEventTypes('suicides', val)} />
                         <Label htmlFor='suicides'>Suicides</Label>
                       </div>
                     </div>

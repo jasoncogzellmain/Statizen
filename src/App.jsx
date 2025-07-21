@@ -12,7 +12,7 @@ function App() {
       <LogProcessorProvider>
         <DataProvider>
           <Router>
-            <div className='flex flex-col min-h-screen'>
+            <div className='flex flex-col h-screen'>
               <TopNav />
               <Content />
               <Footer />

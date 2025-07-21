@@ -7,6 +7,7 @@ const previousMonth = new Date(new Date().setMonth(new Date().getMonth() - 1)).t
 const defaultPVPStats = {
   kills: 0,
   deaths: 0,
+  xp: 0,
   currentMonth: {
     month: currentMonth,
     kills: 0,
@@ -91,6 +92,8 @@ export async function checkMonthChange() {
       kills: 0,
       deaths: 0,
     };
+    // Preserve XP across months
+    if (!pvp.xp) pvp.xp = 0;
     await savePVP(pvp);
   }
 }
