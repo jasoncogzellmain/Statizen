@@ -18,6 +18,9 @@ const defaultSettings = {
   },
   allowDictionarySubmit: false,
   faction: 'peacekeeper', // 👈 needed for UI
+  // RPG Settings
+  rpgEnabled: false, // 👈 Toggle for RPG features in UI
+  discordLevelData: false, // 👈 Toggle for level data in Discord webhooks
 };
 
 export async function getSettingsPath() {
@@ -43,4 +46,46 @@ export async function loadSettings() {
 export async function saveSettings(data) {
   const path = await getSettingsPath();
   await writeTextFile(path, JSON.stringify(data, null, 2));
+}
+
+// Calculate XP from existing kill data for users who have kills but no XP
+export async function calculateXPFromKills() {
+  try {
+    const { loadPVE, savePVE } = await import('../pve/pveUtil.js');
+    const pvpUtil = await import('../pvp/pvpUtil.js');
+
+    const pveData = await loadPVE();
+    const pvpData = await pvpUtil.loadPVP();
+
+    let hasChanges = false;
+
+    // Calculate PVE XP if not present or 0, and has kills
+    if (pveData && pveData.kills > 0 && (!pveData.xp || pveData.xp === 0)) {
+      const pveXP = pveData.kills * 10; // 10 XP per PVE kill
+      pveData.xp = pveXP;
+      await savePVE(pveData);
+      console.log(`Calculated ${pveXP} XP from ${pveData.kills} PVE kills`);
+      hasChanges = true;
+    }
+
+    // Calculate PVP XP if not present or 0, and has kills
+    if (pvpData && pvpData.kills > 0 && (!pvpData.xp || pvpData.xp === 0)) {
+      const pvpXP = pvpData.kills * 20; // 20 XP per PVP kill
+      pvpData.xp = pvpXP;
+      await pvpUtil.savePVP(pvpData);
+      console.log(`Calculated ${pvpXP} XP from ${pvpData.kills} PVP kills`);
+      hasChanges = true;
+    }
+
+    if (hasChanges) {
+      console.log('✅ Successfully calculated XP from existing kill data');
+      return true;
+    } else {
+      console.log('ℹ️ No XP calculation needed - data already exists or no kills found');
+      return false;
+    }
+  } catch (error) {
+    console.error('❌ Error calculating XP from kills:', error);
+    return false;
+  }
 }

@@ -88,8 +88,10 @@ function Dashboard() {
   }, []);
 
   // Calculate level and prestige from XP using fresh data (same as Discord webhook)
-  // Use PVE data for XP since that's where the XP is stored
-  const xp = freshData ? freshData.pve?.xp || 0 : 0;
+  // Combine PVE and PVP XP for total progression
+  const pveXP = freshData ? freshData.pve?.xp || 0 : 0;
+  const pvpXP = freshData ? freshData.pvp?.xp || 0 : 0;
+  const xp = pveXP + pvpXP;
   const { level } = getXPProgressBar(xp);
   // Calculate prestige from level: every 100 levels = 1 prestige
   const prestige = Math.floor(level / 100);
@@ -255,9 +257,13 @@ function Dashboard() {
                 <p className='font-medium'>Logged in as</p>
                 <p className='text-sm text-muted-foreground'>{userData?.userName || 'Unknown'}</p>
                 <div className='flex flex-wrap gap-4 pt-1 text-sm text-muted-foreground'>
-                  <p><b>Faction:</b> {factionDisplay}</p>
-                  <p><b>Prestige:</b> {prestigeTitle} ({prestige})</p>
-                  <p><b>Rank:</b> {rankTitle} (<b>Level</b> {level})</p>
+                  {settings?.rpgEnabled && (
+                    <>
+                      <p><b>Faction:</b> {factionDisplay}</p>
+                      <p><b>Prestige:</b> {prestigeTitle} ({prestige})</p>
+                      <p><b>Rank:</b> {rankTitle} (<b>Level</b> {level})</p>
+                    </>
+                  )}
                 </div>
               </div>
             </div>

@@ -80,34 +80,47 @@ export async function actorDeath(line) {
       }
     }
 
-    // === PVP DEATH HANDLER ===
+    // === PVE DEATH HANDLER ===
     if (line.includes("CActor::Kill: '" + userName + "'") && !line.includes("with damage type 'Suicide'") && !line.includes("killed by '" + userName + "'")) {
-      const killByNPCCheck = line.match(/(?<=killed\sby\s').*?(?=_\d{9,13}'\s\[\d{9,13}\]\susing)/);
-      if (!killByNPCCheck) {
-        const enemyPlayer = line.match(/(?<=killed\sby\s').*?(?='\s\[\d{9,13}\]\susing)/);
-        if (enemyPlayer && enemyPlayer[0]) {
-          const enemyPlayerName = enemyPlayer[0];
-          console.log('you were killed by player ' + enemyPlayerName);
+      // Check if killed by NPC (includes debris, AI ships, etc.)
+      const enemyPlayer = line.match(/(?<=killed\sby\s').*?(?='\s\[\d{9,13}\]\susing)/);
 
-          const updatedPVP = { ...pvpData };
-          updatedPVP.deaths += 1;
-          updatedPVP.currentMonth.deaths += 1;
+      // If we can't find a player name pattern, or if the killer has a long ID (like debris/AI), treat as PVE death
+      if (!enemyPlayer || !enemyPlayer[0] || enemyPlayer[0].length > 20 || enemyPlayer[0].includes('SCItem_') || enemyPlayer[0].includes('AI_')) {
+        console.log('you were killed by NPC/environment');
 
-          let shipClassKey = null;
-          const shipClass = line.match(/(?<=\]\sin\szone\s').*?(?=_[0-9]{9,14}')/);
-          if (shipClass && shipClass[0]) {
-            const extractedShipClass = shipClass[0];
-            if (shipDictionary.dictionary[extractedShipClass]) {
-              console.log('you were killed while driving a ' + shipDictionary.dictionary[extractedShipClass].name);
-              shipClassKey = extractedShipClass;
-            }
+        const updatedPVE = { ...pveData };
+        updatedPVE.deaths += 1;
+        updatedPVE.currentMonth.deaths += 1;
+        await savePVE(updatedPVE);
+
+        // No Discord notification for PVE deaths (as per current design)
+        return;
+      }
+
+      // === PVP DEATH HANDLER ===
+      if (enemyPlayer && enemyPlayer[0]) {
+        const enemyPlayerName = enemyPlayer[0];
+        console.log('you were killed by player ' + enemyPlayerName);
+
+        const updatedPVP = { ...pvpData };
+        updatedPVP.deaths += 1;
+        updatedPVP.currentMonth.deaths += 1;
+
+        let shipClassKey = null;
+        const shipClass = line.match(/(?<=\]\sin\szone\s').*?(?=_[0-9]{9,14}')/);
+        if (shipClass && shipClass[0]) {
+          const extractedShipClass = shipClass[0];
+          if (shipDictionary.dictionary[extractedShipClass]) {
+            console.log('you were killed while driving a ' + shipDictionary.dictionary[extractedShipClass].name);
+            shipClassKey = extractedShipClass;
           }
-
-          addPVPLogEntry(enemyPlayerName, 'loss', shipClassKey);
-          await savePVP(updatedPVP);
-
-          await reportPVPDeath(enemyPlayerName, shipClassKey, currentShipClass);
         }
+
+        addPVPLogEntry(enemyPlayerName, 'loss', shipClassKey);
+        await savePVP(updatedPVP);
+
+        await reportPVPDeath(enemyPlayerName, shipClassKey, currentShipClass);
       }
     }
   } catch (error) {
