@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { MapPin, Target, Skull, User, Zap, Clock, UserCheck, Gamepad2, Rocket, Activity, AlertCircle, Play, Square, FileText, BadgePlus, PersonStanding, CircleOff } from 'lucide-react';
+import { MapPin, Target, Skull, User, Zap, Clock, UserCheck, Gamepad2, Rocket, Activity, AlertCircle, Play, Square, FileText, BadgePlus, PersonStanding, CircleOff, TrendingUp } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { useLogProcessor } from '@/lib/context/logProcessor/logProcessorContext';
 import { useData } from '@/lib/context/data/dataContext';
@@ -47,6 +47,42 @@ const getXPProgressBar = (xp) => {
   const blocks = Math.floor(percent / 10);
   const bar = '█'.repeat(blocks) + '░'.repeat(10 - blocks);
   return { bar, percent: Math.round(percent), level, xpInLevel, xpNeeded };
+};
+
+// XP Progress Bar Component
+const XPProgressBar = ({ xp }) => {
+  const { percent, xpInLevel, xpNeeded } = getXPProgressBar(xp);
+
+  return (
+    <div className='space-y-2'>
+      <div className='flex items-center justify-between'>
+        <div className='text-sm text-muted-foreground'>
+          Progress to Next Level
+        </div>
+        <div className='text-sm text-muted-foreground'>
+          {percent}% to next level
+        </div>
+      </div>
+
+      {/* Visual Progress Bar */}
+      <div className='w-full bg-gray-200 rounded-full h-2 overflow-hidden'>
+        <div
+          className='h-full bg-gradient-to-r from-purple-500 to-purple-600 transition-all duration-300 ease-out'
+          style={{ width: `${percent}%` }}
+        />
+      </div>
+
+      {/* Progress Text */}
+      <div className='flex justify-between text-xs'>
+        <span className='text-muted-foreground'>
+          XP this level: {xpInLevel.toLocaleString()} / {xpNeeded.toLocaleString()}
+        </span>
+        <span className='font-medium text-purple-600'>
+          {xp.toLocaleString()} total XP
+        </span>
+      </div>
+    </div>
+  );
 };
 
 function Dashboard() {
@@ -253,9 +289,11 @@ function Dashboard() {
             </div>
             <div className='flex items-center gap-3 p-3 border rounded-lg'>
               <UserCheck className='w-5 h-5 text-purple-600' />
-              <div>
-                <p className='font-medium'>Logged in as</p>
-                <p className='text-sm text-muted-foreground'>{userData?.userName || 'Unknown'}</p>
+              <div className='w-full'>
+                <div className='flex items-center gap-2'>
+                  <p className='font-medium'>Logged in as:</p>
+                  <p className='text-sm text-muted-foreground'>{userData?.userName || 'Unknown'}</p>
+                </div>
                 <div className='flex flex-wrap gap-4 pt-1 text-sm text-muted-foreground'>
                   {settings?.rpgEnabled && (
                     <>
@@ -265,34 +303,37 @@ function Dashboard() {
                     </>
                   )}
                 </div>
+                {/* XP Progress Bar - Only show when RPG setting is enabled */}
+                {settings?.rpgEnabled && (
+                  <div className='mt-3 pt-3 border-t border-gray-200'>
+                    <XPProgressBar xp={xp} />
+                  </div>
+                )}
               </div>
             </div>
             <div className='flex items-center gap-3 p-3 border rounded-lg'>
               <FileText className='w-5 h-5 text-orange-600' />
-              <div>
+              <div className='flex-1'>
                 <p className='font-medium'>Log Lines Processed</p>
                 <p className='text-sm text-muted-foreground'>{logInfo?.lastProcessedLine.toString() || 'Unknown'}</p>
               </div>
+              <Button onClick={startLogging} variant={isWatching ? 'destructive' : 'default'} className='flex items-center gap-2'>
+                {isWatching ? (
+                  <>
+                    <Square className='w-4 h-4' />
+                    Stop Logging
+                  </>
+                ) : (
+                  <>
+                    <Play className='w-4 h-4' />
+                    Start Logging
+                  </>
+                )}
+              </Button>
             </div>
           </div>
         </CardContent>
       </Card>
-      {/* Logging Control */}
-      <div className='flex flex-row gap-2 w-full justify-end pt-2'>
-        <Button onClick={startLogging} variant={isWatching ? 'destructive' : 'default'} className='flex items-center gap-2'>
-          {isWatching ? (
-            <>
-              <Square className='w-4 h-4' />
-              Stop Logging
-            </>
-          ) : (
-            <>
-              <Play className='w-4 h-4' />
-              Start Logging
-            </>
-          )}
-        </Button>
-      </div>
     </div>
   );
 }
