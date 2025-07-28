@@ -7,12 +7,15 @@ import { Switch } from '@/components/ui/switch';
 import { handleOpenFile } from '@/lib/handleOpenFile';
 import { useSettings } from '@/lib/context/settings/settingsContext';
 import { useData } from '@/lib/context/data/dataContext';
+import { useLogProcessor } from '@/lib/context/logProcessor/logProcessorContext';
+import { setRunAtStartup } from '@/lib/settings/settingsUtil';
 import { InfoIcon } from 'lucide-react';
 import { useState } from 'react';
 
 function Settings() {
   const { settings, loading, updateSettings, updateEventTypes } = useSettings();
   const { userData } = useData();
+  const { startAutoLogging, stopAutoLogging } = useLogProcessor();
   const [testing, setTesting] = useState(false);
 
   const handleLogPath = async () => {
@@ -78,6 +81,64 @@ function Settings() {
                 <div className='flex flex-row gap-1 items-center pt-2 pl-2'>
                   <InfoIcon className='w-3 h-3' />
                   <span className='text-xs text-muted-foreground'>Display notifications for PVP kills only (May cause unexpected behavior)</span>
+                </div>
+              </div>
+            </div>
+
+            <div className='flex items-center justify-between'>
+              <div>
+                <div className='flex items-center space-x-2'>
+                  <Switch
+                    checked={settings.autoLogEnabled}
+                    onCheckedChange={async (val) => {
+                      updateSettings('autoLogEnabled', val);
+                      if (val) {
+                        await startAutoLogging();
+                      } else {
+                        stopAutoLogging();
+                      }
+                    }}
+                  />
+                  <p className='text-sm text-muted-foreground'>Auto-start logging when Star Citizen launches</p>
+                </div>
+                <div className='flex flex-row gap-1 items-center pt-2 pl-2'>
+                  <InfoIcon className='w-3 h-3' />
+                  <span className='text-xs text-muted-foreground'>Automatically start and stop logging based on Star Citizen process detection</span>
+                </div>
+              </div>
+            </div>
+
+            <div className='flex items-center justify-between'>
+              <div>
+                <div className='flex items-center space-x-2'>
+                  <Switch
+                    checked={settings.runAtStartup}
+                    onCheckedChange={async (val) => {
+                      updateSettings('runAtStartup', val);
+                      await setRunAtStartup(val);
+                    }}
+                  />
+                  <p className='text-sm text-muted-foreground'>Run at Windows startup</p>
+                </div>
+                <div className='flex flex-row gap-1 items-center pt-2 pl-2'>
+                  <InfoIcon className='w-3 h-3' />
+                  <span className='text-xs text-muted-foreground'>Automatically launch Statizen when Windows starts</span>
+                </div>
+              </div>
+            </div>
+
+            <div className='flex items-center justify-between'>
+              <div>
+                <div className='flex items-center space-x-2'>
+                  <Switch
+                    checked={settings.minimizeOnLaunch}
+                    onCheckedChange={(val) => updateSettings('minimizeOnLaunch', val)}
+                  />
+                  <p className='text-sm text-muted-foreground'>Minimize on launch</p>
+                </div>
+                <div className='flex flex-row gap-1 items-center pt-2 pl-2'>
+                  <InfoIcon className='w-3 h-3' />
+                  <span className='text-xs text-muted-foreground'>Start Statizen minimized to system tray</span>
                 </div>
               </div>
             </div>
