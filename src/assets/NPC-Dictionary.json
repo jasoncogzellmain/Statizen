@@ -2,52 +2,52 @@
   "version": "0.1.0",
   "dictionary": {
     "Kopion_Irradiated": {
-      "name": "Kopion Trooper (Irradiated)"
+      "name": "Kopion (Irradiated)"
     },
     "PU_Human_Enemy_GroundCombat_NPC": {
       "name": "Ground Combat"
     },
     "PU_Human_Enemy_GroundCombat_NPC_Ninetails_cqc": {
-      "name": "NineTails CQC"
+      "name": "CQC (NineTails)"
     },
     "PU_Human_Enemy_GroundCombat_NPC_Ninetails_grunt": {
-      "name": "NineTails Grunt"
+      "name": "Grunt (NineTails)"
     },
     "PU_Pilots-Human-Criminal-Gunner_Light": {
-      "name": "Criminal Light Pilot Gunner"
+      "name": "Light Gunner (Criminal)"
     },
     "PU_Pilots-Human-Criminal-Pilot_Light": {
-      "name": "Criminal Light Pilot"
+      "name": "Light Pilot (Criminal)"
     },
     "PU_Human-Frontier-Worker-Male-Pyro_01": {
-      "name": "Frontier Male Pyro Worker"
+      "name": "Male Pyro Worker (Frontier)"
     },
     "PU_Human-NineTails-Pilot-Male-Light_01": {
-      "name": "NineTails Male Light Pilot"
+      "name": "Light Pilot (NineTails)"
     },
     "PU_Human-Populace-Engineer-Female-Stormageddon_01": {
-      "name": "Populace Female Engineer (Stormageddon)"
+      "name": "Female Engineer (Stormageddon)"
     },
     "PU_Human-Populace-Engineer-Male-Stormageddon_01": {
-      "name": "Populace Male Engineer (Stormageddon)"
+      "name": "Male Engineer (Stormageddon)"
     },
     "PU_Human-Populace-Farmer-Male-Pyro-Frontier_01": {
-      "name": "Pyro Frontier Male Farmer"
+      "name": "Male Farmer (Pyro Frontier)"
     },
     "PU_Human_Enemy_GroundCombat_NPC_ASD_grunt": {
-      "name": "ASD Grunt"
+      "name": "Grunt (ASD)"
     },
     "PU_Human_Enemy_GroundCombat_NPC_CitizensforProsperity_cqc": {
-      "name": "Citizens for Prosperity CQC"
+      "name": "CQC (Citizens for Prosperity)"
     },
     "PU_Human_Enemy_GroundCombat_NPC_CitizensforProsperity_juggernaut": {
-      "name": "Citizens for Prosperity Juggernaut"
+      "name": "Juggernaut (Citizens for Prosperity)"
     },
     "PU_Human_Enemy_GroundCombat_NPC_CitizensforProsperity_soldier": {
-      "name": "Citizens for Prosperity Soldier"
+      "name": "Soldier (Citizens for Prosperity)"
     },
     "PU_Human_Enemy_GroundCombat_NPC_CitizensforProsperity_techie": {
-      "name": "Citizens for Prosperity Techie"
+      "name": "Techie (Citizens for Prosperity)"
     },
     "PU_Human_Enemy_GroundCombat_NPC_Contestedzones_grunt": {
       "name": "Grunt (Contested Zones)"
@@ -71,16 +71,169 @@
       "name": "Techie (Contested Zones)"
     },
     "PU_Human_Enemy_GroundCombat_NPC_xenothreat_cqc": {
-      "name": "Xenothreat CQC"
+      "name": "CQC (Xenothreat)"
     },
     "PU_Human_Enemy_GroundCombat_NPC_xenothreat_juggernaut": {
-      "name": "Xenothreat Juggernaut"
+      "name": "Juggernaut (Xenothreat)"
     },
     "PU_Human_Enemy_GroundCombat_NPC_xenothreat_juggernaut_sentry": {
-      "name": "Xenothreat Juggernaut Sentry"
+      "name": "Juggernaut Sentry (Xenothreat)"
     },
     "Quasigrazer": {
       "name": "Quasigrazer"
+    },
+    "Kopion": {
+      "name": "Kopion (Irradiated)"
+    },
+    "Kopion_Caged": {
+      "name": "Kopion (Caged)"
+    },
+    "Kopion_Cave": {
+      "name": "Kopion (Cave)"
+    },
+    "Kopion_Headhunter_pet": {
+      "name": "Kopion (Headhunter Pet)"
+    },
+    "Kopion_Tundra": {
+      "name": "Kopion (Tundra)"
+    },
+    "Kopion_cheescake_pet": {
+      "name": "Kopion (Pet Cheescake)"
+    },
+    "NPC_Archetypes_Male_Human_Civilians_Prisoner_09": {
+      "name": "Prisoner"
+    },
+    "NPC_Archetypes_Male_Human_Civilians_Prisoner_11": {
+      "name": "Prisoner"
+    },
+    "NPC_Archetypes_Male_Human_Civilians_Prisoner_13": {
+      "name": "Prisoner"
+    },
+    "NPC_Archetypes_Male_Human_Civilians_Prisoner_14": {
+      "name": "Prisoner"
+    },
+    "PU_Human-NineTails-Grunt-Male-Heavy_01": {
+      "name": "Heavy Grunt (NineTails)"
+    },
+    "PU_Human-NineTails-Grunt-Male-Heavy_02": {
+      "name": "Heavy Grunt (NineTails)"
+    },
+    "PU_Human-Populace-Civilian-Male-Pyro-Frontier_01": {
+      "name": "Male Civilian (Pyro Frontier)"
+    },
+    "PU_Human-Populace-Engineer-Female-Pyro-Frontier_01": {
+      "name": "Female Engineer (Pyro Frontier)"
+    },
+    "PU_Human-Populace-Engineer-Female-Pyro-Frontier_Station_01": {
+      "name": "Female Engineer (Pyro Frontier)"
+    },
+    "PU_Human-Populace-Engineer-Male-Pyro-Frontier_01": {
+      "name": "Male Engineer (Pyro Frontier)"
+    },
+    "PU_Human-Populace-Farmer-Female-Pyro-Frontier_01": {
+      "name": "Female Farmer (Pyro Frontier)"
+    },
+    "PU_Human-Populace-Farmer-Male-CitizenForProsperity_01": {
+      "name": "Male Farmer (Citizens for Prosperity)"
+    },
+    "PU_Human-Populace-Medical_Personnel-Male-Pyro-Frontier_01": {
+      "name": "Male Medical Personnel (Pyro Frontier)"
+    },
+    "PU_Human-Populace-Scientist-Female-Stormageddon_01": {
+      "name": "Female Scientist (Stormageddon)"
+    },
+    "PU_Human-Populace-Scientist-Male-Stormageddon_01": {
+      "name": "Male Scientist (Stormageddon)"
+    },
+    "PU_Human-Populace-Worker-Female-Pyro-Frontier_Station_01": {
+      "name": "Station Worker (Pyro Frontier)"
+    },
+    "PU_Human-Xenothreat-Gunner-Male-Light_01": {
+      "name": "Light Gunner (Xenothreat)"
+    },
+    "PU_Human-Xenothreat-Pilot-Male-Light_01": {
+      "name": "Light Pilot (Xenothreat)"
+    },
+    "PU_Human_Enemy_GroundCombat_NPC_ASD_Captain": {
+      "name": "Captain (ASD)"
+    },
+    "PU_Human_Enemy_GroundCombat_NPC_ASD_cqc": {
+      "name": "CQC (ASD)"
+    },
+    "PU_Human_Enemy_GroundCombat_NPC_ASD_juggernaut": {
+      "name": "Juggernaut (ASD)"
+    },
+    "PU_Human_Enemy_GroundCombat_NPC_ASD_sniper": {
+      "name": "Sniper (ASD)"
+    },
+    "PU_Human_Enemy_GroundCombat_NPC_ASD_soldier": {
+      "name": "Soldier (ASD)"
+    },
+    "PU_Human_Enemy_GroundCombat_NPC_ASD_techie": {
+      "name": "Techie (ASD)"
+    },
+    "PU_Human_Enemy_GroundCombat_NPC_CitizensforProsperity_sniper": {
+      "name": "Sniper (Citizens for Prosperity)"
+    },
+    "PU_Human_Enemy_GroundCombat_NPC_Contestedzones_captain": {
+      "name": "Captain (Contested Zones)"
+    },
+    "PU_Human_Enemy_GroundCombat_NPC_GenericCriminal_AcePilot": {
+      "name": "Ace Pilot"
+    },
+    "PU_Human_Enemy_GroundCombat_NPC_Ninetails_juggernaut": {
+      "name": "Juggernaut (NineTails)"
+    },
+    "PU_Human_Enemy_GroundCombat_NPC_Ninetails_sniper": {
+      "name": "Sniper (NineTails)"
+    },
+    "PU_Human_Enemy_GroundCombat_NPC_Ninetails_soldier": {
+      "name": "Soldier (NineTails)"
+    },
+    "PU_Human_Enemy_GroundCombat_NPC_Ninetails_techie": {
+      "name": "Techie (NineTails)"
+    },
+    "PU_Human_Enemy_GroundCombat_NPC_pyro_outlaw_cqc": {
+      "name": "CQC (Pyro Outlaw)"
+    },
+    "PU_Human_Enemy_GroundCombat_NPC_pyro_outlaw_juggernaut_sentry": {
+      "name": "Juggernaut Sentry (Pyro Outlaw)"
+    },
+    "PU_Human_Enemy_GroundCombat_NPC_pyro_outlaw_sniper": {
+      "name": "Sniper (Pyro Outlaw)"
+    },
+    "PU_Human_Enemy_GroundCombat_NPC_pyro_outlaw_soldier": {
+      "name": "Soldier (Pyro Outlaw)"
+    },
+    "PU_Human_Enemy_GroundCombat_NPC_pyro_outlaw_techie": {
+      "name": "Techie (Pyro Outlaw)"
+    },
+    "PU_Human_Enemy_GroundCombat_NPC_xenothreat_sniper": {
+      "name": "Sniper (Xenothreat)"
+    },
+    "PU_Human_Enemy_GroundCombat_NPC_xenothreat_soldier": {
+      "name": "Soldier (Xenothreat)"
+    },
+    "PU_Human_Enemy_GroundCombat_NPC_xenothreat_techie": {
+      "name": "Techie (Xenothreat)"
+    },
+    "PU_Pilots-Human-Civilian-Gunner_Light": {
+      "name": "Civilian Gunner (Light)"
+    },
+    "PU_Pilots-Human-Civilian-Pilot_Light": {
+      "name": "Civilian Pilot (Light)"
+    },
+    "PU_Pilots-Human-Pirate-Gunner_Light": {
+      "name": "Pirate Gunner (Light)"
+    },
+    "PU_Pilots-Human-Pirate-Pilot_Light": {
+      "name": "Pirate Pilot (Light)"
+    },
+    "vlk_adult_irradiated": {
+      "name": "Adult Valakkar (Irradiated)"
+    },
+    "vlk_juvenile_irradiated": {
+      "name": "Juvenile Valakkar (Irradiated)"
     }
   }
 }
