@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect } from 'react';
-import { loadSettings, saveSettings } from '@/lib/settings/settingsUtil';
+import { loadSettings, saveSettings, calculateXPFromKills } from '@/lib/settings/settingsUtil';
 
 const SettingsContext = createContext();
 
@@ -8,9 +8,16 @@ export function SettingsProvider({ children }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    loadSettings().then((loadedSettings) => {
+    loadSettings().then(async (loadedSettings) => {
       setSettings(loadedSettings);
       setLoading(false);
+
+      // Automatically calculate XP from existing kills if needed
+      try {
+        await calculateXPFromKills();
+      } catch (error) {
+        console.error('Error during automatic XP calculation:', error);
+      }
     });
   }, []);
 
