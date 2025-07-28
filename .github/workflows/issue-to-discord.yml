@@ -1,0 +1,36 @@
+name: Notify Discord on Issue Events
+
+on:
+  issues:
+    types: [opened, closed]
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send message to Discord
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+          ISSUE_ACTION: ${{ github.event.action }}
+          ISSUE_TITLE: ${{ github.event.issue.title }}
+          ISSUE_URL: ${{ github.event.issue.html_url }}
+          ISSUE_USER: ${{ github.event.issue.user.login }}
+        run: |
+          if [ "$ISSUE_ACTION" == "opened" ]; then
+            COLOR=3066993
+            TITLE="🆕 New Issue Opened"
+          elif [ "$ISSUE_ACTION" == "closed" ]; then
+            COLOR=15158332
+            TITLE="✅ Issue Closed"
+          fi
+
+          curl -X POST "$DISCORD_WEBHOOK" \
+          -H "Content-Type: application/json" \
+          -d '{
+            "embeds": [{
+              "title": "'"$TITLE"'",
+              "description": "**'"$ISSUE_TITLE"'**\n[View Issue]('"$ISSUE_URL"')",
+              "color": '"$COLOR"',
+              "footer": { "text": "By '"$ISSUE_USER"'" }
+            }]
+          }'
