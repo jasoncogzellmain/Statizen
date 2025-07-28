@@ -74,6 +74,10 @@ export async function checkRunAtStartup() {
     return isEnabled;
   } catch (error) {
     console.error('❌ Failed to check startup status:', error);
+    return false;
+  }
+}
+
 // Calculate XP from existing kill data for users who have kills but no XP
 export async function calculateXPFromKills() {
   try {
