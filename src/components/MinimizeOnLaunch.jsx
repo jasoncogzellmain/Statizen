@@ -9,7 +9,6 @@ export function MinimizeOnLaunch() {
     const minimizeIfEnabled = async () => {
       if (settings?.minimizeOnLaunch) {
         try {
-          console.log('📱 Minimizing on launch...');
           await invoke('minimize_window');
         } catch (error) {
           console.error('❌ Failed to minimize window:', error);
@@ -21,4 +20,4 @@ export function MinimizeOnLaunch() {
   }, [settings?.minimizeOnLaunch]);
 
   return null; // This component doesn't render anything
-} 
+}

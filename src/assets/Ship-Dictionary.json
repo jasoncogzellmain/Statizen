@@ -1,5 +1,5 @@
 {
-  "version": "0.1.0",
+  "version": "1.0.2",
   "dictionary": {
     "template": {
       "name": "",
@@ -428,23 +428,6 @@
       "missles": "1 x S7, 12 x S3, 2 x S5, 8 x S3",
       "manufacturer": "Crusader Industries",
       "manufacturer-code": "CRUS"
-    },
-    "Category:Flight ready": {
-      "name": "Category:Flight ready",
-      "image": null,
-      "role": null,
-      "size": null,
-      "crew": null,
-      "base-dps": 0,
-      "HullBody": 0,
-      "cargo": null,
-      "shield-type": "",
-      "shield-capacity": 0,
-      "pilot-guns": "",
-      "turret-guns": "",
-      "missles": "",
-      "manufacturer": "",
-      "manufacturer-code": ""
     },
     "ANVL_Arrow": {
       "name": "Arrow",

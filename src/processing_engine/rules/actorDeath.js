@@ -3,6 +3,7 @@ import { submitNPCtoDictionary } from '../../lib/pve/submitNPCtoDictionary.js';
 import { loadPVE, savePVE, addPVELogEntry } from '../../lib/pve/pveUtil.js';
 import { loadPVP, savePVP, addPVPLogEntry } from '../../lib/pvp/pvpUtil.js';
 import { reportPVEKill, reportPVPKill, reportPVPDeath, reportSuicide } from '../../lib/discord/discordUtil.js';
+import { queueKDUpdate } from '../../lib/utils.js';
 import NPCDictionary from '../../assets/NPC-Dictionary.json';
 import shipDictionary from '../../assets/Ship-Dictionary.json';
 
@@ -18,10 +19,14 @@ export async function actorDeath(line) {
     if (line.includes("'" + userName + "' [Class Player] with damage type 'Suicide'")) {
       console.log('you committed suicide');
       addPVELogEntry('suicide', 'loss');
-      const updatedPVE = { ...pveData };
-      updatedPVE.deaths += 1;
-      updatedPVE.currentMonth.deaths += 1;
-      await savePVE(updatedPVE);
+
+      await queueKDUpdate(async () => {
+        const updatedPVE = { ...pveData };
+        updatedPVE.deaths += 1;
+        updatedPVE.currentMonth.deaths += 1;
+        await savePVE(updatedPVE);
+      });
+
       await reportSuicide();
       return;
     }
@@ -40,12 +45,14 @@ export async function actorDeath(line) {
 
         addPVELogEntry(npcClassKey, 'win');
 
-        const updatedPVE = { ...pveData };
-        updatedPVE.kills += 1;
-        updatedPVE.currentMonth.kills += 1;
-        updatedPVE.xp = (updatedPVE.xp || 0) + 10; // 🎯 XP GAIN
-        console.log('PVE XP Update:', { oldXP: pveData.xp || 0, newXP: updatedPVE.xp, npcClass: npcClassKey });
-        await savePVE(updatedPVE);
+        await queueKDUpdate(async () => {
+          const updatedPVE = { ...pveData };
+          updatedPVE.kills += 1;
+          updatedPVE.currentMonth.kills += 1;
+          updatedPVE.xp = (updatedPVE.xp || 0) + 10; // 🎯 XP GAIN
+          console.log('PVE XP Update:', { oldXP: pveData.xp || 0, newXP: updatedPVE.xp, npcClass: npcClassKey });
+          await savePVE(updatedPVE);
+        });
 
         await reportPVEKill(npcClassKey, null, currentShipClass);
       } else {
@@ -55,12 +62,6 @@ export async function actorDeath(line) {
         if (playerKill && playerKill[0]) {
           const playerKillName = playerKill[0];
           console.log('you killed the player ' + playerKillName);
-
-          const updatedPVP = { ...pvpData };
-          updatedPVP.kills += 1;
-          updatedPVP.currentMonth.kills += 1;
-          updatedPVP.xp = (updatedPVP.xp || 0) + 20; // 🎯 XP GAIN
-          console.log('PVP XP Update:', { oldXP: pvpData.xp || 0, newXP: updatedPVP.xp, playerKill: playerKillName });
 
           let shipClassKey = null;
           if (shipClass && shipClass[0]) {
@@ -73,7 +74,15 @@ export async function actorDeath(line) {
 
           let usingShipClassKey = currentShipClass || null;
           addPVPLogEntry(playerKillName, 'win', shipClassKey, usingShipClassKey);
-          await savePVP(updatedPVP);
+
+          await queueKDUpdate(async () => {
+            const updatedPVP = { ...pvpData };
+            updatedPVP.kills += 1;
+            updatedPVP.currentMonth.kills += 1;
+            updatedPVP.xp = (updatedPVP.xp || 0) + 20; // 🎯 XP GAIN
+            console.log('PVP XP Update:', { oldXP: pvpData.xp || 0, newXP: updatedPVP.xp, playerKill: playerKillName });
+            await savePVP(updatedPVP);
+          });
 
           await reportPVPKill(playerKillName, shipClassKey, currentShipClass);
         }
@@ -89,10 +98,12 @@ export async function actorDeath(line) {
       if (!enemyPlayer || !enemyPlayer[0] || enemyPlayer[0].length > 20 || enemyPlayer[0].includes('SCItem_') || enemyPlayer[0].includes('AI_')) {
         console.log('you were killed by NPC/environment');
 
-        const updatedPVE = { ...pveData };
-        updatedPVE.deaths += 1;
-        updatedPVE.currentMonth.deaths += 1;
-        await savePVE(updatedPVE);
+        await queueKDUpdate(async () => {
+          const updatedPVE = { ...pveData };
+          updatedPVE.deaths += 1;
+          updatedPVE.currentMonth.deaths += 1;
+          await savePVE(updatedPVE);
+        });
 
         // No Discord notification for PVE deaths (as per current design)
         return;
@@ -102,10 +113,6 @@ export async function actorDeath(line) {
       if (enemyPlayer && enemyPlayer[0]) {
         const enemyPlayerName = enemyPlayer[0];
         console.log('you were killed by player ' + enemyPlayerName);
-
-        const updatedPVP = { ...pvpData };
-        updatedPVP.deaths += 1;
-        updatedPVP.currentMonth.deaths += 1;
 
         let shipClassKey = null;
         const shipClass = line.match(/(?<=\]\sin\szone\s').*?(?=_[0-9]{9,14}')/);
@@ -118,7 +125,13 @@ export async function actorDeath(line) {
         }
 
         addPVPLogEntry(enemyPlayerName, 'loss', shipClassKey);
-        await savePVP(updatedPVP);
+
+        await queueKDUpdate(async () => {
+          const updatedPVP = { ...pvpData };
+          updatedPVP.deaths += 1;
+          updatedPVP.currentMonth.deaths += 1;
+          await savePVP(updatedPVP);
+        });
 
         await reportPVPDeath(enemyPlayerName, shipClassKey, currentShipClass);
       }
