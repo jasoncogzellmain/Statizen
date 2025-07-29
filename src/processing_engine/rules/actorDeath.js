@@ -37,6 +37,15 @@ export async function actorDeath(line) {
       if (npcClass && npcClass[0]) {
         const npcClassKey = npcClass[0];
 
+        // Debug logging
+        console.log('PVE Kill Debug:', {
+          npcClassKey,
+          currentShipClass,
+          currentShipClassType: typeof currentShipClass,
+          currentShipClassTrimmed: currentShipClass && typeof currentShipClass === 'string' ? currentShipClass.trim() : 'N/A',
+          willShowShip: currentShipClass && currentShipClass !== '',
+        });
+
         if (NPCDictionary.dictionary[npcClassKey]) {
           console.log('you killed a ' + NPCDictionary.dictionary[npcClassKey].name);
         } else {
@@ -54,7 +63,7 @@ export async function actorDeath(line) {
           await savePVE(updatedPVE);
         });
 
-        await reportPVEKill(npcClassKey, null, currentShipClass);
+        await reportPVEKill(npcClassKey, currentShipClass && currentShipClass !== '' ? currentShipClass : null);
       } else {
         // === PVP KILL HANDLER ===
         const playerKill = line.match(/(?<=CActor::Kill:\s').*?(?='\s\[\d{9,12})/);
@@ -72,7 +81,7 @@ export async function actorDeath(line) {
             }
           }
 
-          let usingShipClassKey = currentShipClass || null;
+          let usingShipClassKey = currentShipClass && typeof currentShipClass === 'string' && currentShipClass.trim() !== '' ? currentShipClass : null;
           addPVPLogEntry(playerKillName, 'win', shipClassKey, usingShipClassKey);
 
           await queueKDUpdate(async () => {
@@ -84,7 +93,7 @@ export async function actorDeath(line) {
             await savePVP(updatedPVP);
           });
 
-          await reportPVPKill(playerKillName, shipClassKey, currentShipClass);
+          await reportPVPKill(playerKillName, shipClassKey, currentShipClass && typeof currentShipClass === 'string' && currentShipClass.trim() !== '' ? currentShipClass : null);
         }
       }
     }
@@ -114,17 +123,29 @@ export async function actorDeath(line) {
         const enemyPlayerName = enemyPlayer[0];
         console.log('you were killed by player ' + enemyPlayerName);
 
-        let shipClassKey = null;
-        const shipClass = line.match(/(?<=\]\sin\szone\s').*?(?=_[0-9]{9,14}')/);
-        if (shipClass && shipClass[0]) {
-          const extractedShipClass = shipClass[0];
-          if (shipDictionary.dictionary[extractedShipClass]) {
-            console.log('you were killed while driving a ' + shipDictionary.dictionary[extractedShipClass].name);
-            shipClassKey = extractedShipClass;
+        // Extract killer's ship class - only if this is a ship kill (not ground kill)
+        let killerShipClassKey = null;
+        if (line.includes('using')) {
+          const killerShipClass = line.match(/(?<=killed\sby\s'.*?'\s[\d{9,13}\]\susing\s').*?(?=_[0-9]{9,14}')/);
+          if (killerShipClass && killerShipClass[0]) {
+            const extractedKillerShipClass = killerShipClass[0];
+            if (shipDictionary.dictionary[extractedKillerShipClass]) {
+              console.log('you were killed by a ' + shipDictionary.dictionary[extractedKillerShipClass].name);
+              killerShipClassKey = extractedKillerShipClass;
+            } else {
+              console.log('killed on ground (weapon: ' + extractedKillerShipClass + ')');
+            }
+          } else {
+            console.log('killed on ground (no ship/weapon info)');
           }
+        } else {
+          console.log('killed on ground (no ship involved)');
         }
 
-        addPVPLogEntry(enemyPlayerName, 'loss', shipClassKey);
+        // Use current ship class as victim's ship (null if on ground or no ship)
+        let victimShipClassKey = currentShipClass && typeof currentShipClass === 'string' && currentShipClass.trim() !== '' ? currentShipClass : null;
+
+        addPVPLogEntry(enemyPlayerName, 'loss', killerShipClassKey, victimShipClassKey);
 
         await queueKDUpdate(async () => {
           const updatedPVP = { ...pvpData };
@@ -133,7 +154,7 @@ export async function actorDeath(line) {
           await savePVP(updatedPVP);
         });
 
-        await reportPVPDeath(enemyPlayerName, shipClassKey, currentShipClass);
+        await reportPVPDeath(enemyPlayerName, killerShipClassKey, victimShipClassKey);
       }
     }
   } catch (error) {

@@ -135,25 +135,28 @@ export const reportPVPKill = async (victimName, victimShipClass, currentShipClas
   const rankTitle = getRankTitle(level, isOutlaw);
   const prestigeTitle = getPrestigeTitle(prestige, isOutlaw);
 
-  const embed = {
-    title: '💀 Player Eliminated (PVP)',
-    color: 0xffcc00,
-    fields: [
-      { name: 'Player', value: `[${name}](${getPlayerUrl(name)})`, inline: true },
-      { name: 'Target', value: `[${victimName}](${getPlayerUrl(victimName)})`, inline: true },
-    ],
-  };
+  // Build fields array dynamically
+  const fields = [
+    { name: 'Player', value: `[${name}](${getPlayerUrl(name)})`, inline: true },
+    { name: 'Target', value: `[${victimName}](${getPlayerUrl(victimName)})`, inline: true },
+  ];
 
   // Only add ship fields if ship data is available
-  if (currentShipClass) {
-    embed.fields.push({ name: 'Ship Used', value: getShipName(currentShipClass), inline: true });
+  if (currentShipClass && currentShipClass !== '') {
+    fields.push({ name: 'Ship Used', value: getShipName(currentShipClass), inline: true });
   }
-  if (victimShipClass) {
-    embed.fields.push({ name: 'Victim Ship', value: getShipName(victimShipClass), inline: true });
+  if (victimShipClass && victimShipClass.trim() !== '') {
+    fields.push({ name: 'Victim Ship', value: getShipName(victimShipClass), inline: true });
   }
 
   // Add K/D Ratio
-  embed.fields.push({ name: 'K/D Ratio', value: calculateKDRatio(pvp.kills || 0, pvp.deaths || 0) });
+  fields.push({ name: 'K/D Ratio', value: calculateKDRatio(pvp.kills || 0, pvp.deaths || 0) });
+
+  const embed = {
+    title: '💀 Player Eliminated (PVP)',
+    color: 0xffcc00,
+    fields: fields,
+  };
 
   // Add RPG fields if level data is enabled
   if (settings.discordLevelData) {
@@ -191,6 +194,14 @@ export const reportPVPKill = async (victimName, victimShipClass, currentShipClas
 };
 
 export const reportPVEKill = async (npcClass, currentShipClass) => {
+  // Debug logging
+  console.log('reportPVEKill Debug:', {
+    npcClass,
+    currentShipClass,
+    currentShipClassType: typeof currentShipClass,
+    willAddShipField: currentShipClass && currentShipClass !== '',
+  });
+
   const settings = await loadSettings();
   if (!settings.discordEnabled || !settings.discordWebhookUrl || !settings.eventTypes?.pveKills) return false;
 
@@ -210,22 +221,25 @@ export const reportPVEKill = async (npcClass, currentShipClass) => {
   const rankTitle = getRankTitle(level, isOutlaw);
   const prestigeTitle = getPrestigeTitle(prestige, isOutlaw);
 
-  const embed = {
-    title: '🎯 NPC Eliminated (PVE)',
-    color: 0x00ccff,
-    fields: [
-      { name: 'Player', value: `[${name}](${getPlayerUrl(name)})`, inline: true },
-      { name: 'Target', value: getNPCName(npcClass) || 'Unknown NPC', inline: true },
-    ],
-  };
+  // Build fields array dynamically
+  const fields = [
+    { name: 'Player', value: `[${name}](${getPlayerUrl(name)})`, inline: true },
+    { name: 'Target', value: getNPCName(npcClass) || 'Unknown NPC', inline: true },
+  ];
 
   // Only add ship field if ship data is available
-  if (currentShipClass) {
-    embed.fields.push({ name: 'Ship Used', value: getShipName(currentShipClass), inline: true });
+  if (currentShipClass && currentShipClass !== '') {
+    fields.push({ name: 'Ship Used', value: getShipName(currentShipClass), inline: true });
   }
 
   // Add K/D Ratio
-  embed.fields.push({ name: 'K/D Ratio', value: calculateKDRatio(pve.kills || 0, pve.deaths || 0) });
+  fields.push({ name: 'K/D Ratio', value: calculateKDRatio(pve.kills || 0, pve.deaths || 0) });
+
+  const embed = {
+    title: '🎯 NPC Eliminated (PVE)',
+    color: 0x00ccff,
+    fields: fields,
+  };
 
   // Add RPG fields if level data is enabled
   if (settings.discordLevelData) {
@@ -281,25 +295,28 @@ export const reportPVPDeath = async (killerName, killerShipClass, currentShipCla
   const rankTitle = getRankTitle(level, isOutlaw);
   const prestigeTitle = getPrestigeTitle(prestige, isOutlaw);
 
-  const embed = {
-    title: '☠️ You Were Eliminated (PVP)',
-    color: 0xff4444,
-    fields: [
-      { name: 'Victim', value: `[${name}](${getPlayerUrl(name)})`, inline: true },
-      { name: 'Killer', value: `[${killerName}](${getPlayerUrl(killerName)})`, inline: true },
-    ],
-  };
+  // Build fields array dynamically
+  const fields = [
+    { name: 'Victim', value: `[${name}](${getPlayerUrl(name)})`, inline: true },
+    { name: 'Killer', value: `[${killerName}](${getPlayerUrl(killerName)})`, inline: true },
+  ];
 
   // Only add ship fields if ship data is available
-  if (currentShipClass) {
-    embed.fields.push({ name: 'Your Ship', value: getShipName(currentShipClass), inline: true });
+  if (currentShipClass && currentShipClass.trim() !== '') {
+    fields.push({ name: 'Your Ship', value: getShipName(currentShipClass), inline: true });
   }
-  if (killerShipClass) {
-    embed.fields.push({ name: 'Killer Ship', value: getShipName(killerShipClass), inline: true });
+  if (killerShipClass && killerShipClass.trim() !== '') {
+    fields.push({ name: 'Killer Ship', value: getShipName(killerShipClass), inline: true });
   }
 
   // Add K/D Ratio
-  embed.fields.push({ name: 'K/D Ratio', value: calculateKDRatio(pvp.kills || 0, pvp.deaths || 0) });
+  fields.push({ name: 'K/D Ratio', value: calculateKDRatio(pvp.kills || 0, pvp.deaths || 0) });
+
+  const embed = {
+    title: '☠️ You Were Eliminated (PVP)',
+    color: 0xff4444,
+    fields: fields,
+  };
 
   // Add RPG fields if level data is enabled
   if (settings.discordLevelData) {
