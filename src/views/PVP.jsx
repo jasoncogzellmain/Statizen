@@ -68,7 +68,7 @@ function PVP() {
     }));
 
   // Calculate K/D ratio
-  const kdRatio = PVPData?.deaths === 0 ? PVPData?.kills : PVPData?.kills / PVPData?.deaths || 0;
+  const kdRatio = PVPData?.deaths === 0 ? PVPData?.kills : (PVPData?.kills / PVPData?.deaths).toFixed(2);
 
   // Get top 3 ships by total kills
   const topShips = Object.entries(shipStats)
@@ -76,7 +76,7 @@ function PVP() {
       shipClass,
       ...stats,
       totalKills: stats.kills,
-      kdRatio: stats.deaths === 0 ? stats.kills : stats.kills / stats.deaths,
+      kdRatio: stats.deaths === 0 ? stats.kills : (stats.kills / stats.deaths).toFixed(2),
     }))
     .sort((a, b) => b.totalKills - a.totalKills)
     .slice(0, 3);
@@ -117,7 +117,7 @@ function PVP() {
             </div>
           </CardHeader>
           <CardContent>
-            <p className='pl-4 text-3xl font-bold text-blue-600'>{kdRatio.toFixed(2)}</p>
+            <p className='pl-4 text-3xl font-bold text-blue-600'>{kdRatio}</p>
             <CardDescription className='pl-4 pt-1'>Overall performance</CardDescription>
           </CardContent>
         </Card>

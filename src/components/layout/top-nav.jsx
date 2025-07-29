@@ -15,38 +15,38 @@ const TopNav = () => {
         <img src='/StatizenLogo.png' alt='Statizen Logo' className='h-10' />
         <nav className='flex items-center gap-2 no-drag'>
           <Link to='/dashboard'>
-            <Button variant={location.pathname === '/' || location.pathname === '/dashboard' ? 'default' : 'ghost'} size='sm' className='flex items-center gap-2'>
+            <Button variant={location.pathname === '/' || location.pathname === '/dashboard' ? 'default' : 'ghost'} size='sm' className='flex items-center gap-2 cursor-pointer'>
               <Home className='w-4 h-4' />
               Dashboard
             </Button>
           </Link>
           <Link to='/PVP'>
-            <Button variant={location.pathname === '/PVP' ? 'default' : 'ghost'} size='sm' className='flex items-center gap-2'>
+            <Button variant={location.pathname === '/PVP' ? 'default' : 'ghost'} size='sm' className='flex items-center gap-2 cursor-pointer'>
               <Sword className='w-4 h-4' />
               PVP
             </Button>
           </Link>
           <Link to='/PVE'>
-            <Button variant={location.pathname === '/PVE' ? 'default' : 'ghost'} size='sm' className='flex items-center gap-2'>
+            <Button variant={location.pathname === '/PVE' ? 'default' : 'ghost'} size='sm' className='flex items-center gap-2 cursor-pointer'>
               <Shield className='w-4 h-4' />
               PVE
             </Button>
           </Link>
           {/* Org is not used yet */}
           {/* <Link to='/Org'>
-            <Button variant={location.pathname === '/Org' ? 'default' : 'ghost'} size='sm' className='flex items-center gap-2'>
+            <Button variant={location.pathname === '/Org' ? 'default' : 'ghost'} size='sm' className='flex items-center gap-2 cursor-pointer'>
               <Users className='w-4 h-4' />
               Org
             </Button>
           </Link> */}
           <Link to='/settings'>
-            <Button variant={location.pathname === '/settings' ? 'default' : 'ghost'} size='sm' className='flex items-center gap-2'>
+            <Button variant={location.pathname === '/settings' ? 'default' : 'ghost'} size='sm' className='flex items-center gap-2 cursor-pointer'>
               <SettingsIcon className='w-4 h-4' />
               Settings
             </Button>
           </Link>
           <Link to='/dictionary'>
-            <Button variant={location.pathname === '/dictionary' ? 'default' : 'ghost'} size='sm' className='flex items-center gap-2'>
+            <Button variant={location.pathname === '/dictionary' ? 'default' : 'ghost'} size='sm' className='flex items-center gap-2 cursor-pointer'>
               <Book className='w-4 h-4' />
               Dictionary
             </Button>

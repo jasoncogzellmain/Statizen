@@ -122,7 +122,7 @@ function Dashboard() {
               </div>
             </CardHeader>
             <CardContent>
-              <p className='text-xl font-bold text-green-600'>{PVPData?.deaths === 0 ? PVPData?.kills : PVPData?.kills / PVPData?.deaths || 0}</p>
+              <p className='text-xl font-bold text-green-600'>{PVPData?.deaths === 0 ? PVPData?.kills : (PVPData?.kills / PVPData?.deaths).toFixed(2)}</p>
               <CardDescription>
                 {PVPData?.kills} kills / {PVPData?.deaths} deaths
               </CardDescription>
@@ -136,7 +136,7 @@ function Dashboard() {
               </div>
             </CardHeader>
             <CardContent>
-              <p className='text-xl font-bold text-orange-600'>{PVEData?.deaths === 0 ? PVEData?.kills : PVEData?.kills / PVEData?.deaths || 0}</p>
+              <p className='text-xl font-bold text-orange-600'>{PVEData?.deaths === 0 ? PVEData?.kills : (PVEData?.kills / PVEData?.deaths).toFixed(2)}</p>
               <CardDescription>
                 {PVEData?.kills} kills / {PVEData?.deaths} deaths
               </CardDescription>
