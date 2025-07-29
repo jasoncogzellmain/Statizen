@@ -187,7 +187,7 @@ function PVP() {
                       </div>
                       <div className='text-right'>
                         <p className='font-medium text-green-600'>{ship.totalKills} kills</p>
-                        <p className='text-xs text-muted-foreground'>K/D: {ship.kdRatio.toFixed(1)}</p>
+                        <p className='text-xs text-muted-foreground'>K/D: {ship.kdRatio}</p>
                       </div>
                     </div>
                   ))
