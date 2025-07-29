@@ -1,6 +1,6 @@
 [package]
 name = "statizen"
-version = "1.0.2"
+version = "1.0.3"
 description = "Statizen"
 authors = ["Chris Narowski"]
 license = ""

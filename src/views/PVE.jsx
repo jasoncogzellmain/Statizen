@@ -56,7 +56,7 @@ function PVE() {
     }));
 
   // Calculate K/D ratio
-  const kdRatio = PVEData?.deaths === 0 ? PVEData?.kills : PVEData?.kills / PVEData?.deaths || 0;
+  const kdRatio = PVEData?.deaths === 0 ? PVEData?.kills : (PVEData?.kills / PVEData?.deaths).toFixed(2);
 
   // Get all NPCs sorted by kills
   const allNPCs = Object.entries(npcStats).sort(([, a], [, b]) => b.kills - a.kills);
@@ -100,7 +100,7 @@ function PVE() {
             </div>
           </CardHeader>
           <CardContent>
-            <p className='pl-4 text-3xl font-bold text-blue-600'>{kdRatio.toFixed(1)}</p>
+            <p className='pl-4 text-3xl font-bold text-blue-600'>{kdRatio}</p>
             <CardDescription className='pl-4 pt-1'>Overall performance</CardDescription>
           </CardContent>
         </Card>

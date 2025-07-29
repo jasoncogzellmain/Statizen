@@ -95,6 +95,9 @@ function Dashboard() {
   const rankTitle = getRankTitle(level, isOutlaw);
   const prestigeTitle = getPrestigeTitle(prestige, isOutlaw);
 
+  // Simplified logic - check if currentShip has a value
+  const isInShip = userData?.currentShip && userData.currentShip.trim() !== '';
+
   return (
     <div className='flex flex-col gap-2 p-5'>
       <div className='flex flex-row w-full gap-2'>
@@ -104,11 +107,11 @@ function Dashboard() {
             <CardHeader>
               <div className='flex items-center gap-2'>
                 <Rocket className='w-5 h-5 text-blue-600' />
-                <CardTitle>Current Ship</CardTitle>
+                <CardTitle>{isInShip ? 'Current Ship' : 'Status'}</CardTitle>
               </div>
             </CardHeader>
             <CardContent>
-              <span className={`flex text-nowrap font-bold ${(userData?.currentShip?.length || 0) > 28 ? 'text-xs' : (userData?.currentShip?.length || 0) > 22 ? 'text-md' : 'text-xl'}`}>{userData?.currentShip || 'Unknown'}</span>
+              <span className={`flex text-nowrap font-bold ${(userData?.currentShip?.length || 0) > 28 ? 'text-xs' : (userData?.currentShip?.length || 0) > 22 ? 'text-md' : 'text-xl'}`}>{isInShip ? userData.currentShip : 'On Foot'}</span>
             </CardContent>
           </Card>
           <Card>
@@ -119,7 +122,7 @@ function Dashboard() {
               </div>
             </CardHeader>
             <CardContent>
-              <p className='text-xl font-bold text-green-600'>{PVPData?.deaths === 0 ? PVPData?.kills : PVPData?.kills / PVPData?.deaths || 0}</p>
+              <p className='text-xl font-bold text-green-600'>{PVPData?.deaths === 0 ? PVPData?.kills : (PVPData?.kills / PVPData?.deaths).toFixed(2)}</p>
               <CardDescription>
                 {PVPData?.kills} kills / {PVPData?.deaths} deaths
               </CardDescription>
@@ -133,7 +136,7 @@ function Dashboard() {
               </div>
             </CardHeader>
             <CardContent>
-              <p className='text-xl font-bold text-orange-600'>{PVEData?.deaths === 0 ? PVEData?.kills : PVEData?.kills / PVEData?.deaths || 0}</p>
+              <p className='text-xl font-bold text-orange-600'>{PVEData?.deaths === 0 ? PVEData?.kills : (PVEData?.kills / PVEData?.deaths).toFixed(2)}</p>
               <CardDescription>
                 {PVEData?.kills} kills / {PVEData?.deaths} deaths
               </CardDescription>
