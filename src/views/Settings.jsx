@@ -10,12 +10,21 @@ import { useData } from '@/lib/context/data/dataContext';
 import { useLogProcessor } from '@/lib/context/logProcessor/logProcessorContext';
 import { setRunAtStartup } from '@/lib/settings/settingsUtil';
 import { InfoIcon } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 function Settings() {
-  const { settings, loading, updateSettings, updateEventTypes } = useSettings();
+  const { settings, loading, updateSettings, updateEventTypes, batchUpdateSettings } = useSettings();
   const { userData } = useData();
   const { startAutoLogging, stopAutoLogging } = useLogProcessor();
   const [testing, setTesting] = useState(false);
+
+  // Debug: Monitor settings changes
+  useEffect(() => {
+    console.log('Settings changed in UI:', {
+      rpgEnabled: settings?.rpgEnabled,
+      discordLevelData: settings?.discordLevelData,
+      levelUps: settings?.eventTypes?.levelUps,
+    });
+  }, [settings?.rpgEnabled, settings?.discordLevelData, settings?.eventTypes?.levelUps]);
 
   const handleLogPath = async () => {
     const path = await handleOpenFile();
@@ -225,15 +234,46 @@ function Settings() {
 
               <div className='flex items-center justify-between'>
                 <div>
-                  <p className='font-medium'>Enable Dashboard Features</p>
+                  <p className='font-medium'>Enable RPG Leveling System</p>
                   <p className='text-sm text-muted-foreground'>Show rank, level, and prestige in dashboard</p>
                 </div>
-                <Switch checked={settings.rpgEnabled} onCheckedChange={(val) => updateSettings('rpgEnabled', val)} />
+                <Switch
+                  checked={settings.rpgEnabled}
+                  onCheckedChange={async (val) => {
+                    console.log('RPG toggle clicked:', val);
+                    console.log('Initial settings:', {
+                      rpgEnabled: settings.rpgEnabled,
+                      discordLevelData: settings.discordLevelData,
+                      levelUps: settings.eventTypes?.levelUps,
+                    });
+
+                    // If disabling RPG system, disable all related settings at once
+                    if (!val) {
+                      console.log('Disabling RPG system and related settings...');
+
+                      // Use batch update to avoid overwriting issues
+                      await batchUpdateSettings({
+                        rpgEnabled: false,
+                        discordLevelData: false,
+                        'eventTypes.levelUps': false,
+                      });
+
+                      console.log('All RPG-related settings disabled');
+                    } else {
+                      // Just enable RPG system
+                      await updateSettings('rpgEnabled', true);
+                    }
+
+                    console.log('RPG system updated to:', val);
+                  }}
+                />
               </div>
 
               <div className='flex flex-row gap-1 items-center pt-2'>
                 <InfoIcon className='w-3 h-3' />
-                <span className='text-xs text-muted-foreground'>Level Progression System features track XP from kills and display your progression rank and prestige. XP is always logged regardless of this setting.</span>
+                <span className='text-xs text-muted-foreground'>
+                  Level Progression System features track XP from kills and display your progression rank and prestige. When disabled, Discord notifications will not include level data regardless of the "Include Level Data" setting below.
+                </span>
               </div>
             </CardContent>
           </Card>

@@ -36,11 +36,34 @@ export function SettingsProvider({ children }) {
     await saveSettings(updated);
   };
 
+  const batchUpdateSettings = async (updates) => {
+    let updated = { ...settings };
+
+    // Apply all updates to the settings object
+    for (const [key, value] of Object.entries(updates)) {
+      if (key.startsWith('eventTypes.')) {
+        // Handle event types updates
+        const eventTypeKey = key.replace('eventTypes.', '');
+        updated = {
+          ...updated,
+          eventTypes: { ...updated.eventTypes, [eventTypeKey]: value },
+        };
+      } else {
+        // Handle regular settings updates
+        updated = { ...updated, [key]: value };
+      }
+    }
+
+    setSettings(updated);
+    await saveSettings(updated);
+  };
+
   const value = {
     settings,
     loading,
     updateSettings,
     updateEventTypes,
+    batchUpdateSettings,
   };
 
   return <SettingsContext.Provider value={value}>{children}</SettingsContext.Provider>;
