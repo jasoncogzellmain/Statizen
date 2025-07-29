@@ -47,7 +47,7 @@ export async function actorDeath(line) {
         console.log('PVE XP Update:', { oldXP: pveData.xp || 0, newXP: updatedPVE.xp, npcClass: npcClassKey });
         await savePVE(updatedPVE);
 
-        await reportPVEKill(npcClassKey, null, currentShipClass);
+        await reportPVEKill(npcClassKey, null, (currentShipClass && currentShipClass.trim() !== '') ? currentShipClass : null);
       } else {
         // === PVP KILL HANDLER ===
         const playerKill = line.match(/(?<=CActor::Kill:\s').*?(?='\s\[\d{9,12})/);
@@ -71,11 +71,11 @@ export async function actorDeath(line) {
             }
           }
 
-          let usingShipClassKey = currentShipClass || null;
+          let usingShipClassKey = (currentShipClass && currentShipClass.trim() !== '') ? currentShipClass : null;
           addPVPLogEntry(playerKillName, 'win', shipClassKey, usingShipClassKey);
           await savePVP(updatedPVP);
 
-          await reportPVPKill(playerKillName, shipClassKey, currentShipClass);
+          await reportPVPKill(playerKillName, shipClassKey, (currentShipClass && currentShipClass.trim() !== '') ? currentShipClass : null);
         }
       }
     }
@@ -107,20 +107,34 @@ export async function actorDeath(line) {
         updatedPVP.deaths += 1;
         updatedPVP.currentMonth.deaths += 1;
 
-        let shipClassKey = null;
-        const shipClass = line.match(/(?<=\]\sin\szone\s').*?(?=_[0-9]{9,14}')/);
-        if (shipClass && shipClass[0]) {
-          const extractedShipClass = shipClass[0];
-          if (shipDictionary.dictionary[extractedShipClass]) {
-            console.log('you were killed while driving a ' + shipDictionary.dictionary[extractedShipClass].name);
-            shipClassKey = extractedShipClass;
+        // Extract killer's ship class - only if this is a ship kill (not ground kill)
+        let killerShipClassKey = null;
+        if (line.includes('using')) {
+          // Try to extract ship class from the log line
+          const killerShipClass = line.match(/(?<=killed\sby\s'.*?'\s\[\d{9,13}\]\susing\s').*?(?=_[0-9]{9,14}')/);
+          if (killerShipClass && killerShipClass[0]) {
+            const extractedKillerShipClass = killerShipClass[0];
+            // Only consider it a ship if it exists in our ship dictionary
+            if (shipDictionary.dictionary[extractedKillerShipClass]) {
+              console.log('you were killed by a ' + shipDictionary.dictionary[extractedKillerShipClass].name);
+              killerShipClassKey = extractedKillerShipClass;
+            } else {
+              console.log('you were killed on ground (weapon: ' + extractedKillerShipClass + ')');
+            }
+          } else {
+            console.log('you were killed on ground (no ship/weapon info)');
           }
+        } else {
+          console.log('you were killed on ground (no ship involved)');
         }
 
-        addPVPLogEntry(enemyPlayerName, 'loss', shipClassKey);
+        // Use current ship class as victim's ship (null if on ground or no ship)
+        let victimShipClassKey = (currentShipClass && currentShipClass.trim() !== '') ? currentShipClass : null;
+
+        addPVPLogEntry(enemyPlayerName, 'loss', killerShipClassKey, victimShipClassKey);
         await savePVP(updatedPVP);
 
-        await reportPVPDeath(enemyPlayerName, shipClassKey, currentShipClass);
+        await reportPVPDeath(enemyPlayerName, killerShipClassKey, victimShipClassKey);
       }
     }
   } catch (error) {

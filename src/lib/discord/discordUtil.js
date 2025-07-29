@@ -90,16 +90,26 @@ export const reportPVPKill = async (victimName, victimShipClass, currentShipClas
     fullPVPData: pvp
   });
 
+  // Build fields array dynamically
+  const fields = [
+    { name: 'Pilot', value: `[${name}](${getPlayerUrl(name)})`, inline: true },
+    { name: 'Target', value: `[${victimName}](${getPlayerUrl(victimName)})`, inline: true }
+  ];
+
+  // Only add ship fields if there's actual ship data
+  if (currentShipClass && currentShipClass.trim() !== '') {
+    fields.push({ name: 'Ship Used', value: getShipName(currentShipClass), inline: true });
+  }
+  if (victimShipClass && victimShipClass.trim() !== '') {
+    fields.push({ name: 'Victim Ship', value: getShipName(victimShipClass), inline: true });
+  }
+
+  fields.push({ name: 'K/D Ratio', value: calculateKDRatio(pvp.kills || 0, pvp.deaths || 0) });
+
   const embed = {
     title: '💀 Player Eliminated (PVP)',
     color: 0xffcc00,
-    fields: [
-      { name: 'Pilot', value: `[${name}](${getPlayerUrl(name)})`, inline: true },
-      { name: 'Target', value: `[${victimName}](${getPlayerUrl(victimName)})`, inline: true },
-      { name: 'Ship Used', value: getShipName(currentShipClass) || 'Unknown', inline: true },
-      { name: 'Victim Ship', value: getShipName(victimShipClass) || 'Unknown', inline: true },
-      { name: 'K/D Ratio', value: calculateKDRatio(pvp.kills || 0, pvp.deaths || 0) }
-    ]
+    fields: fields
   };
 
   // Add RPG fields if level data is enabled
@@ -143,35 +153,25 @@ export const reportPVEKill = async (npcClass, npcShipClass, currentShipClass) =>
     fullPVEData: pve
   });
 
-  // Determine if this is a ground kill (no ship involved)
-  const isGroundKill = !currentShipClass || currentShipClass === 'Unknown' || currentShipClass === '';
+  // Build fields array dynamically
+  const fields = [
+    { name: 'Pilot', value: `[${name}](${getPlayerUrl(name)})`, inline: false },
+    { name: 'Target Destroyed', value: getNPCName(npcClass), inline: false }
+  ];
+
+  // Only add ship information if there's actual ship data
+  if (currentShipClass && currentShipClass.trim() !== '') {
+    fields.push({ name: 'Ship Used', value: getShipName(currentShipClass), inline: true });
+  }
+
+  // Add K/D ratio
+  fields.push({ name: 'K/D Ratio', value: calculateKDRatio(pve.kills || 0, pve.deaths || 0) });
 
   const embed = {
     title: '🧨 Enemy Neutralized (PVE)',
     color: 0x00ccff,
-    fields: [
-      { name: 'Pilot', value: `[${name}](${getPlayerUrl(name)})`, inline: false },
-      { name: 'Target Destroyed', value: getNPCName(npcClass), inline: false }
-    ]
+    fields: fields
   };
-
-  // Only add ship information if it's not a ground kill
-  if (!isGroundKill) {
-    embed.fields.push(
-      { name: 'Ship Used', value: getShipName(currentShipClass) || 'Unknown', inline: true }
-    );
-
-    // Only add NPC ship if we have valid ship data
-    if (npcShipClass && npcShipClass !== 'Unknown') {
-      embed.fields.push(
-        { name: 'NPC Ship', value: getShipName(npcShipClass) || 'Unknown', inline: true }
-      );
-    }
-  }
-
-  embed.fields.push(
-    { name: 'K/D Ratio', value: calculateKDRatio(pve.kills || 0, pve.deaths || 0) }
-  );
 
   // Add RPG fields if level data is enabled
   if (settings.discordLevelData) {
@@ -207,16 +207,26 @@ export const reportPVPDeath = async (killerName, killerShipClass, currentShipCla
   const rankTitle = getRankTitle(level, isOutlaw);
   const prestigeTitle = getPrestigeTitle(prestige, isOutlaw);
 
+  // Build fields array dynamically
+  const fields = [
+    { name: 'Victim', value: `[${name}](${getPlayerUrl(name)})`, inline: true },
+    { name: 'Killer', value: `[${killerName}](${getPlayerUrl(killerName)})`, inline: true }
+  ];
+
+  // Only add ship fields if there's actual ship data
+  if (currentShipClass) {
+    fields.push({ name: 'Your Ship', value: getShipName(currentShipClass), inline: true });
+  }
+  if (killerShipClass) {
+    fields.push({ name: 'Killer Ship', value: getShipName(killerShipClass), inline: true });
+  }
+
+  fields.push({ name: 'K/D Ratio', value: calculateKDRatio(pvp.kills || 0, pvp.deaths || 0) });
+
   const embed = {
     title: '☠️ You Were Eliminated (PVP)',
     color: 0xff4444,
-    fields: [
-      { name: 'Victim', value: `[${name}](${getPlayerUrl(name)})`, inline: true },
-      { name: 'Killer', value: `[${killerName}](${getPlayerUrl(killerName)})`, inline: true },
-      { name: 'Your Ship', value: getShipName(currentShipClass) || 'Unknown', inline: true },
-      { name: 'Killer Ship', value: getShipName(killerShipClass) || 'Unknown', inline: true },
-      { name: 'K/D Ratio', value: calculateKDRatio(pvp.kills || 0, pvp.deaths || 0) }
-    ]
+    fields: fields
   };
 
   // Add RPG fields if level data is enabled
