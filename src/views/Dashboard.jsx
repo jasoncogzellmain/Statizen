@@ -252,11 +252,11 @@ function Dashboard() {
         </CardContent>
       </Card>
       {/* Logging Control */}
-      <div className='flex flex-row w-full justify-between'>
-        <Card className='py-2'>
-          <CardContent>
-            <div className='flex flex-wrap pt-1 text-sm text-muted-foreground'>
-              {settings?.rpgEnabled && (
+      <div className={`flex flex-row w-full ${settings?.rpgEnabled ? 'justify-between' : 'justify-end'}`}>
+        {settings?.rpgEnabled && (
+          <Card className='py-2'>
+            <CardContent>
+              <div className='flex flex-wrap pt-1 text-sm text-muted-foreground'>
                 <>
                   <div className='flex flex-row gap-2 justify-between w-full'>
                     <div className='flex flex-row gap-2 items-center'>
@@ -294,11 +294,11 @@ function Dashboard() {
                     </div>
                   </div>
                 </>
-              )}
-            </div>
-          </CardContent>
-        </Card>
-        <div className='flex flex-row flex-1 justify-center items-center'>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+        <div className={`flex flex-row ${settings?.rpgEnabled ? 'flex-1 justify-center' : ''} items-center`}>
           {autoLogEnabled ? (
             <div className='flex items-center gap-3 px-4 py-2 border-2 border-green-500 rounded-lg animate-pulse'>
               <span className='text-sm font-medium text-green-600'>Auto Logging</span>

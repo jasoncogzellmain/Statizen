@@ -92,24 +92,24 @@ const reportLevelUp = async (oldLevel, newLevel, oldRankTitle, newRankTitle, old
     embed = {
       title: 'PRESTIGE INCREASED!',
       color: 0xffd700, // Gold color for prestige
-      fields: [
-        { name: 'Player', value: `[${name}](${getPlayerUrl(name)})`, inline: false },
-        { name: 'New Prestige', value: `${newPrestige}`, inline: true },
-        { name: 'New Prestige Title', value: newRankTitle, inline: true },
-        { name: 'Level', value: `${newLevel}`, inline: true },
-      ],
+      fields: [{ name: 'Player', value: `[${name}](${getPlayerUrl(name)})`, inline: false }],
     };
+
+    // Add rank/prestige fields only if level data is enabled
+    if (settings.discordLevelData) {
+      embed.fields.push({ name: 'New Prestige', value: `${newPrestige}`, inline: true }, { name: 'New Prestige Title', value: newRankTitle, inline: true }, { name: 'Level', value: `${newLevel}`, inline: true });
+    }
   } else {
     embed = {
       title: 'RANK UP!',
       color: 0x00ff00, // Green color for regular level up
-      fields: [
-        { name: 'Player', value: `[${name}](${getPlayerUrl(name)})`, inline: false },
-        { name: 'Old Rank', value: `${oldRankTitle} (${oldLevel})`, inline: true },
-        { name: 'New Rank', value: `${newRankTitle} (${newLevel})`, inline: true },
-        { name: 'Prestige', value: `${newPrestige}`, inline: true },
-      ],
+      fields: [{ name: 'Player', value: `[${name}](${getPlayerUrl(name)})`, inline: false }],
     };
+
+    // Add rank/prestige fields only if level data is enabled
+    if (settings.discordLevelData) {
+      embed.fields.push({ name: 'Old Rank', value: `${oldRankTitle} (${oldLevel})`, inline: true }, { name: 'New Rank', value: `${newRankTitle} (${newLevel})`, inline: true }, { name: 'Prestige', value: `${newPrestige}`, inline: true });
+    }
   }
 
   return sendDiscordWebhook(settings.discordWebhookUrl, embed);
