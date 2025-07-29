@@ -194,14 +194,6 @@ export const reportPVPKill = async (victimName, victimShipClass, currentShipClas
 };
 
 export const reportPVEKill = async (npcClass, currentShipClass) => {
-  // Debug logging
-  console.log('reportPVEKill Debug:', {
-    npcClass,
-    currentShipClass,
-    currentShipClassType: typeof currentShipClass,
-    willAddShipField: currentShipClass && currentShipClass !== '',
-  });
-
   const settings = await loadSettings();
   if (!settings.discordEnabled || !settings.discordWebhookUrl || !settings.eventTypes?.pveKills) return false;
 

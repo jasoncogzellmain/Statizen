@@ -37,15 +37,6 @@ export async function actorDeath(line) {
       if (npcClass && npcClass[0]) {
         const npcClassKey = npcClass[0];
 
-        // Debug logging
-        console.log('PVE Kill Debug:', {
-          npcClassKey,
-          currentShipClass,
-          currentShipClassType: typeof currentShipClass,
-          currentShipClassTrimmed: currentShipClass && typeof currentShipClass === 'string' ? currentShipClass.trim() : 'N/A',
-          willShowShip: currentShipClass && currentShipClass !== '',
-        });
-
         if (NPCDictionary.dictionary[npcClassKey]) {
           console.log('you killed a ' + NPCDictionary.dictionary[npcClassKey].name);
         } else {
