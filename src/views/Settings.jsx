@@ -129,10 +129,7 @@ function Settings() {
             <div className='flex items-center justify-between'>
               <div>
                 <div className='flex items-center space-x-2'>
-                  <Switch
-                    checked={settings.minimizeOnLaunch}
-                    onCheckedChange={(val) => updateSettings('minimizeOnLaunch', val)}
-                  />
+                  <Switch checked={settings.minimizeOnLaunch} onCheckedChange={(val) => updateSettings('minimizeOnLaunch', val)} />
                   <p className='text-sm text-muted-foreground'>Minimize on launch</p>
                 </div>
                 <div className='flex flex-row gap-1 items-center pt-2 pl-2'>
@@ -188,9 +185,8 @@ function Settings() {
                       </div>
                       <p className='text-sm text-red-300 italic mb-2'>"The stars belong to the bold."</p>
                       <p className='text-sm text-gray-300 mb-3'>
-                        Drifters, smugglers, mercs, and pirates — the Outlaw faction is made up of those who live on the edge of society.
-                        They answer to no one, bending or breaking laws as needed to survive. Whether it's seizing cargo from corp convoys
-                        or taking bounties on corrupt enforcers, Outlaws carve their own path in the 'verse.
+                        Drifters, smugglers, mercs, and pirates — the Outlaw faction is made up of those who live on the edge of society. They answer to no one, bending or breaking laws as needed to survive. Whether it's seizing cargo from corp
+                        convoys or taking bounties on corrupt enforcers, Outlaws carve their own path in the 'verse.
                       </p>
                       <div className='text-xs text-red-300'>
                         <p className='font-medium mb-1'>Core Traits:</p>
@@ -210,9 +206,8 @@ function Settings() {
                       </div>
                       <p className='text-sm text-blue-300 italic mb-2'>"Order above all."</p>
                       <p className='text-sm text-gray-300 mb-3'>
-                        Peacekeepers are defenders of the law and guardians of the UEE's vision for a safer, unified galaxy.
-                        From official Advocacy agents to corporate security and vigilante defenders, Peacekeepers uphold justice
-                        across lawless frontiers. They strike with precision, protect civilians, and push back against chaos.
+                        Peacekeepers are defenders of the law and guardians of the UEE's vision for a safer, unified galaxy. From official Advocacy agents to corporate security and vigilante defenders, Peacekeepers uphold justice across lawless
+                        frontiers. They strike with precision, protect civilians, and push back against chaos.
                       </p>
                       <div className='text-xs text-blue-300'>
                         <p className='font-medium mb-1'>Core Traits:</p>
@@ -285,6 +280,10 @@ function Settings() {
                       <div className='flex items-center space-x-2'>
                         <Switch id='suicides' checked={safeEvent.suicides} onCheckedChange={(val) => updateEventTypes('suicides', val)} />
                         <Label htmlFor='suicides'>Suicides</Label>
+                      </div>
+                      <div className='flex items-center space-x-2'>
+                        <Switch id='level-ups' checked={safeEvent.levelUps} onCheckedChange={(val) => updateEventTypes('levelUps', val)} />
+                        <Label htmlFor='level-ups'>Level Ups</Label>
                       </div>
                       <div className='flex items-center space-x-2'>
                         <Switch id='level-data' checked={settings.discordLevelData} onCheckedChange={(val) => updateSettings('discordLevelData', val)} />

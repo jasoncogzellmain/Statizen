@@ -15,6 +15,7 @@ const defaultSettings = {
     pvpDeaths: true,
     pveKills: false,
     suicides: false,
+    levelUps: true, // Add level ups setting
   },
   allowDictionarySubmit: false,
   faction: 'peacekeeper', // 👈 needed for UI
@@ -58,7 +59,6 @@ export async function setRunAtStartup(enable) {
   try {
     const { invoke } = await import('@tauri-apps/api/core');
     await invoke('set_run_at_startup', { enable });
-    console.log(`✅ ${enable ? 'Added' : 'Removed'} from startup`);
     return true;
   } catch (error) {
     console.error('❌ Failed to manage startup:', error);
@@ -70,7 +70,6 @@ export async function checkRunAtStartup() {
   try {
     const { invoke } = await import('@tauri-apps/api/core');
     const isEnabled = await invoke('check_run_at_startup');
-    console.log('📊 Run at startup check:', isEnabled);
     return isEnabled;
   } catch (error) {
     console.error('❌ Failed to check startup status:', error);
@@ -94,7 +93,6 @@ export async function calculateXPFromKills() {
       const pveXP = pveData.kills * 10; // 10 XP per PVE kill
       pveData.xp = pveXP;
       await savePVE(pveData);
-      console.log(`Calculated ${pveXP} XP from ${pveData.kills} PVE kills`);
       hasChanges = true;
     }
 
@@ -103,15 +101,12 @@ export async function calculateXPFromKills() {
       const pvpXP = pvpData.kills * 20; // 20 XP per PVP kill
       pvpData.xp = pvpXP;
       await pvpUtil.savePVP(pvpData);
-      console.log(`Calculated ${pvpXP} XP from ${pvpData.kills} PVP kills`);
       hasChanges = true;
     }
 
     if (hasChanges) {
-      console.log('✅ Successfully calculated XP from existing kill data');
       return true;
     } else {
-      console.log('ℹ️ No XP calculation needed - data already exists or no kills found');
       return false;
     }
   } catch (error) {

@@ -108,20 +108,20 @@ export async function parseNewLogLines() {
 
 async function processLogLine(_line) {
   if (_line.includes('<Actor Death>')) {
-    engineRunner(_line, 'actorDeath');
+    await engineRunner(_line, 'actorDeath');
   } else if (_line.includes('<AccountLoginCharacterStatus_Character>')) {
-    engineRunner(_line, 'initializeLog');
+    await engineRunner(_line, 'initializeLog');
   } else if (_line.includes('<Spawn Flow>')) {
-    engineRunner(_line, 'spawnFlow');
+    await engineRunner(_line, 'spawnFlow');
   } else if (_line.includes('<Actor Stall>')) {
-    engineRunner(_line, 'stallFlow');
+    await engineRunner(_line, 'stallFlow');
   } else if (_line.includes('<RequestLocationInventory>')) {
-    engineRunner(_line, 'requestLocationInventory');
+    await engineRunner(_line, 'requestLocationInventory');
   } else if (_line.includes('<Vehicle Control Flow>')) {
-    engineRunner(_line, 'vehicleControlFlow');
+    await engineRunner(_line, 'vehicleControlFlow');
   } else if (_line.includes('<[ActorState] Corpse>')) {
-    engineRunner(_line, 'corpse');
+    await engineRunner(_line, 'corpse');
   } else if (_line.includes('<EndMission>')) {
-    engineRunner(_line, 'endMission');
+    await engineRunner(_line, 'endMission');
   }
 }

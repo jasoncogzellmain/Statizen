@@ -8,8 +8,6 @@ import { useData } from '@/lib/context/data/dataContext';
 import { useSettings } from '@/lib/context/settings/settingsContext';
 import { initializeLog } from '@/lib/initialization/initializeLog';
 import { formatTimeAgo } from '@/lib/utils';
-import { loadPVE } from '@/lib/pve/pveUtil';
-import { loadPVP } from '@/lib/pvp/pvpUtil';
 
 // Copy the exact same functions from Discord utility
 const getOutlawRankTitle = (level) => {
@@ -32,8 +30,8 @@ const getPeacekeeperPrestigeTitle = (prestige) => {
   return titles[Math.min(prestige, titles.length - 1)];
 };
 
-const getRankTitle = (level, isOutlaw) => isOutlaw ? getOutlawRankTitle(level) : getPeacekeeperRankTitle(level);
-const getPrestigeTitle = (prestige, isOutlaw) => isOutlaw ? getOutlawPrestigeTitle(prestige) : getPeacekeeperPrestigeTitle(prestige);
+const getRankTitle = (level, isOutlaw) => (isOutlaw ? getOutlawRankTitle(level) : getPeacekeeperRankTitle(level));
+const getPrestigeTitle = (prestige, isOutlaw) => (isOutlaw ? getOutlawPrestigeTitle(prestige) : getPeacekeeperPrestigeTitle(prestige));
 const getLevelFromXP = (xp) => Math.floor(0.1 * Math.sqrt(xp));
 const getXPForLevel = (level) => Math.pow(level / 0.1, 2);
 
@@ -44,17 +42,29 @@ const getXPProgressBar = (xp) => {
   const xpInLevel = xp - xpStart;
   const xpNeeded = xpEnd - xpStart;
   const percent = (xpInLevel / xpNeeded) * 100;
-  const blocks = Math.floor(percent / 10);
-  const bar = '█'.repeat(blocks) + '░'.repeat(10 - blocks);
-  return { bar, percent: Math.round(percent), level, xpInLevel, xpNeeded };
+
+  // Calculate which image to use (0-100, with 101 total images)
+  const imageIndex = Math.min(Math.max(Math.floor(percent), 0), 100);
+  const progressBarUrl = `https://statizen-progressbar.pages.dev/progress/progressbar-${imageIndex}.png`;
+
+  // Validate the URL format
+  if (!progressBarUrl || !progressBarUrl.startsWith('https://statizen-progressbar.pages.dev/')) {
+    console.error('Invalid progress bar URL generated:', progressBarUrl);
+  }
+
+  return {
+    progressBarUrl,
+    percent: Math.round(percent),
+    level,
+    xpInLevel,
+    xpNeeded,
+  };
 };
 
 function Dashboard() {
-  const { isWatching, toggleLogging } = useLogProcessor();
+  const { isWatching, toggleLogging, autoLogEnabled } = useLogProcessor();
   const { settings } = useSettings();
   const { userData, logInfo, PVEData, PVPData, OrgData, lastKilledBy, lastKilledActor, nearbyPlayers } = useData();
-
-
 
   const startLogging = async () => {
     if (!isWatching) {
@@ -71,28 +81,12 @@ function Dashboard() {
 
   const isOutlaw = settings?.faction === 'outlaw';
 
-  // Load fresh data like Discord webhook (synchronously)
-  const [freshData, setFreshData] = React.useState(null);
-
-  React.useEffect(() => {
-    const loadFreshData = async () => {
-      try {
-        const freshPVE = await loadPVE();
-        const freshPVP = await loadPVP();
-        setFreshData({ pve: freshPVE, pvp: freshPVP });
-      } catch (error) {
-        console.error('Error loading fresh data:', error);
-      }
-    };
-    loadFreshData();
-  }, []);
-
-  // Calculate level and prestige from XP using fresh data (same as Discord webhook)
+  // Calculate level and prestige from XP using real-time data from context (same as Discord webhook)
   // Combine PVE and PVP XP for total progression
-  const pveXP = freshData ? freshData.pve?.xp || 0 : 0;
-  const pvpXP = freshData ? freshData.pvp?.xp || 0 : 0;
+  const pveXP = PVEData?.xp || 0;
+  const pvpXP = PVPData?.xp || 0;
   const xp = pveXP + pvpXP;
-  const { level } = getXPProgressBar(xp);
+  const { level, progressBarUrl, percent, xpInLevel, xpNeeded } = getXPProgressBar(xp);
   // Calculate prestige from level: every 100 levels = 1 prestige
   const prestige = Math.floor(level / 100);
   const factionDisplay = isOutlaw ? 'Outlaw' : 'Peacekeeper';
@@ -100,17 +94,6 @@ function Dashboard() {
   // Use exact same calculation as Discord webhook
   const rankTitle = getRankTitle(level, isOutlaw);
   const prestigeTitle = getPrestigeTitle(prestige, isOutlaw);
-
-  // Debug logging
-  console.log('Dashboard XP Debug:', {
-    isOutlaw,
-    freshData: freshData,
-    fresh_xp: xp,
-    calculated_level: level,
-    calculated_prestige: prestige,
-    rankTitle,
-    prestigeTitle
-  });
 
   return (
     <div className='flex flex-col gap-2 p-5'>
@@ -193,11 +176,11 @@ function Dashboard() {
           </Card>
           <Card>
             <CardContent className='space-y-3'>
-              <div className='flex justify-between p-2 rounded-lg min-h-33'>
-                <div className='flex gap-3'>
+              <div className='flex justify-between px-2 rounded-lg min-h-33'>
+                <div className='flex p-0'>
                   <div>
-                    <p className='font-medium'>Detected Nearby Players</p>
-                    <div className='flex flex-row gap-2 pt-2 flex-wrap'>
+                    <div className='text-sm font-bold pt-0'>Nearby Players</div>
+                    <div className='flex flex-row gap-2 pt-2 flex-wrap max-h-20 overflow-y-auto'>
                       {nearbyPlayers && nearbyPlayers.length > 0 ? (
                         nearbyPlayers.map((player, index) => {
                           let badgeStyle = '';
@@ -256,15 +239,6 @@ function Dashboard() {
               <div>
                 <p className='font-medium'>Logged in as</p>
                 <p className='text-sm text-muted-foreground'>{userData?.userName || 'Unknown'}</p>
-                <div className='flex flex-wrap gap-4 pt-1 text-sm text-muted-foreground'>
-                  {settings?.rpgEnabled && (
-                    <>
-                      <p><b>Faction:</b> {factionDisplay}</p>
-                      <p><b>Prestige:</b> {prestigeTitle} ({prestige})</p>
-                      <p><b>Rank:</b> {rankTitle} (<b>Level</b> {level})</p>
-                    </>
-                  )}
-                </div>
               </div>
             </div>
             <div className='flex items-center gap-3 p-3 border rounded-lg'>
@@ -278,24 +252,76 @@ function Dashboard() {
         </CardContent>
       </Card>
       {/* Logging Control */}
-      <div className='flex flex-row gap-2 w-full justify-end pt-2'>
-        <Button onClick={startLogging} variant={isWatching ? 'destructive' : 'default'} className='flex items-center gap-2'>
-          {isWatching ? (
-            <>
-              <Square className='w-4 h-4' />
-              Stop Logging
-            </>
+      <div className='flex flex-row w-full justify-between'>
+        <Card className='py-2'>
+          <CardContent>
+            <div className='flex flex-wrap pt-1 text-sm text-muted-foreground'>
+              {settings?.rpgEnabled && (
+                <>
+                  <div className='flex flex-row gap-2 justify-between w-full'>
+                    <div className='flex flex-row gap-2 items-center'>
+                      <div className='text-sm font-bold'>Faction</div>
+                      <div className='text-xs text-[#00CCee]'>{factionDisplay}</div>
+                    </div>
+                    <div className='flex flex-row gap-2 items-center'>
+                      <div className='text-sm font-bold'>Prestige</div>
+                      <div className='text-xs text-[#00CCee]'>
+                        {prestige} - {prestigeTitle}
+                      </div>
+                    </div>
+                    <div className='flex flex-row gap-2 items-center'>
+                      <div className='text-sm font-bold'>Rank</div>
+                      <div className='text-xs text-[#00CCee]'>
+                        {level} - {rankTitle}
+                      </div>
+                    </div>
+                  </div>
+                  <div className='w-full mt-2'>
+                    <img
+                      src={progressBarUrl}
+                      alt={`Progress bar ${percent}%`}
+                      className='w-full h-4 object-cover rounded'
+                      onError={(e) => {
+                        console.error('Failed to load progress bar image:', progressBarUrl);
+                        e.target.style.display = 'none';
+                      }}
+                    />
+                    <div className='flex justify-between w-full mt-1'>
+                      <div className='text-xs text-muted-foreground mb-1'>Progress to Next Level: {percent}%</div>
+                      <div className='text-xs text-muted-foreground mb-1'>
+                        XP: {Math.floor(xpInLevel)} / {Math.floor(xpNeeded)}
+                      </div>
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+        <div className='flex flex-row flex-1 justify-center items-center'>
+          {autoLogEnabled ? (
+            <div className='flex items-center gap-3 px-4 py-2 border-2 border-green-500 rounded-lg animate-pulse'>
+              <span className='text-sm font-medium text-green-600'>Auto Logging</span>
+            </div>
           ) : (
-            <>
-              <Play className='w-4 h-4' />
-              Start Logging
-            </>
+            <Button onClick={startLogging} variant={isWatching ? 'destructive' : 'default'} className='flex items-center gap-2'>
+              {isWatching ? (
+                <>
+                  <Square className='w-4 h-4' />
+                  Stop Logging
+                </>
+              ) : (
+                <>
+                  <Play className='w-4 h-4' />
+                  Start Logging
+                </>
+              )}
+            </Button>
           )}
-        </Button>
+        </div>
       </div>
     </div>
   );
 }
 
 export default Dashboard;
-

@@ -6,7 +6,7 @@ import { spawnFlow } from './rules/spawnFlow.js';
 import { stallFlow } from './rules/stallFlow.js';
 import { corpse } from './rules/corpse.js';
 
-export function engineRunner(_line, type) {
+export async function engineRunner(_line, type) {
   const settings = loadSettings();
 
   console.log('engineRunner called');
@@ -14,17 +14,17 @@ export function engineRunner(_line, type) {
   switch (type) {
     case 'actorDeath': {
       console.log('actorDeath');
-      actorDeath(_line);
+      await actorDeath(_line);
       break;
     }
     case 'spawnFlow': {
       console.log('spawnFlow');
-      spawnFlow(_line);
+      await spawnFlow(_line);
       break;
     }
     case 'stallFlow': {
       console.log('stallFlow');
-      stallFlow(_line);
+      await stallFlow(_line);
       break;
     }
     case 'requestLocationInventory': {
@@ -32,12 +32,12 @@ export function engineRunner(_line, type) {
     }
     case 'vehicleControlFlow': {
       console.log('vehicleControlFlow');
-      vehicleControlFlow(_line);
+      await vehicleControlFlow(_line);
       break;
     }
     case 'corpse': {
       console.log('corpse');
-      corpse(_line);
+      await corpse(_line);
       break;
     }
     case 'endMission': {
@@ -45,7 +45,7 @@ export function engineRunner(_line, type) {
     }
     case 'initializeLog': {
       console.log('initializeLog');
-      initializeLog(settings);
+      await initializeLog(settings);
       break;
     }
     default: {

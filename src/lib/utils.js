@@ -39,3 +39,37 @@ export function formatTimeAgo(dateString) {
   const diffInYears = Math.floor(diffInMonths / 12);
   return `${diffInYears} year${diffInYears !== 1 ? 's' : ''} ago`;
 }
+
+// K/D Update Queue to prevent race conditions
+let kdUpdateQueue = Promise.resolve();
+
+export async function queueKDUpdate(updateFunction) {
+  return new Promise((resolve, reject) => {
+    kdUpdateQueue = kdUpdateQueue
+      .then(async () => {
+        try {
+          const result = await updateFunction();
+          resolve(result);
+        } catch (error) {
+          reject(error);
+        }
+      })
+      .catch((error) => {
+        reject(error);
+      });
+  });
+}
+
+// Progress bar image testing utility
+export async function testProgressBarImage(percent) {
+  const imageIndex = Math.min(Math.max(Math.floor(percent), 0), 100);
+  const url = `https://statizen-progressbar.pages.dev/progress/progressbar-${imageIndex}.png`;
+
+  try {
+    const response = await fetch(url, { method: 'HEAD' });
+    return response.ok;
+  } catch (error) {
+    console.error('Progress bar image test failed:', error);
+    return false;
+  }
+}

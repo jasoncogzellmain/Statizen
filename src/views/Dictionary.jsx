@@ -63,9 +63,9 @@ function ShipList({ selectedShip, setSelectedShip }) {
   }, []);
   const filtered = ships.filter((ship) => ship.name.toLowerCase().includes(search.toLowerCase()));
   return (
-    <div className='flex flex-col gap-2'>
+    <div className='flex flex-col gap-2 h-full'>
       <input className=' mx-2 mb-2 px-2 py-1 rounded bg-muted text-foreground border border-input focus:outline-none focus:ring-2 focus:ring-primary' placeholder='Search ships...' value={search} onChange={(e) => setSearch(e.target.value)} />
-      <div className='flex flex-col gap-1 max-h-[560px] overflow-y-auto ship-scrollbar'>
+      <div className='flex flex-col gap-1 h-full max-h-[610px] min-h-[610px] overflow-y-auto ship-scrollbar'>
         {filtered.map((ship) => (
           <div
             key={ship.key}
@@ -233,9 +233,9 @@ function NPCList({ selectedNPC, setSelectedNPC }) {
   }, []);
   const filtered = npcs.filter((npc) => npc.name.toLowerCase().includes(search.toLowerCase()));
   return (
-    <div className='flex flex-col gap-2'>
+    <div className='flex flex-col gap-2 h-full'>
       <input className=' mx-2 mb-2 px-2 py-1 rounded bg-muted text-foreground border border-input focus:outline-none focus:ring-2 focus:ring-primary' placeholder='Search NPCs...' value={search} onChange={(e) => setSearch(e.target.value)} />
-      <div className='flex flex-col gap-1 max-h-[560px] overflow-y-auto ship-scrollbar'>
+      <div className='flex flex-col gap-1 max-h-[610px] min-h-[610px] overflow-y-auto ship-scrollbar'>
         {filtered.map((npc) => (
           <div
             key={npc.key}

@@ -153,10 +153,10 @@ function PVE() {
         </Card>
         {/* NPC Types Eliminated - Scrollable List */}
         <Card className='pb-0'>
-          <CardContent className='px-0 py-0 my-0 mb-0 max-h-[310px] overflow-y-auto ship-scrollbar'>
+          <CardContent className='px-0 py-0 my-0 mb-0 max-h-[352px] overflow-y-auto ship-scrollbar'>
             <div className='flex mr-1 flex-col gap-2 pl-4 mb-0'>
               <input className='mr-4 mb-2 px-2 py-1 rounded bg-muted text-foreground border border-input focus:outline-none focus:ring-2 focus:ring-primary' placeholder='Search NPCs...' value={search} onChange={(e) => setSearch(e.target.value)} />
-              <div className='flex flex-col gap-1 max-h-[250px] overflow-y-auto ship-scrollbar mb-0'>
+              <div className='flex flex-col gap-1 max-h-[300px] overflow-y-auto ship-scrollbar mb-0'>
                 {filteredNPCs.map(([npcName, stats]) => (
                   <div key={npcName} className='pl-3 py-2 rounded cursor-pointer transition-colors select-none hover:bg-accent hover:text-accent-foreground'>
                     <div className='flex items-center justify-between pr-4'>

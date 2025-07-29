@@ -5,9 +5,9 @@ import { loadPVP } from '@/lib/pvp/pvpUtil';
 import NPCDictionary from '@/assets/NPC-Dictionary.json';
 import ShipDictionary from '@/assets/Ship-Dictionary.json';
 
-const getNPCName = (npcClass) => npcClass ? NPCDictionary.dictionary[npcClass]?.name || npcClass : npcClass;
-const getShipName = (shipClass) => shipClass ? ShipDictionary.dictionary[shipClass]?.name || shipClass : shipClass;
-const calculateKDRatio = (kills, deaths) => deaths === 0 ? kills : (kills / deaths).toFixed(2);
+const getNPCName = (npcClass) => (npcClass ? NPCDictionary.dictionary[npcClass]?.name || npcClass : npcClass);
+const getShipName = (shipClass) => (shipClass ? ShipDictionary.dictionary[shipClass]?.name || shipClass : shipClass);
+const calculateKDRatio = (kills, deaths) => (deaths === 0 ? kills : (kills / deaths).toFixed(2));
 const getPlayerUrl = (name) => `https://robertsspaceindustries.com/en/citizens/${encodeURIComponent(name)}`;
 
 const getOutlawRankTitle = (level) => {
@@ -30,8 +30,8 @@ const getPeacekeeperPrestigeTitle = (prestige) => {
   return titles[Math.min(prestige, titles.length - 1)];
 };
 
-const getRankTitle = (level, isOutlaw) => isOutlaw ? getOutlawRankTitle(level) : getPeacekeeperRankTitle(level);
-const getPrestigeTitle = (prestige, isOutlaw) => isOutlaw ? getOutlawPrestigeTitle(prestige) : getPeacekeeperPrestigeTitle(prestige);
+const getRankTitle = (level, isOutlaw) => (isOutlaw ? getOutlawRankTitle(level) : getPeacekeeperRankTitle(level));
+const getPrestigeTitle = (prestige, isOutlaw) => (isOutlaw ? getOutlawPrestigeTitle(prestige) : getPeacekeeperPrestigeTitle(prestige));
 const getLevelFromXP = (xp) => Math.floor(0.1 * Math.sqrt(xp));
 const getXPForLevel = (level) => Math.pow(level / 0.1, 2);
 
@@ -42,9 +42,23 @@ const getXPProgressBar = (xp) => {
   const xpInLevel = xp - xpStart;
   const xpNeeded = xpEnd - xpStart;
   const percent = (xpInLevel / xpNeeded) * 100;
-  const blocks = Math.floor(percent / 10);
-  const bar = '█'.repeat(blocks) + '░'.repeat(10 - blocks);
-  return { bar, percent: Math.round(percent), level, xpInLevel, xpNeeded };
+
+  // Calculate which image to use (0-100, with 101 total images)
+  const imageIndex = Math.min(Math.max(Math.floor(percent), 0), 100);
+  const progressBarUrl = `https://statizen-progressbar.pages.dev/progress/progressbar-${imageIndex}.png`;
+
+  // Validate the URL format
+  if (!progressBarUrl || !progressBarUrl.startsWith('https://statizen-progressbar.pages.dev/')) {
+    console.error('Invalid progress bar URL generated:', progressBarUrl);
+  }
+
+  return {
+    progressBarUrl,
+    percent: Math.round(percent),
+    level,
+    xpInLevel,
+    xpNeeded,
+  };
 };
 
 const sendDiscordWebhook = async (webhookUrl, embed) => {
@@ -52,13 +66,53 @@ const sendDiscordWebhook = async (webhookUrl, embed) => {
     const response = await fetch(webhookUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ embeds: [embed] })
+      body: JSON.stringify({ embeds: [embed] }),
     });
     return response.ok;
   } catch (error) {
     console.error('Error sending Discord webhook:', error);
     return false;
   }
+};
+
+const reportLevelUp = async (oldLevel, newLevel, oldRankTitle, newRankTitle, oldPrestige, newPrestige) => {
+  const settings = await loadSettings();
+
+  if (!settings.discordEnabled || !settings.discordWebhookUrl || !settings.eventTypes?.levelUps) {
+    return false;
+  }
+
+  const user = await loadUser();
+  const name = user?.userName || 'Unknown';
+
+  let embed;
+
+  // Check if it's a prestige level up (every 100 levels)
+  if (Math.floor(newLevel / 100) > Math.floor(oldLevel / 100)) {
+    embed = {
+      title: 'PRESTIGE INCREASED!',
+      color: 0xffd700, // Gold color for prestige
+      fields: [
+        { name: 'Player', value: `[${name}](${getPlayerUrl(name)})`, inline: false },
+        { name: 'New Prestige', value: `${newPrestige}`, inline: true },
+        { name: 'New Prestige Title', value: newRankTitle, inline: true },
+        { name: 'Level', value: `${newLevel}`, inline: true },
+      ],
+    };
+  } else {
+    embed = {
+      title: 'RANK UP!',
+      color: 0x00ff00, // Green color for regular level up
+      fields: [
+        { name: 'Player', value: `[${name}](${getPlayerUrl(name)})`, inline: false },
+        { name: 'Old Rank', value: `${oldRankTitle} (${oldLevel})`, inline: true },
+        { name: 'New Rank', value: `${newRankTitle} (${newLevel})`, inline: true },
+        { name: 'Prestige', value: `${newPrestige}`, inline: true },
+      ],
+    };
+  }
+
+  return sendDiscordWebhook(settings.discordWebhookUrl, embed);
 };
 
 export const reportPVPKill = async (victimName, victimShipClass, currentShipClass) => {
@@ -74,118 +128,138 @@ export const reportPVPKill = async (victimName, victimShipClass, currentShipClas
   const pvpXP = pvp?.xp || 0;
   const xp = pveXP + pvpXP;
   const isOutlaw = settings.faction === 'outlaw';
-  const { bar, percent, level, xpInLevel, xpNeeded } = getXPProgressBar(xp);
+
+  const { progressBarUrl, percent, level, xpInLevel, xpNeeded } = getXPProgressBar(xp);
   // Calculate prestige from level: every 100 levels = 1 prestige
   const prestige = Math.floor(level / 100);
   const rankTitle = getRankTitle(level, isOutlaw);
   const prestigeTitle = getPrestigeTitle(prestige, isOutlaw);
 
-  // Debug logging for Discord webhook
-  console.log('Discord PVP Kill Webhook Debug:', {
-    xp,
-    level,
-    rankTitle,
-    prestige,
-    prestigeTitle,
-    fullPVPData: pvp
-  });
-
   const embed = {
     title: '💀 Player Eliminated (PVP)',
     color: 0xffcc00,
     fields: [
-      { name: 'Pilot', value: `[${name}](${getPlayerUrl(name)})`, inline: true },
+      { name: 'Player', value: `[${name}](${getPlayerUrl(name)})`, inline: true },
       { name: 'Target', value: `[${victimName}](${getPlayerUrl(victimName)})`, inline: true },
-      { name: 'Ship Used', value: getShipName(currentShipClass) || 'Unknown', inline: true },
-      { name: 'Victim Ship', value: getShipName(victimShipClass) || 'Unknown', inline: true },
-      { name: 'K/D Ratio', value: calculateKDRatio(pvp.kills || 0, pvp.deaths || 0) }
-    ]
+    ],
   };
+
+  // Only add ship fields if ship data is available
+  if (currentShipClass) {
+    embed.fields.push({ name: 'Ship Used', value: getShipName(currentShipClass), inline: true });
+  }
+  if (victimShipClass) {
+    embed.fields.push({ name: 'Victim Ship', value: getShipName(victimShipClass), inline: true });
+  }
+
+  // Add K/D Ratio
+  embed.fields.push({ name: 'K/D Ratio', value: calculateKDRatio(pvp.kills || 0, pvp.deaths || 0) });
 
   // Add RPG fields if level data is enabled
   if (settings.discordLevelData) {
-    embed.fields.splice(2, 0,
-      { name: 'Rank', value: `${rankTitle} (${level})`, inline: true },
-      { name: 'Prestige', value: `${prestigeTitle} (${prestige})`, inline: true },
-      { name: 'Progress to Next Level', value: `${bar} ${percent}%\nXP this level: ${Math.floor(xpInLevel)} / ${Math.floor(xpNeeded)}` }
-    );
+    // Add Rank and Prestige after K/D Ratio
+    embed.fields.push({ name: 'Rank', value: `${rankTitle} (${level})`, inline: true }, { name: 'Prestige', value: `${prestigeTitle} (${prestige})`, inline: true });
+
+    // Add Progress to Next Level after Rank and Prestige
+    embed.fields.push({
+      name: `${percent}% Progress to Next Level (${Math.floor(xpInLevel)} / ${Math.floor(xpNeeded)})`,
+      value: ' ',
+    });
+
+    // Add the progress bar image
+    embed.image = {
+      url: progressBarUrl,
+    };
   }
 
-  return sendDiscordWebhook(settings.discordWebhookUrl, embed);
+  // Send the kill notification
+  const killResult = await sendDiscordWebhook(settings.discordWebhookUrl, embed);
+
+  // Check if this kill resulted in a level up (xpInLevel is 0 and level > 1)
+  if (xpInLevel < 1 && level > 1) {
+    // Changed from === 0 to < 1 for floating point precision
+    // Calculate old level for the level up message
+    const oldLevel = level - 1;
+    const oldPrestige = Math.floor(oldLevel / 100);
+    const oldRankTitle = getRankTitle(oldLevel, isOutlaw);
+
+    // Send level up notification
+    await reportLevelUp(oldLevel, level, oldRankTitle, rankTitle, oldPrestige, prestige);
+  }
+
+  return killResult;
 };
 
-export const reportPVEKill = async (npcClass, npcShipClass, currentShipClass) => {
+export const reportPVEKill = async (npcClass, currentShipClass) => {
   const settings = await loadSettings();
   if (!settings.discordEnabled || !settings.discordWebhookUrl || !settings.eventTypes?.pveKills) return false;
 
   const user = await loadUser();
-  const pve = await loadPVE();
   const pvp = await loadPVP();
+  const pve = await loadPVE();
   const name = user?.userName || 'Unknown';
   // Combine PVE and PVP XP for total progression
   const pveXP = pve?.xp || 0;
   const pvpXP = pvp?.xp || 0;
   const xp = pveXP + pvpXP;
   const isOutlaw = settings.faction === 'outlaw';
-  const { bar, percent, level, xpInLevel, xpNeeded } = getXPProgressBar(xp);
+
+  const { progressBarUrl, percent, level, xpInLevel, xpNeeded } = getXPProgressBar(xp);
   // Calculate prestige from level: every 100 levels = 1 prestige
   const prestige = Math.floor(level / 100);
   const rankTitle = getRankTitle(level, isOutlaw);
   const prestigeTitle = getPrestigeTitle(prestige, isOutlaw);
 
-  // Debug logging for Discord webhook
-  console.log('Discord PVE Webhook Debug:', {
-    xp,
-    level,
-    rankTitle,
-    prestige,
-    prestigeTitle,
-    fullPVEData: pve
-  });
-
-  // Determine if this is a ground kill (no ship involved)
-  const isGroundKill = !currentShipClass || currentShipClass === 'Unknown' || currentShipClass === '';
-
   const embed = {
-    title: '🧨 Enemy Neutralized (PVE)',
+    title: '🎯 NPC Eliminated (PVE)',
     color: 0x00ccff,
     fields: [
-      { name: 'Pilot', value: `[${name}](${getPlayerUrl(name)})`, inline: false },
-      { name: 'Target Destroyed', value: getNPCName(npcClass), inline: false }
-    ]
+      { name: 'Player', value: `[${name}](${getPlayerUrl(name)})`, inline: true },
+      { name: 'Target', value: getNPCName(npcClass) || 'Unknown NPC', inline: true },
+    ],
   };
 
-  // Only add ship information if it's not a ground kill
-  if (!isGroundKill) {
-    embed.fields.push(
-      { name: 'Ship Used', value: getShipName(currentShipClass) || 'Unknown', inline: true }
-    );
-
-    // Only add NPC ship if we have valid ship data
-    if (npcShipClass && npcShipClass !== 'Unknown') {
-      embed.fields.push(
-        { name: 'NPC Ship', value: getShipName(npcShipClass) || 'Unknown', inline: true }
-      );
-    }
+  // Only add ship field if ship data is available
+  if (currentShipClass) {
+    embed.fields.push({ name: 'Ship Used', value: getShipName(currentShipClass), inline: true });
   }
 
-  embed.fields.push(
-    { name: 'K/D Ratio', value: calculateKDRatio(pve.kills || 0, pve.deaths || 0) }
-  );
+  // Add K/D Ratio
+  embed.fields.push({ name: 'K/D Ratio', value: calculateKDRatio(pve.kills || 0, pve.deaths || 0) });
 
   // Add RPG fields if level data is enabled
   if (settings.discordLevelData) {
-    const rpgFields = [
-      { name: 'Rank', value: `${rankTitle} (${level})`, inline: true },
-      { name: 'Prestige', value: `${prestigeTitle} (${prestige})`, inline: true },
-      { name: 'Progress to Next Level', value: `${bar} ${percent}%\nXP this level: ${Math.floor(xpInLevel)} / ${Math.floor(xpNeeded)}` }
-    ];
+    // Add Rank and Prestige after K/D Ratio
+    embed.fields.push({ name: 'Rank', value: `${rankTitle} (${level})`, inline: true }, { name: 'Prestige', value: `${prestigeTitle} (${prestige})`, inline: true });
 
-    // Insert RPG fields after the basic info but before K/D ratio
-    embed.fields.splice(2, 0, ...rpgFields);
+    // Add Progress to Next Level after Rank and Prestige
+    embed.fields.push({
+      name: `${percent}% Progress to Next Level (${Math.floor(xpInLevel)} / ${Math.floor(xpNeeded)})`,
+      value: ' ',
+    });
+
+    // Add the progress bar image
+    embed.image = {
+      url: progressBarUrl,
+    };
   }
 
-  return sendDiscordWebhook(settings.discordWebhookUrl, embed);
+  // Send the kill notification
+  const killResult = await sendDiscordWebhook(settings.discordWebhookUrl, embed);
+
+  // Check if this kill resulted in a level up (xpInLevel is 0 and level > 1)
+  if (xpInLevel < 1 && level > 1) {
+    // Changed from === 0 to < 1 for floating point precision
+    // Calculate old level for the level up message
+    const oldLevel = level - 1;
+    const oldPrestige = Math.floor(oldLevel / 100);
+    const oldRankTitle = getRankTitle(oldLevel, isOutlaw);
+
+    // Send level up notification
+    await reportLevelUp(oldLevel, level, oldRankTitle, rankTitle, oldPrestige, prestige);
+  }
+
+  return killResult;
 };
 
 export const reportPVPDeath = async (killerName, killerShipClass, currentShipClass) => {
@@ -201,7 +275,7 @@ export const reportPVPDeath = async (killerName, killerShipClass, currentShipCla
   const pvpXP = pvp?.xp || 0;
   const xp = pveXP + pvpXP;
   const isOutlaw = settings.faction === 'outlaw';
-  const { bar, percent, level, xpInLevel, xpNeeded } = getXPProgressBar(xp);
+  const { progressBarUrl, percent, level, xpInLevel, xpNeeded } = getXPProgressBar(xp);
   // Calculate prestige from level: every 100 levels = 1 prestige
   const prestige = Math.floor(level / 100);
   const rankTitle = getRankTitle(level, isOutlaw);
@@ -213,19 +287,35 @@ export const reportPVPDeath = async (killerName, killerShipClass, currentShipCla
     fields: [
       { name: 'Victim', value: `[${name}](${getPlayerUrl(name)})`, inline: true },
       { name: 'Killer', value: `[${killerName}](${getPlayerUrl(killerName)})`, inline: true },
-      { name: 'Your Ship', value: getShipName(currentShipClass) || 'Unknown', inline: true },
-      { name: 'Killer Ship', value: getShipName(killerShipClass) || 'Unknown', inline: true },
-      { name: 'K/D Ratio', value: calculateKDRatio(pvp.kills || 0, pvp.deaths || 0) }
-    ]
+    ],
   };
+
+  // Only add ship fields if ship data is available
+  if (currentShipClass) {
+    embed.fields.push({ name: 'Your Ship', value: getShipName(currentShipClass), inline: true });
+  }
+  if (killerShipClass) {
+    embed.fields.push({ name: 'Killer Ship', value: getShipName(killerShipClass), inline: true });
+  }
+
+  // Add K/D Ratio
+  embed.fields.push({ name: 'K/D Ratio', value: calculateKDRatio(pvp.kills || 0, pvp.deaths || 0) });
 
   // Add RPG fields if level data is enabled
   if (settings.discordLevelData) {
-    embed.fields.splice(2, 0,
-      { name: 'Rank', value: `${rankTitle} (${level})`, inline: true },
-      { name: 'Prestige', value: `${prestigeTitle} (${prestige})`, inline: true },
-      { name: 'Progress to Next Level', value: `${bar} ${percent}%\nXP this level: ${Math.floor(xpInLevel)} / ${Math.floor(xpNeeded)}` }
-    );
+    // Add Rank and Prestige after K/D Ratio
+    embed.fields.push({ name: 'Rank', value: `${rankTitle} (${level})`, inline: true }, { name: 'Prestige', value: `${prestigeTitle} (${prestige})`, inline: true });
+
+    // Add Progress to Next Level after Rank and Prestige
+    embed.fields.push({
+      name: `${percent}% Progress to Next Level (${Math.floor(xpInLevel)} / ${Math.floor(xpNeeded)})`,
+      value: ' ',
+    });
+
+    // Add the progress bar image
+    embed.image = {
+      url: progressBarUrl,
+    };
   }
 
   return sendDiscordWebhook(settings.discordWebhookUrl, embed);
@@ -244,45 +334,38 @@ export const reportSuicide = async () => {
   const pvpXP = pvp?.xp || 0;
   const xp = pveXP + pvpXP;
   const isOutlaw = settings.faction === 'outlaw';
-  const { bar, percent, level, xpInLevel, xpNeeded } = getXPProgressBar(xp);
+  const { progressBarUrl, percent, level, xpInLevel, xpNeeded } = getXPProgressBar(xp);
   // Calculate prestige from level: every 100 levels = 1 prestige
   const prestige = Math.floor(level / 100);
   const rankTitle = getRankTitle(level, isOutlaw);
   const prestigeTitle = getPrestigeTitle(prestige, isOutlaw);
 
-  // Debug logging for suicide webhook
-  console.log('Discord Suicide Webhook Debug:', {
-    pveXP,
-    pvpXP,
-    totalXP: xp,
-    level,
-    rankTitle,
-    prestige,
-    prestigeTitle,
-    fullPVEData: pve,
-    fullPVPData: pvp
-  });
-
   const embed = {
     title: '🪦 Suicide Recorded',
     color: 0x23272a,
     fields: [
-      { name: 'Pilot', value: `[${name}](${getPlayerUrl(name)})`, inline: false },
+      { name: 'Player', value: `[${name}](${getPlayerUrl(name)})`, inline: false },
       { name: 'Status', value: 'Self-terminated during operation.', inline: false },
-      { name: 'K/D Ratio', value: calculateKDRatio(pvp.kills || 0, pvp.deaths || 0) }
-    ]
+      { name: 'K/D Ratio', value: calculateKDRatio(pvp.kills || 0, pvp.deaths || 0) },
+    ],
   };
 
   // Add RPG fields if level data is enabled
   if (settings.discordLevelData) {
-    embed.fields.splice(2, 0,
-      { name: 'Rank', value: `${rankTitle} (${level})`, inline: true },
-      { name: 'Prestige', value: `${prestigeTitle} (${prestige})`, inline: true },
-      { name: 'Progress to Next Level', value: `${bar} ${percent}%\nXP this level: ${Math.floor(xpInLevel)} / ${Math.floor(xpNeeded)}` }
-    );
+    // Add Rank and Prestige after K/D Ratio
+    embed.fields.push({ name: 'Rank', value: `${rankTitle} (${level})`, inline: true }, { name: 'Prestige', value: `${prestigeTitle} (${prestige})`, inline: true });
+
+    // Add Progress to Next Level after Rank and Prestige
+    embed.fields.push({
+      name: `${percent}% Progress to Next Level (${Math.floor(xpInLevel)} / ${Math.floor(xpNeeded)})`,
+      value: ' ',
+    });
+
+    // Add the progress bar image
+    embed.image = {
+      url: progressBarUrl,
+    };
   }
 
   return sendDiscordWebhook(settings.discordWebhookUrl, embed);
 };
-
-
