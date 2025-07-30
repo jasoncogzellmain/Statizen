@@ -60,13 +60,18 @@ export async function savePVE(data) {
   await writeTextFile(path, JSON.stringify(data, null, 2));
 }
 
-export async function addPVELogEntry(npcClass, action) {
+export async function addPVELogEntry(npcClass, action, weaponClass = null) {
   const dateTime = new Date().toISOString();
   const logEntry = {
     action: action,
     npcClass: npcClass,
     dateTime: dateTime,
   };
+
+  if (weaponClass !== null) {
+    logEntry.weaponClass = weaponClass;
+  }
+
   const path = await getPVELogPath();
   const log = await loadPVELog();
   log.push(logEntry);

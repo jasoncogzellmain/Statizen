@@ -4,9 +4,11 @@ import { loadPVE } from '@/lib/pve/pveUtil';
 import { loadPVP } from '@/lib/pvp/pvpUtil';
 import NPCDictionary from '@/assets/NPC-Dictionary.json';
 import ShipDictionary from '@/assets/Ship-Dictionary.json';
+import WeaponDictionary from '@/assets/Weapon-Dictionary.json';
 
 const getNPCName = (npcClass) => (npcClass ? NPCDictionary.dictionary[npcClass]?.name || npcClass : npcClass);
 const getShipName = (shipClass) => (shipClass ? ShipDictionary.dictionary[shipClass]?.name || shipClass : shipClass);
+const getWeaponName = (weaponClass) => (weaponClass ? WeaponDictionary.dictionary[weaponClass]?.name || weaponClass : weaponClass);
 const calculateKDRatio = (kills, deaths) => (deaths === 0 ? kills : (kills / deaths).toFixed(2));
 const getPlayerUrl = (name) => `https://robertsspaceindustries.com/en/citizens/${encodeURIComponent(name)}`;
 
@@ -115,7 +117,7 @@ const reportLevelUp = async (oldLevel, newLevel, oldRankTitle, newRankTitle, old
   return sendDiscordWebhook(settings.discordWebhookUrl, embed);
 };
 
-export const reportPVPKill = async (victimName, victimShipClass, currentShipClass) => {
+export const reportPVPKill = async (victimName, victimShipClass, currentShipClass, weaponClass = null) => {
   const settings = await loadSettings();
   if (!settings.discordEnabled || !settings.discordWebhookUrl || !settings.eventTypes?.pvpKills) return false;
 
@@ -147,6 +149,11 @@ export const reportPVPKill = async (victimName, victimShipClass, currentShipClas
   }
   if (victimShipClass && victimShipClass.trim() !== '') {
     fields.push({ name: 'Victim Ship', value: getShipName(victimShipClass), inline: true });
+  }
+
+  // Add weapon information if available
+  if (weaponClass && weaponClass.trim() !== '') {
+    fields.push({ name: 'Weapon Used', value: getWeaponName(weaponClass), inline: true });
   }
 
   // Add K/D Ratio
@@ -193,7 +200,7 @@ export const reportPVPKill = async (victimName, victimShipClass, currentShipClas
   return killResult;
 };
 
-export const reportPVEKill = async (npcClass, currentShipClass) => {
+export const reportPVEKill = async (npcClass, currentShipClass, weaponClass = null) => {
   const settings = await loadSettings();
   if (!settings.discordEnabled || !settings.discordWebhookUrl || !settings.eventTypes?.pveKills) return false;
 
@@ -222,6 +229,11 @@ export const reportPVEKill = async (npcClass, currentShipClass) => {
   // Only add ship field if ship data is available
   if (currentShipClass && currentShipClass !== '') {
     fields.push({ name: 'Ship Used', value: getShipName(currentShipClass), inline: true });
+  }
+
+  // Add weapon information if available
+  if (weaponClass && weaponClass.trim() !== '') {
+    fields.push({ name: 'Weapon Used', value: getWeaponName(weaponClass), inline: true });
   }
 
   // Add K/D Ratio
@@ -268,7 +280,7 @@ export const reportPVEKill = async (npcClass, currentShipClass) => {
   return killResult;
 };
 
-export const reportPVPDeath = async (killerName, killerShipClass, currentShipClass) => {
+export const reportPVPDeath = async (killerName, killerShipClass, currentShipClass, killerWeaponClass = null) => {
   const settings = await loadSettings();
   if (!settings.discordEnabled || !settings.discordWebhookUrl || !settings.eventTypes?.pvpDeaths) return false;
 
@@ -299,6 +311,11 @@ export const reportPVPDeath = async (killerName, killerShipClass, currentShipCla
   }
   if (killerShipClass && killerShipClass.trim() !== '') {
     fields.push({ name: 'Killer Ship', value: getShipName(killerShipClass), inline: true });
+  }
+
+  // Add weapon information if available
+  if (killerWeaponClass && killerWeaponClass.trim() !== '') {
+    fields.push({ name: 'Killer Weapon', value: getWeaponName(killerWeaponClass), inline: true });
   }
 
   // Add K/D Ratio

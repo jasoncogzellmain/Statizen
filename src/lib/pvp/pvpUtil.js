@@ -60,7 +60,7 @@ export async function savePVP(data) {
   await writeTextFile(path, JSON.stringify(data, null, 2));
 }
 
-export async function addPVPLogEntry(playerClass, action, shipClass, usingShipClass) {
+export async function addPVPLogEntry(playerClass, action, shipClass, usingShipClass, weaponClass = null, killerWeaponClass = null) {
   const dateTime = new Date().toISOString();
   const logEntry = {
     action: action,
@@ -74,6 +74,14 @@ export async function addPVPLogEntry(playerClass, action, shipClass, usingShipCl
 
   if (usingShipClass !== null) {
     logEntry.usingShipClass = usingShipClass;
+  }
+
+  if (weaponClass !== null) {
+    logEntry.weaponClass = weaponClass;
+  }
+
+  if (killerWeaponClass !== null) {
+    logEntry.killerWeaponClass = killerWeaponClass;
   }
 
   const path = await getPVPLogPath();

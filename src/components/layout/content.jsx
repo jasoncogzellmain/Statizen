@@ -3,6 +3,7 @@ import { Routes, Route } from 'react-router-dom';
 import Dashboard from '@/views/Dashboard';
 import PVP from '@/views/PVP';
 import PVE from '@/views/PVE';
+
 import Org from '@/views/Org';
 import Dictionary from '@/views/Dictionary';
 import Settings from '@/views/Settings';
@@ -45,6 +46,7 @@ const Content = () => {
             </PageWrapper>
           }
         />
+
         <Route
           path='/Org'
           element={
