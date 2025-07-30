@@ -9,6 +9,7 @@ import { useData } from '@/lib/context/data/dataContext';
 
 import shipDictRaw from '@/assets/Ship-Dictionary.json';
 import NPCDictionary from '@/assets/NPC-Dictionary.json';
+import WeaponDictionary from '@/assets/Weapon-Dictionary.json';
 
 function AnimatedTabs({ defaultValue, children, ...props }) {
   const [activeTab, setActiveTab] = useState(defaultValue);
@@ -309,20 +310,181 @@ function NPCDetails({ npcKey }) {
   );
 }
 
+function WeaponList({ selectedWeapon, setSelectedWeapon }) {
+  const [search, setSearch] = useState('');
+  const weapons = React.useMemo(() => {
+    const dict = WeaponDictionary.dictionary || {};
+    return Object.entries(dict)
+      .filter(([key, value]) => key !== 'template' && value.name)
+      .map(([key, value]) => ({ key, name: value.name }))
+      .sort((a, b) => a.name.localeCompare(b.name));
+  }, []);
+  const filtered = weapons.filter((weapon) => weapon.name.toLowerCase().includes(search.toLowerCase()));
+  return (
+    <div className='flex flex-col gap-2 h-full'>
+      <input className=' mx-2 mb-2 px-2 py-1 rounded bg-muted text-foreground border border-input focus:outline-none focus:ring-2 focus:ring-primary' placeholder='Search weapons...' value={search} onChange={(e) => setSearch(e.target.value)} />
+      <div className='flex flex-col gap-1 max-h-[610px] min-h-[610px] overflow-y-auto ship-scrollbar'>
+        {filtered.map((weapon) => (
+          <div
+            key={weapon.key}
+            className={'pl-3 py-2 rounded cursor-pointer transition-colors select-none ' + (selectedWeapon === weapon.key ? 'bg-accent text-accent-foreground' : 'hover:bg-accent hover:text-accent-foreground')}
+            onClick={() => setSelectedWeapon(weapon.key)}
+          >
+            {weapon.name}
+          </div>
+        ))}
+        {filtered.length === 0 && <div className='text-muted-foreground pl-3 py-2'>No weapons found.</div>}
+      </div>
+    </div>
+  );
+}
+
+function WeaponDetails({ weaponKey }) {
+  const { pveLog, pvpLog } = useData();
+  const [weaponStats, setWeaponStats] = useState({ kills: 0, deaths: 0, lastKill: null, lastDeath: null });
+
+  // Calculate weapon statistics when logs change
+  React.useEffect(() => {
+    if (!weaponKey) return;
+
+    let kills = 0;
+    let deaths = 0;
+    let lastKill = null;
+    let lastDeath = null;
+
+    // Check PVE log for kills with this weapon
+    pveLog.forEach((entry) => {
+      if (entry.action === 'win' && entry.weaponClass === weaponKey) {
+        kills++;
+        if (!lastKill || entry.dateTime > lastKill) {
+          lastKill = entry.dateTime;
+        }
+      }
+    });
+
+    // Check PVP log for kills and deaths with this weapon
+    pvpLog.forEach((entry) => {
+      if (entry.action === 'win' && entry.weaponClass === weaponKey) {
+        kills++;
+        if (!lastKill || entry.dateTime > lastKill) {
+          lastKill = entry.dateTime;
+        }
+      } else if (entry.action === 'loss' && entry.killerWeaponClass === weaponKey) {
+        deaths++;
+        if (!lastDeath || entry.dateTime > lastDeath) {
+          lastDeath = entry.dateTime;
+        }
+      }
+    });
+
+    setWeaponStats({ kills, deaths, lastKill, lastDeath });
+  }, [weaponKey, pveLog, pvpLog]);
+
+  if (!weaponKey) return <div className='text-muted-foreground p-6'>Select a weapon to see details.</div>;
+
+  const dict = WeaponDictionary.dictionary || {};
+  const weapon = dict[weaponKey];
+  if (!weapon) return <div className='text-muted-foreground p-6'>Weapon not found.</div>;
+
+  const kdRatio = weaponStats.deaths === 0 ? weaponStats.kills : (weaponStats.kills / weaponStats.deaths).toFixed(2);
+
+  return (
+    <div className='flex flex-col'>
+      <div className='flex flex-col gap-2 px-4 w-full'>
+        <div className='text-2xl font-bold pt-4'>{weapon.name}</div>
+        <div className='text-sm text-muted-foreground'>Weapon Class: {weaponKey}</div>
+        <div className='flex flex-row items-center gap-6 mt-4 mb-2'>
+          <div className='flex flex-row items-center'>
+            <span className='font-semibold text-muted-foreground pr-2'>Kills</span>
+            <span className='pl-2 text-green-600 font-bold text-lg'>{weaponStats.kills}</span>
+          </div>
+          <div className='flex flex-row items-center'>
+            <span className='font-semibold text-muted-foreground pr-2'>Deaths</span>
+            <span className='pl-2 text-red-600 font-bold text-lg'>{weaponStats.deaths}</span>
+          </div>
+          <div className='flex flex-row items-center'>
+            <span className='font-semibold text-muted-foreground pr-2'>K/D</span>
+            <span className='pl-2 text-blue-600 font-bold text-lg'>{kdRatio}</span>
+          </div>
+        </div>
+      </div>
+      <Separator className='pt-0 mt-0' />
+      <div className='flex flex-col mt-2 justify-center items-center'>
+        <table className='w-full bg-muted/60 rounded-lg shadow-sm'>
+          <tbody>
+            <tr className='odd:bg-muted/60 even:bg-muted/40 border-b border-border last:border-none'>
+              <td className='px-4 py-2 font-semibold text-muted-foreground w-1/4'>Weapon Class</td>
+              <td className='px-4 py-2 text-foreground'>{weaponKey}</td>
+            </tr>
+            <tr className='odd:bg-muted/60 even:bg-muted/40 border-b border-border last:border-none'>
+              <td className='px-4 py-2 font-semibold text-muted-foreground'>Display Name</td>
+              <td className='px-4 py-2 text-foreground'>{weapon.name}</td>
+            </tr>
+            <tr className='odd:bg-muted/60 even:bg-muted/40 border-b border-border last:border-none'>
+              <td className='px-4 py-2 font-semibold text-muted-foreground'>Type</td>
+              <td className='px-4 py-2 text-foreground'>{weapon.type || 'Unknown'}</td>
+            </tr>
+            <tr className='odd:bg-muted/60 even:bg-muted/40 border-b border-border last:border-none'>
+              <td className='px-4 py-2 font-semibold text-muted-foreground'>Manufacturer</td>
+              <td className='px-4 py-2 text-foreground'>{weapon.manufacturer || 'Unknown'}</td>
+            </tr>
+            <tr className='odd:bg-muted/60 even:bg-muted/40 border-b border-border last:border-none'>
+              <td className='px-4 py-2 font-semibold text-muted-foreground'>Class</td>
+              <td className='px-4 py-2 text-foreground'>{weapon.class || 'Unknown'}</td>
+            </tr>
+            <tr className='odd:bg-muted/60 even:bg-muted/40 border-b border-border last:border-none'>
+              <td className='px-4 py-2 font-semibold text-muted-foreground'>Cost</td>
+              <td className='px-4 py-2 text-foreground'>{weapon.cost === 'Not purchasable' ? <span className='text-red-500 font-semibold'>Not purchasable</span> : weapon.cost ? `${weapon.cost.toLocaleString()} aUEC` : 'Unknown'}</td>
+            </tr>
+            <tr className='odd:bg-muted/60 even:bg-muted/40 border-b border-border last:border-none'>
+              <td className='px-4 py-2 font-semibold text-muted-foreground'>Magazine Size</td>
+              <td className='px-4 py-2 text-foreground'>{weapon.magazine_size || 'Unknown'}</td>
+            </tr>
+            <tr className='odd:bg-muted/60 even:bg-muted/40 border-b border-border last:border-none'>
+              <td className='px-4 py-2 font-semibold text-muted-foreground'>Rate of Fire</td>
+              <td className='px-4 py-2 text-foreground'>{weapon.rate_of_fire || 'Unknown'}</td>
+            </tr>
+            <tr className='odd:bg-muted/60 even:bg-muted/40 border-b border-border last:border-none'>
+              <td className='px-4 py-2 font-semibold text-muted-foreground'>Effective Range</td>
+              <td className='px-4 py-2 text-foreground'>{weapon.effective_range || 'Unknown'}</td>
+            </tr>
+            {weapon.description && (
+              <tr className='odd:bg-muted/60 even:bg-muted/40 border-b border-border last:border-none'>
+                <td className='px-4 py-2 font-semibold text-muted-foreground'>Description</td>
+                <td className='px-4 py-2 text-foreground'>{weapon.description}</td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+
 function Dictionary() {
   const [selectedShip, setSelectedShip] = useState(null);
   const [selectedNPC, setSelectedNPC] = useState(null);
+  const [selectedWeapon, setSelectedWeapon] = useState(null);
 
-  // When a ship is selected, clear NPC selection
+  // When a ship is selected, clear other selections
   const handleSelectShip = (shipKey) => {
     setSelectedShip(shipKey);
     setSelectedNPC(null);
+    setSelectedWeapon(null);
   };
 
-  // When an NPC is selected, clear ship selection
+  // When an NPC is selected, clear other selections
   const handleSelectNPC = (npcKey) => {
     setSelectedNPC(npcKey);
     setSelectedShip(null);
+    setSelectedWeapon(null);
+  };
+
+  // When a weapon is selected, clear other selections
+  const handleSelectWeapon = (weaponKey) => {
+    setSelectedWeapon(weaponKey);
+    setSelectedShip(null);
+    setSelectedNPC(null);
   };
 
   return (
@@ -332,6 +494,7 @@ function Dictionary() {
           <TabsList className='flex flex-row gap-2 w-full rounded-t-none'>
             <TabsTrigger value='ship'>Ships</TabsTrigger>
             <TabsTrigger value='npc'>NPCs</TabsTrigger>
+            <TabsTrigger value='weapon'>Weapons</TabsTrigger>
           </TabsList>
           <TabsContent value='ship'>
             <div className='flex flex-col bg-background min-h-full border-r'>
@@ -343,11 +506,17 @@ function Dictionary() {
               <NPCList selectedNPC={selectedNPC} setSelectedNPC={handleSelectNPC} />
             </div>
           </TabsContent>
+          <TabsContent value='weapon'>
+            <div className='flex flex-col bg-background min-h-full border-r'>
+              <WeaponList selectedWeapon={selectedWeapon} setSelectedWeapon={handleSelectWeapon} />
+            </div>
+          </TabsContent>
         </AnimatedTabs>
       </div>
       <div id='dictionary-content' className='flex-1 bg-background'>
-        {selectedShip && !selectedNPC && <ShipDetails shipName={selectedShip} />}
-        {selectedNPC && !selectedShip && <NPCDetails npcKey={selectedNPC} />}
+        {selectedShip && !selectedNPC && !selectedWeapon && <ShipDetails shipName={selectedShip} />}
+        {selectedNPC && !selectedShip && !selectedWeapon && <NPCDetails npcKey={selectedNPC} />}
+        {selectedWeapon && !selectedShip && !selectedNPC && <WeaponDetails weaponKey={selectedWeapon} />}
       </div>
     </div>
   );

@@ -1,15 +1,33 @@
 import { loadUser } from '../../lib/user/userUtil.js';
 import { submitNPCtoDictionary } from '../../lib/pve/submitNPCtoDictionary.js';
+import { submitWeaponToDictionary } from '../../lib/pve/submitWeaponToDictionary.js';
 import { loadPVE, savePVE, addPVELogEntry } from '../../lib/pve/pveUtil.js';
 import { loadPVP, savePVP, addPVPLogEntry } from '../../lib/pvp/pvpUtil.js';
+import { loadWeapon, saveWeapon, addWeaponLogEntry, updateWeaponStats } from '../../lib/weapon/weaponUtil.js';
 import { reportPVEKill, reportPVPKill, reportPVPDeath, reportSuicide } from '../../lib/discord/discordUtil.js';
 import { queueKDUpdate } from '../../lib/utils.js';
 import NPCDictionary from '../../assets/NPC-Dictionary.json';
 import shipDictionary from '../../assets/Ship-Dictionary.json';
+import weaponDictionary from '../../assets/Weapon-Dictionary.json';
+
+// Helper function to extract weapon information from log line
+function extractWeaponInfo(line) {
+  const weaponMatch = line.match(/(?<=using\s').*?(?=_\d+'\s\[Class\s)/);
+  const weaponClassMatch = line.match(/(?<=\[Class\s).*?(?=\]\swith\sdamage\stype)/);
+
+  if (weaponMatch && weaponMatch[0] && weaponClassMatch && weaponClassMatch[0]) {
+    return {
+      weaponClass: weaponClassMatch[0].trim(),
+      weaponId: weaponMatch[0].trim(),
+    };
+  }
+  return null;
+}
 
 export async function actorDeath(line) {
   const pveData = await loadPVE();
   const pvpData = await loadPVP();
+  const weaponData = await loadWeapon();
   try {
     let userData = await loadUser();
     const userName = userData.userName;
@@ -37,13 +55,32 @@ export async function actorDeath(line) {
       if (npcClass && npcClass[0]) {
         const npcClassKey = npcClass[0];
 
+        // Extract weapon information
+        const weaponInfo = extractWeaponInfo(line);
+        let weaponClassKey = null;
+
+        if (weaponInfo) {
+          weaponClassKey = weaponInfo.weaponClass;
+
+          // Check if weapon is in dictionary, if not submit it
+          if (!weaponDictionary.dictionary[weaponClassKey]) {
+            submitWeaponToDictionary(weaponClassKey);
+          }
+
+          // Update weapon statistics
+          await updateWeaponStats(weaponClassKey, 'win');
+          addWeaponLogEntry(weaponClassKey, 'win', 'npc');
+
+          console.log('you killed with weapon: ' + (weaponDictionary.dictionary[weaponClassKey]?.name || weaponClassKey));
+        }
+
         if (NPCDictionary.dictionary[npcClassKey]) {
           console.log('you killed a ' + NPCDictionary.dictionary[npcClassKey].name);
         } else {
           submitNPCtoDictionary(npcClassKey);
         }
 
-        addPVELogEntry(npcClassKey, 'win');
+        addPVELogEntry(npcClassKey, 'win', weaponClassKey);
 
         await queueKDUpdate(async () => {
           const updatedPVE = { ...pveData };
@@ -54,7 +91,7 @@ export async function actorDeath(line) {
           await savePVE(updatedPVE);
         });
 
-        await reportPVEKill(npcClassKey, currentShipClass && currentShipClass !== '' ? currentShipClass : null);
+        await reportPVEKill(npcClassKey, currentShipClass && currentShipClass !== '' ? currentShipClass : null, weaponClassKey);
       } else {
         // === PVP KILL HANDLER ===
         const playerKill = line.match(/(?<=CActor::Kill:\s').*?(?='\s\[\d{9,12})/);
@@ -62,6 +99,25 @@ export async function actorDeath(line) {
         if (playerKill && playerKill[0]) {
           const playerKillName = playerKill[0];
           console.log('you killed the player ' + playerKillName);
+
+          // Extract weapon information
+          const weaponInfo = extractWeaponInfo(line);
+          let weaponClassKey = null;
+
+          if (weaponInfo) {
+            weaponClassKey = weaponInfo.weaponClass;
+
+            // Check if weapon is in dictionary, if not submit it
+            if (!weaponDictionary.dictionary[weaponClassKey]) {
+              submitWeaponToDictionary(weaponClassKey);
+            }
+
+            // Update weapon statistics
+            await updateWeaponStats(weaponClassKey, 'win');
+            addWeaponLogEntry(weaponClassKey, 'win', 'player');
+
+            console.log('you killed with weapon: ' + (weaponDictionary.dictionary[weaponClassKey]?.name || weaponClassKey));
+          }
 
           let shipClassKey = null;
           if (shipClass && shipClass[0]) {
@@ -73,7 +129,7 @@ export async function actorDeath(line) {
           }
 
           let usingShipClassKey = currentShipClass && typeof currentShipClass === 'string' && currentShipClass.trim() !== '' ? currentShipClass : null;
-          addPVPLogEntry(playerKillName, 'win', shipClassKey, usingShipClassKey);
+          addPVPLogEntry(playerKillName, 'win', shipClassKey, usingShipClassKey, weaponClassKey);
 
           await queueKDUpdate(async () => {
             const updatedPVP = { ...pvpData };
@@ -84,7 +140,7 @@ export async function actorDeath(line) {
             await savePVP(updatedPVP);
           });
 
-          await reportPVPKill(playerKillName, shipClassKey, currentShipClass && typeof currentShipClass === 'string' && currentShipClass.trim() !== '' ? currentShipClass : null);
+          await reportPVPKill(playerKillName, shipClassKey, currentShipClass && typeof currentShipClass === 'string' && currentShipClass.trim() !== '' ? currentShipClass : null, weaponClassKey);
         }
       }
     }
@@ -114,6 +170,21 @@ export async function actorDeath(line) {
         const enemyPlayerName = enemyPlayer[0];
         console.log('you were killed by player ' + enemyPlayerName);
 
+        // Extract killer's weapon information
+        const weaponInfo = extractWeaponInfo(line);
+        let killerWeaponClassKey = null;
+
+        if (weaponInfo) {
+          killerWeaponClassKey = weaponInfo.weaponClass;
+
+          // Check if weapon is in dictionary, if not submit it
+          if (!weaponDictionary.dictionary[killerWeaponClassKey]) {
+            submitWeaponToDictionary(killerWeaponClassKey);
+          }
+
+          console.log('you were killed by weapon: ' + (weaponDictionary.dictionary[killerWeaponClassKey]?.name || killerWeaponClassKey));
+        }
+
         // Extract killer's ship class - only if this is a ship kill (not ground kill)
         let killerShipClassKey = null;
         if (line.includes('using')) {
@@ -136,7 +207,7 @@ export async function actorDeath(line) {
         // Use current ship class as victim's ship (null if on ground or no ship)
         let victimShipClassKey = currentShipClass && typeof currentShipClass === 'string' && currentShipClass.trim() !== '' ? currentShipClass : null;
 
-        addPVPLogEntry(enemyPlayerName, 'loss', killerShipClassKey, victimShipClassKey);
+        addPVPLogEntry(enemyPlayerName, 'loss', killerShipClassKey, victimShipClassKey, null, killerWeaponClassKey);
 
         await queueKDUpdate(async () => {
           const updatedPVP = { ...pvpData };
@@ -145,7 +216,7 @@ export async function actorDeath(line) {
           await savePVP(updatedPVP);
         });
 
-        await reportPVPDeath(enemyPlayerName, killerShipClassKey, victimShipClassKey);
+        await reportPVPDeath(enemyPlayerName, killerShipClassKey, victimShipClassKey, killerWeaponClassKey);
       }
     }
   } catch (error) {

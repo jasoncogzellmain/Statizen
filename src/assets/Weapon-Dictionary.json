@@ -1,0 +1,644 @@
+{
+  "version": "1.0.0",
+  "dictionary": {
+    "template": {
+      "name": "",
+      "volume": 0,
+      "manufacturer": "",
+      "item_type": "",
+      "class": "",
+      "magazine_size": 0,
+      "rate_of_fire": "",
+      "effective_range": "",
+      "attachments": {
+        "optics_size": "",
+        "barrel_size": "",
+        "underbarrel_size": ""
+      },
+      "description": "",
+      "verified": false,
+      "kills": 0,
+      "deaths": 0
+    },
+    "behr_rifle_ballistic_02_civilian": {
+      "name": "P8-AR Rifle",
+      "volume": 13000,
+      "cost": "Not purchasable",
+      "manufacturer": "Behring",
+      "item_type": "Assault Rifle",
+      "class": "Ballistic",
+      "magazine_size": 15,
+      "rate_of_fire": "475 rpm",
+      "effective_range": "100 m",
+      "attachments": {
+        "optics_size": "2",
+        "barrel_size": "2",
+        "underbarrel_size": "2"
+      },
+      "description": "The direct descendant of the UEE Marines standard issue weapon, Behring has crafted the semi-automatic P8-AR to provide civilians across the empire a straight-forward and dependable weapon to defend themselves against aggressive hostiles.",
+      "verified": true,
+      "kills": 0,
+      "deaths": 0
+    },
+    "behr_smg_ballistic_01": {
+      "name": "P8-SC",
+      "volume": 0,
+      "cost": 0,
+      "manufacturer": "Behr",
+      "item_type": "Weapon",
+      "class": "SMG",
+      "magazine_size": 0,
+      "rate_of_fire": "",
+      "effective_range": "",
+      "attachments": {
+        "optics_size": "",
+        "barrel_size": "",
+        "underbarrel_size": ""
+      },
+      "description": "",
+      "verified": false,
+      "kills": 0,
+      "deaths": 0
+    },
+    "behr_shotgun_ballistic_01": {
+      "name": "BR-2 Shotgun",
+      "volume": 0,
+      "cost": 0,
+      "manufacturer": "Behr",
+      "item_type": "Weapon",
+      "class": "Shotgun",
+      "magazine_size": 0,
+      "rate_of_fire": "",
+      "effective_range": "",
+      "attachments": {
+        "optics_size": "",
+        "barrel_size": "",
+        "underbarrel_size": ""
+      },
+      "description": "",
+      "verified": false,
+      "kills": 0,
+      "deaths": 0
+    },
+    "gmni_pistol_ballistic_01": {
+      "name": "LH86",
+      "volume": 0,
+      "cost": 0,
+      "manufacturer": "Gmni",
+      "item_type": "Weapon",
+      "class": "Pistol",
+      "magazine_size": 0,
+      "rate_of_fire": "",
+      "effective_range": "",
+      "attachments": {
+        "optics_size": "",
+        "barrel_size": "",
+        "underbarrel_size": ""
+      },
+      "description": "",
+      "verified": false,
+      "kills": 0,
+      "deaths": 0
+    },
+    "gmni_shotgun_ballistic_01": {
+      "name": "R97 Shotgun",
+      "volume": 0,
+      "cost": 0,
+      "manufacturer": "Gmni",
+      "item_type": "Weapon",
+      "class": "Shotgun",
+      "magazine_size": 0,
+      "rate_of_fire": "",
+      "effective_range": "",
+      "attachments": {
+        "optics_size": "",
+        "barrel_size": "",
+        "underbarrel_size": ""
+      },
+      "description": "",
+      "verified": false,
+      "kills": 0,
+      "deaths": 0
+    },
+    "behr_rifle_ballistic_01_black02": {
+      "name": "P4-AR \"Nightstalker\" Rifle",
+      "volume": 0,
+      "cost": 0,
+      "manufacturer": "Behr",
+      "item_type": "Weapon",
+      "class": "Rifle",
+      "magazine_size": 0,
+      "rate_of_fire": "",
+      "effective_range": "",
+      "attachments": {
+        "optics_size": "",
+        "barrel_size": "",
+        "underbarrel_size": ""
+      },
+      "description": "",
+      "verified": false,
+      "kills": 0,
+      "deaths": 0
+    },
+    "ksar_shotgun_ballistic_01": {
+      "name": "Ravager-212 Twin Shotgun",
+      "volume": 0,
+      "cost": 0,
+      "manufacturer": "KSAR",
+      "item_type": "Weapon",
+      "class": "Shotgun",
+      "magazine_size": 0,
+      "rate_of_fire": "",
+      "effective_range": "",
+      "attachments": {
+        "optics_size": "",
+        "barrel_size": "",
+        "underbarrel_size": ""
+      },
+      "description": "",
+      "verified": false,
+      "kills": 0,
+      "deaths": 0
+    },
+    "behr_pistol_ballistic_01": {
+      "name": "S-38 Pistol",
+      "volume": 0,
+      "cost": 0,
+      "manufacturer": "Behr",
+      "item_type": "Weapon",
+      "class": "Pistol",
+      "magazine_size": 0,
+      "rate_of_fire": "",
+      "effective_range": "",
+      "attachments": {
+        "optics_size": "",
+        "barrel_size": "",
+        "underbarrel_size": ""
+      },
+      "description": "",
+      "verified": false,
+      "kills": 0,
+      "deaths": 0
+    },
+    "ksar_shotgun_ballistic_01_iae2201": {
+      "name": "Ravager-212 \"Red Alert\" Twin Shotgun",
+      "volume": 0,
+      "cost": 0,
+      "manufacturer": "KSAR",
+      "item_type": "Weapon",
+      "class": "Shotgun",
+      "magazine_size": 0,
+      "rate_of_fire": "",
+      "effective_range": "",
+      "attachments": {
+        "optics_size": "",
+        "barrel_size": "",
+        "underbarrel_size": ""
+      },
+      "description": "",
+      "verified": false,
+      "kills": 0,
+      "deaths": 0
+    },
+    "gmni_lmg_ballistic_01": {
+      "name": "F55 LMG",
+      "volume": 0,
+      "cost": 0,
+      "manufacturer": "Gmni",
+      "item_type": "Weapon",
+      "class": "LMG",
+      "magazine_size": 0,
+      "rate_of_fire": "",
+      "effective_range": "",
+      "attachments": {
+        "optics_size": "",
+        "barrel_size": "",
+        "underbarrel_size": ""
+      },
+      "description": "",
+      "verified": false,
+      "kills": 0,
+      "deaths": 0
+    },
+    "gmni_smg_ballistic_01_firerats01": {
+      "name": "C54 \"Scorched\" SMG",
+      "volume": 0,
+      "cost": 0,
+      "manufacturer": "Gmni",
+      "item_type": "Weapon",
+      "class": "SMG",
+      "magazine_size": 0,
+      "rate_of_fire": "",
+      "effective_range": "",
+      "attachments": {
+        "optics_size": "",
+        "barrel_size": "",
+        "underbarrel_size": ""
+      },
+      "description": "",
+      "verified": false,
+      "kills": 0,
+      "deaths": 0
+    },
+    "gmni_shotgun_ballistic_01_firerats01": {
+      "name": "R97 \"Scorched\" Shotgun",
+      "volume": 0,
+      "cost": 0,
+      "manufacturer": "Gmni",
+      "item_type": "Weapon",
+      "class": "Shotgun",
+      "magazine_size": 0,
+      "rate_of_fire": "",
+      "effective_range": "",
+      "attachments": {
+        "optics_size": "",
+        "barrel_size": "",
+        "underbarrel_size": ""
+      },
+      "description": "",
+      "verified": false,
+      "kills": 0,
+      "deaths": 0
+    },
+    "ksar_rifle_energy_01_red01": {
+      "name": "Karna \"Brimstone\" Rifle",
+      "volume": 0,
+      "cost": 0,
+      "manufacturer": "KSAR",
+      "item_type": "Weapon",
+      "class": "Rifle",
+      "magazine_size": 0,
+      "rate_of_fire": "",
+      "effective_range": "",
+      "attachments": {
+        "optics_size": "",
+        "barrel_size": "",
+        "underbarrel_size": ""
+      },
+      "description": "",
+      "verified": false,
+      "kills": 0,
+      "deaths": 0
+    },
+    "ksar_shotgun_energy_01_black_purple01": {
+      "name": "Devastator \"Rager\" Shotgun",
+      "volume": 0,
+      "cost": 0,
+      "manufacturer": "KSAR",
+      "item_type": "Weapon",
+      "class": "Shotgun",
+      "magazine_size": 0,
+      "rate_of_fire": "",
+      "effective_range": "",
+      "attachments": {
+        "optics_size": "",
+        "barrel_size": "",
+        "underbarrel_size": ""
+      },
+      "description": "",
+      "verified": false,
+      "kills": 0,
+      "deaths": 0
+    },
+    "lbco_pistol_energy_01_acid01": {
+      "name": "Yubarev \"Venom\" Pistol",
+      "volume": 0,
+      "cost": 0,
+      "manufacturer": "LBCO",
+      "item_type": "Weapon",
+      "class": "Pistol",
+      "magazine_size": 0,
+      "rate_of_fire": "",
+      "effective_range": "",
+      "attachments": {
+        "optics_size": "",
+        "barrel_size": "",
+        "underbarrel_size": ""
+      },
+      "description": "",
+      "verified": false,
+      "kills": 0,
+      "deaths": 0
+    },
+    "gmni_shotgun_ballistic_01_pink_red01": {
+      "name": "R97 \"Kismet\" Shotgun",
+      "volume": 0,
+      "cost": 0,
+      "manufacturer": "Gmni",
+      "item_type": "Weapon",
+      "class": "Shotgun",
+      "magazine_size": 0,
+      "rate_of_fire": "",
+      "effective_range": "",
+      "attachments": {
+        "optics_size": "",
+        "barrel_size": "",
+        "underbarrel_size": ""
+      },
+      "description": "",
+      "verified": false,
+      "kills": 0,
+      "deaths": 0
+    },
+    "gmni_sniper_ballistic_01_iae2201": {
+      "name": "A03 \"Red Alert\" Sniper Rifle",
+      "volume": 0,
+      "cost": 0,
+      "manufacturer": "Gmni",
+      "item_type": "Weapon",
+      "class": "Sniper Rifle",
+      "magazine_size": 0,
+      "rate_of_fire": "",
+      "effective_range": "",
+      "attachments": {
+        "optics_size": "",
+        "barrel_size": "",
+        "underbarrel_size": ""
+      },
+      "description": "",
+      "verified": false,
+      "kills": 0,
+      "deaths": 0
+    },
+    "ksar_shotgun_ballistic_01_firerats01": {
+      "name": "Ravager-212 \"Scorched\" Twin Shotgun",
+      "volume": 0,
+      "cost": 0,
+      "manufacturer": "KSAR",
+      "item_type": "Weapon",
+      "class": "Shotgun",
+      "magazine_size": 0,
+      "rate_of_fire": "",
+      "effective_range": "",
+      "attachments": {
+        "optics_size": "",
+        "barrel_size": "",
+        "underbarrel_size": ""
+      },
+      "description": "",
+      "verified": false,
+      "kills": 0,
+      "deaths": 0
+    },
+    "ksar_smg_energy_01_red01": {
+      "name": "Custodian \"Brimstone\" SMG",
+      "volume": 7500,
+      "cost": 0,
+      "manufacturer": "Kastak Arms",
+      "item_type": "SMG",
+      "class": "Energy (Laser)",
+      "magazine_size": 60,
+      "rate_of_fire": "800 rpm",
+      "effective_range": "30 m",
+      "attachments": {
+        "optics_size": null,
+        "barrel_size": null,
+        "underbarrel_size": null
+      },
+      "description": "The Custodian SMG from Kastak Arms focuses on a high rate of fire over damage and accuracy making it an ideal choice for sweeping through tight environments and close quarters combat. The \"Brimstone\" special edition features a bold red top-trim and a dark gray finish on the lower half of the weapon.",
+      "verified": true,
+      "kills": 0,
+      "deaths": 0
+    },
+    "behr_smg_ballistic_01_iae2201": {
+      "name": "P8-SC \"Red Alert\" SMG",
+      "volume": 0,
+      "cost": 0,
+      "manufacturer": "Behr",
+      "item_type": "Weapon",
+      "class": "SMG",
+      "magazine_size": 0,
+      "rate_of_fire": "",
+      "effective_range": "",
+      "attachments": {
+        "optics_size": "",
+        "barrel_size": "",
+        "underbarrel_size": ""
+      },
+      "description": "",
+      "verified": false,
+      "kills": 0,
+      "deaths": 0
+    },
+    "behr_rifle_ballistic_01": {
+      "name": "P4-AR",
+      "volume": 0,
+      "cost": 0,
+      "manufacturer": "Behr",
+      "item_type": "Weapon",
+      "class": "Rifle",
+      "magazine_size": 0,
+      "rate_of_fire": "",
+      "effective_range": "",
+      "attachments": {
+        "optics_size": "",
+        "barrel_size": "",
+        "underbarrel_size": ""
+      },
+      "description": "",
+      "verified": false,
+      "kills": 0,
+      "deaths": 0
+    },
+    "behr_smg_ballistic_01_tan01": {
+      "name": "P8-SC \"Desert Shadow\" SMG",
+      "volume": 0,
+      "cost": 0,
+      "manufacturer": "Behr",
+      "item_type": "Weapon",
+      "class": "SMG",
+      "magazine_size": 0,
+      "rate_of_fire": "",
+      "effective_range": "",
+      "attachments": {
+        "optics_size": "",
+        "barrel_size": "",
+        "underbarrel_size": ""
+      },
+      "description": "",
+      "verified": false,
+      "kills": 0,
+      "deaths": 0
+    },
+    "lbco_sniper_energy_01": {
+      "name": "Atzakav Sniper Rifle",
+      "volume": 0,
+      "cost": 0,
+      "manufacturer": "LBCO",
+      "item_type": "Weapon",
+      "class": "Sniper Rifle",
+      "magazine_size": 0,
+      "rate_of_fire": "",
+      "effective_range": "",
+      "attachments": {
+        "optics_size": "",
+        "barrel_size": "",
+        "underbarrel_size": ""
+      },
+      "description": "",
+      "verified": false,
+      "kills": 0,
+      "deaths": 0
+    },
+    "volt_smg_energy_01": {
+      "name": "Quartz Energy SMG",
+      "volume": 0,
+      "cost": 0,
+      "manufacturer": "Volt",
+      "item_type": "Weapon",
+      "class": "SMG",
+      "magazine_size": 0,
+      "rate_of_fire": "",
+      "effective_range": "",
+      "attachments": {
+        "optics_size": "",
+        "barrel_size": "",
+        "underbarrel_size": ""
+      },
+      "description": "",
+      "verified": false,
+      "kills": 0,
+      "deaths": 0
+    },
+    "volt_smg_energy_01_tint02_optic_001": {
+      "name": "Quartz \"Black Op\" Energy SMG",
+      "volume": 0,
+      "cost": 0,
+      "manufacturer": "Volt",
+      "item_type": "Weapon",
+      "class": "SMG",
+      "magazine_size": 0,
+      "rate_of_fire": "",
+      "effective_range": "",
+      "attachments": {
+        "optics_size": "",
+        "barrel_size": "",
+        "underbarrel_size": ""
+      },
+      "description": "",
+      "verified": false,
+      "kills": 0,
+      "deaths": 0
+    },
+    "volt_rifle_energy_01": {
+      "name": "Parallax Energy Assault Rifle",
+      "volume": 0,
+      "cost": 0,
+      "manufacturer": "Volt",
+      "item_type": "Weapon",
+      "class": "Rifle",
+      "magazine_size": 0,
+      "rate_of_fire": "",
+      "effective_range": "",
+      "attachments": {
+        "optics_size": "",
+        "barrel_size": "",
+        "underbarrel_size": ""
+      },
+      "description": "",
+      "verified": false,
+      "kills": 0,
+      "deaths": 0
+    },
+    "volt_shotgun_energy_01_tint01": {
+      "name": "Prism \"Bonedust\" Laser Shotgun",
+      "volume": 0,
+      "cost": 0,
+      "manufacturer": "Volt",
+      "item_type": "Weapon",
+      "class": "Shotgun",
+      "magazine_size": 0,
+      "rate_of_fire": "",
+      "effective_range": "",
+      "attachments": {
+        "optics_size": "",
+        "barrel_size": "",
+        "underbarrel_size": ""
+      },
+      "description": "",
+      "verified": false,
+      "kills": 0,
+      "deaths": 0
+    },
+    "behr_glauncher_ballistic_01": {
+      "name": "GP-33 MOD Grenade Launcher",
+      "volume": 0,
+      "cost": 0,
+      "manufacturer": "Behr",
+      "item_type": "Weapon",
+      "class": "Grenade Launcher",
+      "magazine_size": 0,
+      "rate_of_fire": "",
+      "effective_range": "",
+      "attachments": {
+        "optics_size": "",
+        "barrel_size": "",
+        "underbarrel_size": ""
+      },
+      "description": "",
+      "verified": false,
+      "kills": 0,
+      "deaths": 0
+    },
+    "apar_special_ballistic_01_mat01": {
+      "name": "Scourge \"Quite Useful\" Railgun",
+      "volume": 0,
+      "cost": 0,
+      "manufacturer": "APAR",
+      "item_type": "Weapon",
+      "class": "Railgun",
+      "magazine_size": 0,
+      "rate_of_fire": "",
+      "effective_range": "",
+      "attachments": {
+        "optics_size": "",
+        "barrel_size": "",
+        "underbarrel_size": ""
+      },
+      "description": "",
+      "verified": false,
+      "kills": 0,
+      "deaths": 0
+    },
+    "ksar_rifle_energy_01": {
+      "name": "Karna Rifle",
+      "volume": 0,
+      "cost": 0,
+      "manufacturer": "KSAR",
+      "item_type": "Weapon",
+      "class": "Rifle",
+      "magazine_size": 0,
+      "rate_of_fire": "",
+      "effective_range": "",
+      "attachments": {
+        "optics_size": "",
+        "barrel_size": "",
+        "underbarrel_size": ""
+      },
+      "description": "",
+      "verified": false,
+      "kills": 0,
+      "deaths": 0
+    },
+    "klwe_sniper_energy_01": {
+      "name": "Arrowhead Sniper Rifle",
+      "volume": 0,
+      "cost": 0,
+      "manufacturer": "KLWE",
+      "item_type": "Weapon",
+      "class": "Sniper Rifle",
+      "magazine_size": 0,
+      "rate_of_fire": "",
+      "effective_range": "",
+      "attachments": {
+        "optics_size": "",
+        "barrel_size": "",
+        "underbarrel_size": ""
+      },
+      "description": "",
+      "verified": false,
+      "kills": 0,
+      "deaths": 0
+    }
+  }
+}
