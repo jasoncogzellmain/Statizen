@@ -1,8 +1,10 @@
 /* global __APP_VERSION__ */
 import { useSettings } from '@/lib/context/settings/settingsContext';
+import { useVersionCheck } from '@/lib/hooks/useVersionCheck';
 
 const Footer = () => {
   const { settings, loading } = useSettings();
+  const { hasUpdate, latestVersion, loading: updateLoading } = useVersionCheck();
   const version = __APP_VERSION__; // Injected at build time from package.json
 
   if (loading) {
@@ -29,6 +31,23 @@ const Footer = () => {
             Nowskify
           </a>{' '}
           • v{version}
+          {updateLoading && (
+            <span className='ml-2 text-gray-400'>Checking for updates...</span>
+          )}
+          {hasUpdate && !updateLoading && (
+            <span className='ml-2'>
+              •{' '}
+              <a
+                href='https://github.com/ChrisNSki/Statizen/releases/latest'
+                target='_blank'
+                rel='noopener noreferrer'
+                className='text-yellow-400 hover:text-yellow-300 underline'
+                title={`Update available: v${latestVersion}`}
+              >
+                Update Available (v{latestVersion})
+              </a>
+            </span>
+          )}
         </span>
         {settings?.logPath ? (
           <span className='text-green-400'>Log File Loaded</span>
